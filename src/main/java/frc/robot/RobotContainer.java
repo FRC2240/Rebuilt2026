@@ -5,22 +5,27 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.utils.Field;
 
 public class RobotContainer {
+    private final SendableChooser<Command> autoChooser;
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
 
     public RobotContainer() {
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
+
         configureBindings();
     }
 
@@ -32,13 +37,14 @@ public class RobotContainer {
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
         drivetrain.setDefaultCommand(driveCommands.driveWithJoystick());
-        Field.inAllianceZone.whileTrue(driveCommands.drive(driveCommands.driveWithController(),driveCommands.rotateToFacePoint(()-> Field.HUB_CENTER_TRANSLATION.get())));
+        // Field.inAllianceZone.whileTrue(driveCommands.drive(driveCommands.driveWithController(),driveCommands.rotateToFacePoint(()->
+        // Field.HUB_CENTER_TRANSLATION.get())));
 
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }
 
     public Command getAutonomousCommand() {
-        return Commands.none();
+        return autoChooser.getSelected();
     }
 }
