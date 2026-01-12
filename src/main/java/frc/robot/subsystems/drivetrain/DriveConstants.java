@@ -24,7 +24,7 @@ public class DriveConstants {
     public static LinearAcceleration MAX_WHEEL_DECELERATION = MetersPerSecondPerSecond.of(50);
 
     public static PIDController TRANSLATION_PID_CONTROLLER = new PIDController(5, 0, 1);
-    public static PIDController ROTATION_PID_CONTROLLER = new PIDController(5, 0, 0);
+    public static PIDController ROTATION_PID_CONTROLLER = new PIDController(10, 0, 0);
 
     public static Distance TRANSLATION_FINISHED_THRESHOLD = Inches.of(2);
     public static Angle ROTATION_FINISHED_THRESHOLD = Degrees.of(2);
