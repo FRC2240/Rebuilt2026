@@ -1,4 +1,6 @@
-package frc.robot;
+package frc.robot.subsystems.drivetrain;
+
+import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
@@ -20,16 +22,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
-public class Telemetry {
-    private final double MaxSpeed;
-
-    /**
-     * Construct a telemetry object, with the specified max speed of the robot
-     * 
-     * @param maxSpeed Maximum speed in meters per second
-     */
-    public Telemetry(double maxSpeed) {
-        MaxSpeed = maxSpeed;
+public class Logger {
+    public Logger() {
         SignalLogger.start();
 
         /* Set up the module state Mechanism2d telemetry */
@@ -115,7 +109,7 @@ public class Telemetry {
         for (int i = 0; i < 4; ++i) {
             m_moduleSpeeds[i].setAngle(state.ModuleStates[i].angle);
             m_moduleDirections[i].setAngle(state.ModuleStates[i].angle);
-            m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * MaxSpeed));
+            m_moduleSpeeds[i].setLength(state.ModuleStates[i].speedMetersPerSecond / (2 * DriveConstants.MAX_SPEED.in(MetersPerSecond)));
         }
     }
 }
