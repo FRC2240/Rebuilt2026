@@ -5,8 +5,9 @@ import static edu.wpi.first.units.Units.*;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.SignalLogger;
 import com.ctre.phoenix6.Utils;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.Matrix;
@@ -16,6 +17,8 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.sysid.SysIdRoutineLog;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -52,12 +55,22 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     null, // Use default ramp rate (1 V/s)
                     Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
                     null, // Use default timeout (10 s)
-                    // Log state with SignalLogger class
-                    state -> SignalLogger.writeString("SysIdTranslation_State", state.toString())),
+                    state -> SmartDashboard.putString("SysIdTranslation_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     output -> setControl(m_translationCharacterization.withVolts(output)),
-                    null,
+                    this::logSysIdTranslation,
                     this));
+
+    private void logSysIdTranslation(SysIdRoutineLog log) {
+        var modules = getModules();
+        for (int i = 0; i < 4; i++) {
+            var module = modules[i];
+            TalonFX driveMotor = module.getDriveMotor();
+            log.motor("drive-motor-" + i).voltage(driveMotor.getMotorVoltage().getValue())
+                    .angularPosition(driveMotor.getPosition().getValue())
+                    .angularVelocity(driveMotor.getVelocity().getValue());
+        }
+    }
 
     /*
      * SysId routine for characterizing steer. This is used to find PID gains for
@@ -68,12 +81,24 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     null, // Use default ramp rate (1 V/s)
                     Volts.of(7), // Use dynamic voltage of 7 V
                     null, // Use default timeout (10 s)
-                    // Log state with SignalLogger class
-                    state -> SignalLogger.writeString("SysIdSteer_State", state.toString())),
+                    state -> SmartDashboard.putString("SysIdSteer_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     volts -> setControl(m_steerCharacterization.withVolts(volts)),
-                    null,
+                    this::logSysIdSteer,
                     this));
+
+    private void logSysIdSteer(SysIdRoutineLog log) {
+        var modules = getModules();
+        for (int i = 0; i < 4; i++) {
+            var module = modules[i];
+            TalonFX angleMotor = module.getSteerMotor();
+            CANcoder encoder = module.getEncoder();
+
+            log.motor("steer-motor-" + i).voltage(angleMotor.getMotorVoltage().getValue())
+                    .angularPosition(encoder.getPosition().getValue())
+                    .angularVelocity(encoder.getVelocity().getValue());
+        }
+    }
 
     /*
      * SysId routine for characterizing rotation.
@@ -89,21 +114,19 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     /* This is in radians per second, but SysId only supports "volts" */
                     Volts.of(Math.PI),
                     null, // Use default timeout (10 s)
-                    // Log state with SignalLogger class
-                    state -> SignalLogger.writeString("SysIdRotation_State", state.toString())),
+                    state -> SmartDashboard.putString("SysIdRotation_State", state.toString())),
             new SysIdRoutine.Mechanism(
                     output -> {
                         /* output is actually radians per second, but SysId only supports "volts" */
                         setControl(m_rotationCharacterization.withRotationalRate(output.in(Volts)));
                         /* also log the requested output for SysId */
-                        SignalLogger.writeDouble("Rotational_Rate", output.in(Volts));
+                        SmartDashboard.putNumber("Rotational_Rate", output.in(Volts));
                     },
                     null,
                     this));
 
     /* The SysId routine to test */
     private SysIdRoutine m_sysIdRoutineToApply = m_sysIdRoutineTranslation;
-
 
     public Drivetrain() {
         super(TunerConstants.DrivetrainConstants,
@@ -112,7 +135,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                 TunerConstants.BackLeft,
                 TunerConstants.BackRight);
 
-        //registerTelemetry(logger::telemeterize);
+        registerTelemetry(logger::telemeterize);
 
         if (Utils.isSimulation()) {
             startSimThread();
