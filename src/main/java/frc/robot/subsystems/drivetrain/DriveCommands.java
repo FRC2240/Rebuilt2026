@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.utils.Field;
 
 public class DriveCommands {
     private Drivetrain drivetrain;
@@ -225,4 +226,7 @@ public class DriveCommands {
         });
     }
 
+    public Supplier<RotationalVelocity> aimAtHub() {
+        return rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get());
+    }
 }
