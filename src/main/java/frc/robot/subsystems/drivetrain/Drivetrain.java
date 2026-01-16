@@ -100,15 +100,12 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     @Override
     public void periodic() {
         /*
-         * Periodically try to apply the operator perspective.
-         * If we haven't applied the operator perspective before, then we should apply
-         * it regardless of DS state.
+         * Periodically try to apply the operator perspective. If we haven't applied the
+         * operator perspective before, then we should apply it regardless of DS state.
          * This allows us to correct the perspective in case the robot code restarts
-         * mid-match.
-         * Otherwise, only check and apply the operator perspective if the DS is
-         * disabled.
-         * This ensures driving behavior doesn't change until an explicit disable event
-         * occurs during testing.
+         * mid-match. Otherwise, only check and apply the operator perspective if the DS
+         * is disabled. This ensures driving behavior doesn't change until an explicit
+         * disable event occurs during testing.
          */
         if (!m_hasAppliedOperatorPerspective || DriverStation.isDisabled()) {
             DriverStation.getAlliance().ifPresent(allianceColor -> {
@@ -124,7 +121,10 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private void startSimThread() {
         m_lastSimTime = Utils.getCurrentTimeSeconds();
 
-        /* Run simulation at a faster rate so PID gains behave more reasonably */
+        /*
+         * Uses a notifier to run simulation at a faster rate so PID gains behave more
+         * reasonably
+         */
         m_simNotifier = new Notifier(() -> {
             final double currentTime = Utils.getCurrentTimeSeconds();
             double deltaTime = currentTime - m_lastSimTime;

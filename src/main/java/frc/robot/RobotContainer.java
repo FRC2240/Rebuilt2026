@@ -7,9 +7,7 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -32,7 +30,8 @@ public class RobotContainer {
     }
 
     private void configurePathPlanner() {
-        NamedCommands.registerCommand("hub_align", driveCommands.drive(driveCommands.driveNone, driveCommands.rotateToFacePoint(()->Field.HUB_CENTER_TRANSLATION.get())));
+        NamedCommands.registerCommand("hub_align",
+                driveCommands.drive(null, driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
 
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -45,14 +44,16 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        drivetrain.setDefaultCommand(driveCommands.driveWithJoystick());
+        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
         joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
-        RobotModeTriggers.teleop().and(Field.inAllianceZone).whileTrue(driveCommands.drive(driveCommands.driveWithController(), driveCommands.aimAtHub()));
+        RobotModeTriggers.teleop().and(Field.inAllianceZone)
+                .whileTrue(driveCommands.drive(driveCommands.driveWithJoystick(),
+                        driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected(); 
+        return autoChooser.getSelected();
     }
 }
