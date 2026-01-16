@@ -127,8 +127,6 @@ public class DriveCommands {
 
     /**
      * Drives the robot with the drive and rotation joysticks
-     * 
-     * @return
      */
     public Command controlWithJoysticks() {
         return drive(driveWithJoystick(), rotateWithJoystick());
