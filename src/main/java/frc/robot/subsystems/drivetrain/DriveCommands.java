@@ -53,14 +53,6 @@ public class DriveCommands {
     }
 
     /**
-     * Returns 1 if the alliance is red or empty. Otherwise, -1
-     */
-    private int getAllianceMultiplier() {
-        return (DriverStation.getAlliance().isEmpty()
-                || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
-    }
-
-    /**
      * Gets the maximum drive speed, accounting for if the robot is in slow mode.
      * 
      * @return The current maximum speed
@@ -168,7 +160,10 @@ public class DriveCommands {
     public Supplier<TranslationalVelocity> driveWithJoystick() {
         TranslationalVelocity velocity = TranslationalVelocity.none();
         return () -> {
-            int allianceMultiplier = getAllianceMultiplier();
+            // Inverts controls if on the blue alliance
+            int allianceMultiplier = (DriverStation.getAlliance().isEmpty()
+                    || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
+
             velocity.x = getMaxDriveSpeed()
                     .times(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND) * allianceMultiplier);
             velocity.y = getMaxDriveSpeed()
