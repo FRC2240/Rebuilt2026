@@ -1,20 +1,13 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.vision.BaseVisionIO.BaseVisionIOInput;
 import frc.robot.subsystems.vision.BaseVisionIO.vision_configuration_type;
+import frc.robot.utils.Field;
 
-import static frc.robot.Constants.Vision.ANGULAR_STDEV_COEFF;
-import static frc.robot.Constants.Vision.ANGULAR_STDEV_MEGATAG_2_COEFF;
-import static frc.robot.Constants.Vision.CAMERA_0_POS;
-import static frc.robot.Constants.Vision.CAMERA_1_POS;
-import static frc.robot.Constants.Vision.LINEAR_STDEV_COEFF;
-import static frc.robot.Constants.Vision.LINEAR_STDEV_MEGATAG_2_COEFF;
-import static frc.robot.Constants.Field.APRIL_TAG_LAYOUT;
-import static frc.robot.Constants.Vision.MAX_UNCERTAINTY;
-import static frc.robot.Constants.Vision.MAX_Z_ERROR;
+import static edu.wpi.first.units.Units.Meters;
+import static frc.robot.subsystems.vision.VisionConstants.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -39,8 +32,8 @@ public class Vision extends SubsystemBase {
                     new PhotonVisionIO("photoncam-right", CAMERA_1_POS));
         } else {
             return new Vision(drivetrain::addVisionMeasurement,
-                    new SimPhotonVisionIO("camera_0", drivetrain::getPose, Constants.Vision.CAMERA_0_POS),
-                    new SimPhotonVisionIO("camera_1", drivetrain::getPose, Constants.Vision.CAMERA_1_POS));
+                    new SimPhotonVisionIO("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
+                    new SimPhotonVisionIO("camera_1", drivetrain::getPose, VisionConstants.CAMERA_1_POS));
         }
     }
 
@@ -93,7 +86,7 @@ public class Vision extends SubsystemBase {
 
             // each tag seen ID appends its position to tag poses
             for (int tag_ID : input[i].april_tag_IDs) {
-                var tag_pose = APRIL_TAG_LAYOUT.getTagPose(tag_ID);
+                var tag_pose = Field.APRIL_TAG_LAYOUT.getTagPose(tag_ID);
                 if (tag_pose.isPresent()) {
                     tag_poses.add(tag_pose.get());
                 }
@@ -109,9 +102,9 @@ public class Vision extends SubsystemBase {
                         && estimation.uncertainty() > MAX_UNCERTAINTY);
                 boolean zErrorInvalid = Math.abs(estimation.position().getZ()) > MAX_Z_ERROR;
                 boolean xOutBounds = (estimation.position().getX() < 0.0)
-                        || (estimation.position().getX() > APRIL_TAG_LAYOUT.getFieldLength());
+                        || (estimation.position().getX() > Field.FIELD_LENGTH.in(Meters));
                 boolean yOutBounds = (estimation.position().getY() < 0.0)
-                        || (estimation.position().getY() > APRIL_TAG_LAYOUT.getFieldWidth());
+                        || (estimation.position().getY() > Field.FIELD_WIDTH.in(Meters));
 
                 boolean reject_pose = tagCountInvalid || uncertaintyInvalid || zErrorInvalid || xOutBounds
                         || yOutBounds;

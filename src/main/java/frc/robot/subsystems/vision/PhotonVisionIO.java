@@ -5,8 +5,6 @@ import java.util.Set;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-import static frc.robot.Constants.Field.APRIL_TAG_LAYOUT;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.LinkedList;
@@ -14,6 +12,7 @@ import java.util.LinkedList;
 import org.photonvision.PhotonCamera;
 
 import edu.wpi.first.math.geometry.Transform3d;
+import frc.robot.utils.Field;
 
 public class PhotonVisionIO implements BaseVisionIO{
     protected final PhotonCamera camera;
@@ -87,7 +86,7 @@ public class PhotonVisionIO implements BaseVisionIO{
                 var tag = raw_data.targets.get(0);
 
                 //calc bot pose
-                var tag_pos = APRIL_TAG_LAYOUT.getTagPose(tag.fiducialId);
+                var tag_pos = Field.APRIL_TAG_LAYOUT.getTagPose(tag.fiducialId);
                 if (tag_pos.isPresent()) {
                     Transform3d feild_to_tag =
                         new Transform3d(tag_pos.get().getTranslation(), tag_pos.get().getRotation());
