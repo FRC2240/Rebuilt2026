@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hooters;
+package frc.robot.subsystems.shooter;
 
 import edu.wpi.first.units.measure.Angle;
 
