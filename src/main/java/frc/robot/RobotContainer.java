@@ -4,19 +4,24 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
-import frc.robot.subsystems.vision.Vision;
-import frc.robot.utils.Field;
+import frc.robot.utils.*;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
@@ -25,6 +30,8 @@ public class RobotContainer {
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
     public final Vision vision = Vision.createVision(drivetrain);
+
+    public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
         configurePathPlanner();
@@ -46,11 +53,16 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
+        sim.setDefaultCommand(Commands.run(() -> sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
+                    new Rotation2d(Degrees.of(45))), sim));
+
+        drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(() -> MetersPerSecond.of(10).times(Math.cos(5)))));
         joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
-        RobotModeTriggers.teleop().and(Field.inAllianceZone)
-                .whileTrue(driveCommands.drive(driveCommands.driveWithJoystick(),
-                        driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
+
+        joystick.button(1).onTrue(Commands.runOnce(() -> {
+            sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
+                    new Rotation2d(Degrees.of(45)));
+        }));
         // Reset the field-centric heading on left bumper press.
         joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }

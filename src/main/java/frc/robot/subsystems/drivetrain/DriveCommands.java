@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.Supplier;
 
@@ -14,13 +15,16 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.utils.Field;
 
 public class DriveCommands {
     private Drivetrain drivetrain;
@@ -236,5 +240,23 @@ public class DriveCommands {
             Rotation2d rotationToPoint = translationToTarget.getAngle();
             return rotationToPoint;
         });
+    }
+
+    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> groundSpeedSupplier) {
+      return rotateToRotation(() -> {
+        LinearVelocity ballGroundSpeed = groundSpeedSupplier.get();
+        Translation2d robotTranslation = drivetrain.getTranslation();
+        Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
+        Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+        Distance distanceToHub = Meters.of(translationToHub.getNorm());
+        Time ballTimeToHub = distanceToHub.div(ballGroundSpeed);        
+
+        ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getHeading());
+        Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond, robotChassisSpeeds.vyMetersPerSecond);
+        Translation2d overshoot = robotVelocities.times(ballTimeToHub.in(Seconds));
+
+        Translation2d correctedTranslation = translationToHub.minus(overshoot.times(0.1));
+        return correctedTranslation.getAngle();
+      });
     }
 }
