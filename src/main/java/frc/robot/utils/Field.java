@@ -2,8 +2,6 @@ package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.Inches;
 
-import java.util.Optional;
-
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -35,28 +33,21 @@ public class Field {
           Inches.of(182.11),
           FIELD_WIDTH.div(2)));
 
-  public boolean hubactivated() {
-    char hubactive = DriverStation.getGameSpecificMessage().charAt(0); // returns who is disabled first
-    Optional<Alliance> alliance = DriverStation.getAlliance();
-    double timeleft = DriverStation.getMatchTime();
+  public boolean isHubActive() {
+    // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
+    Alliance disabledFirst = DriverStation.getGameSpecificMessage().charAt(0) == 'B' ? Alliance.Blue : Alliance.Red; 
+    Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
+    boolean isInactiveFirst = disabledFirst == alliance;
 
-    if ((timeleft < 30.0)/* endgame/auto */ || (timeleft > 130.0)/* Transition shift */) {
-      return true;
-    } 
-    else {
-      if ((hubactive == 'B' && alliance.get() == Alliance.Blue) || (hubactive == 'R' && alliance.get() == Alliance.Red)) {
-        if ((timeleft > 105.0) || ((timeleft > 55.0) && (timeleft < 80.0))) {
-          return false;
-        }
-        return true;
-      } 
-      else {
-        if ((timeleft > 105.0) || ((timeleft > 55.0) && (timeleft < 80.0))) {
-          return true;
-        }
-        return false;
-      }
-    }
+    double timeleft = DriverStation.getMatchTime();
+    // Both hubs are active in auto, in transistion shift, and in end game
+    boolean areBothActive = DriverStation.isAutonomous() || timeleft > 130.0 || timeleft < 30.0;
+    // The team that is inactive first is active in shift 2 and 4
+    boolean isFirstInactiveActive = (timeleft < 105.0 && timeleft > 80.0) || (timeleft < 55.0 && timeleft > 30.0);
+    // The team that is inactive second is active in shift 1 and 3
+    boolean isSecondInactiveActive = (timeleft < 130.0 && timeleft > 105.0) || (timeleft < 80.0 && timeleft > 55.0);
+
+    return areBothActive || (isInactiveFirst && isFirstInactiveActive) || (!isInactiveFirst && isSecondInactiveActive);
   }
 
   /**
