@@ -15,7 +15,7 @@ import frc.robot.RobotContainer;
  */
 public class Field {
     public static final AprilTagFieldLayout APRIL_TAG_LAYOUT = AprilTagFieldLayout
-            .loadField(AprilTagFields.k2025ReefscapeWelded); // TODO: Change when released
+            .loadField(AprilTagFields.k2026RebuiltWelded); 
 
     // https://firstfrc.blob.core.windows.net/frc2026/FieldAssets/2026-field-dimension-dwgs.pdf
     public static final Distance FIELD_LENGTH = Inches.of(651.22); // X
