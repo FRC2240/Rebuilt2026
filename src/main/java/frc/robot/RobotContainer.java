@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.vision.Vision;
 import frc.robot.utils.Field;
 
 public class RobotContainer {
@@ -23,6 +24,7 @@ public class RobotContainer {
 
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
+    public final Vision vision = Vision.createVision(drivetrain);
 
     public RobotContainer() {
         configurePathPlanner();
