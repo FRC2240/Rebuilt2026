@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hopper;
+package frc.robot.subsystems.Intake;
 
 
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
@@ -13,27 +13,27 @@ public class Intake extends SubsystemBase {
 
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
 
-    public void runExtend(Current current) {
+    public void Extend(Current current) {
         Hopper.setControl(req.withOutput(current));
 
     }
 
-    public void runIntake(Current current) {
+    public void Intake(Current current) {
         Intake.setControl(req.withOutput(current));
     }
 
     // commands
-    public Command runExtendCommand(Current current) {
+    public Command ExtendCommand(Current current) {
         return this.run(
                 () -> {
-                    runExtend(current);
+                    Extend(current);
                 });
     }
 
-    public Command runIntakeCommand(Current current) {
+    public Command IntakeCommand(Current current) {
         return this.run(
                 () -> {
-                    runIntake(current);
+                    Intake(current);
                 });
     }
 }

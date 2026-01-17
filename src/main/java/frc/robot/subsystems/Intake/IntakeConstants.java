@@ -1,4 +1,4 @@
-package frc.robot.subsystems.Hopper;
+package frc.robot.subsystems.Intake;
 
 public class IntakeConstants {
     public static class Intake {
