@@ -29,6 +29,7 @@ public class RobotContainer {
 
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
+    public final Vision vision = Vision.createVision(drivetrain);
 
     public final FieldSimulation sim = new FieldSimulation();
 
