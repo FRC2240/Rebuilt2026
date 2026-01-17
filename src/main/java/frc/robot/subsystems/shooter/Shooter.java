@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.GravityTypeValue;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.Field;
 
 public class Shooter extends SubsystemBase{
 
@@ -73,6 +74,13 @@ public class Shooter extends SubsystemBase{
     }
 
 
+    public Boolean canShoot() {
+        //Check heading, shooter velocity(prob some math to know if it can hit), hub is active
+        //Laurens said he would expose the heading, should prob be a bool
+        //Math for if shooter velocity is good is needed
+        Field.hubactivated();
+        return true;
+    }
 
     //TODO Implement once you know the robot architecture
     public LinearVelocity getBallVelocity() {
