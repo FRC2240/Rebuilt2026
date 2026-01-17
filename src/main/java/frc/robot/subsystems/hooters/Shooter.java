@@ -1,4 +1,4 @@
-package frc.robot.subsystems.shooter;
+package frc.robot.subsystems.hooters;
 
 import static edu.wpi.first.units.Units.Degrees;
 
