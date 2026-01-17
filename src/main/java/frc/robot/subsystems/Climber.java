@@ -9,6 +9,12 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
+
+
 
 import static frc.robot.Constants.Climber.MOTOR_ID;
 
@@ -16,6 +22,11 @@ public class Climber extends SubsystemBase{
    TalonFX motor = new TalonFX(MOTOR_ID);
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
     private final TalonFXConfiguration conf;
+
+Mechanism2d Climbroot = new Mechanism2d(27, 27);
+MechanismRoot2d Climbbase = Climbroot.getRoot("ClimbBase", 2.25, 14.5);
+MechanismLigament2d climbersim = Climbbase.append(new MechanismLigament2d("ClimbArm", 10, 90));
+
 
     public Climber(){
         motor = new TalonFX(MOTOR_ID);
@@ -38,5 +49,25 @@ public class Climber extends SubsystemBase{
                 extend(current);
             }
         );
-    }    
+    } 
+    
+    public void extendsim(Double length){
+        climbersim.setLength(length);
+    }
+
+    public Command extendCommandsim(Double length){
+        return this.run(
+            () ->  {
+                extendsim(length);
+
+            });
+
+        }
+            
+
+
+
+
+
 }
+
