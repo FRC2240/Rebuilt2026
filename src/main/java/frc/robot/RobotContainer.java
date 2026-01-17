@@ -52,11 +52,11 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
+        sim.setDefaultCommand(Commands.run(() -> sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
+                    new Rotation2d(Degrees.of(45))), sim));
+
+        drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(() -> MetersPerSecond.of(10).times(Math.cos(5)))));
         joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
-        RobotModeTriggers.teleop().and(Field.inAllianceZone)
-                .whileTrue(driveCommands.drive(driveCommands.driveWithJoystick(),
-                        driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
 
         joystick.button(1).onTrue(Commands.runOnce(() -> {
             sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
