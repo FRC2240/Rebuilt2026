@@ -12,7 +12,6 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -25,50 +24,50 @@ import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;;
 
 public class RobotContainer {
-    private SendableChooser<Command> autoChooser;
-    private final CommandXboxController joystick = new CommandXboxController(0);
+  private SendableChooser<Command> autoChooser;
+  private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
-    public final Vision vision = Vision.createVision(drivetrain);
+  public static final Drivetrain drivetrain = new Drivetrain();
+  public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
+  public final Vision vision = Vision.createVision(drivetrain);
 
-    public final FieldSimulation sim = new FieldSimulation();
+  public final FieldSimulation sim = new FieldSimulation();
 
-    public RobotContainer() {
-        configurePathPlanner();
-        configureBindings();
-    }
+  public RobotContainer() {
+    configurePathPlanner();
+    configureBindings();
+  }
 
-    private void configurePathPlanner() {
-        NamedCommands.registerCommand("hub_align",
-                driveCommands.drive(null, driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
+  private void configurePathPlanner() {
+    NamedCommands.registerCommand("hub_align",
+        driveCommands.drive(null, driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
 
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
-    }
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+  }
 
-    private void configureBindings() {
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+  private void configureBindings() {
+    // Idle while the robot is disabled. This ensures the configured
+    // neutral mode is applied to the drive motors while disabled.
+    final var idle = new SwerveRequest.Idle();
+    RobotModeTriggers.disabled().whileTrue(
+        drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        sim.setDefaultCommand(Commands.run(() -> sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
-                    new Rotation2d(Degrees.of(45))), sim));
+    drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(),
+        null));
+    joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
 
-        drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(() -> MetersPerSecond.of(10).times(Math.cos(5)))));
-        joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
+    joystick.button(1).onTrue(driveCommands.setSlowModeCommand(true)).onFalse(driveCommands.setSlowModeCommand(false))
+        .whileTrue(Commands
+            .run(() -> sim.shootWithRobotVelocity(drivetrain, new Rotation2d(Degrees.of(45)), MetersPerSecond.of(10))))
+        .whileTrue(driveCommands.drive(driveCommands.driveWithJoystick(),
+            driveCommands.rotateToAimAtHub(() -> MetersPerSecond.of(10).times(Rotation2d.fromDegrees(45).getCos()))));
 
-        joystick.button(1).onTrue(Commands.runOnce(() -> {
-            sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
-                    new Rotation2d(Degrees.of(45)));
-        }));
-        // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
-    }
+    // Reset the field-centric heading on left bumper press.
+    joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+  }
 
-    public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
-    }
+  public Command getAutonomousCommand() {
+    return autoChooser.getSelected();
+  }
 }
