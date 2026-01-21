@@ -18,7 +18,7 @@ public class Intake extends SubsystemBase {
 
     }
 
-    public void Intake(Current current) {
+    public void RunIntake(Current current) {
         Intake.setControl(req.withOutput(current));
     }
 
@@ -33,7 +33,7 @@ public class Intake extends SubsystemBase {
     public Command IntakeCommand(Current current) {
         return this.run(
                 () -> {
-                    Intake(current);
+                    RunIntake(current);
                 });
     }
 }
