@@ -1,9 +1,10 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.vision.BaseVisionIO;
 import frc.robot.subsystems.vision.BaseVisionIO.BaseVisionIOInput;
 import frc.robot.subsystems.vision.BaseVisionIO.vision_configuration_type;
+import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.Field;
 
 import static edu.wpi.first.units.Units.Meters;

@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.climber;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -8,28 +8,26 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import edu.wpi.first.units.measure.Current;
+
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismObject2d;
-
-
-
-import static frc.robot.Constants.Climber.MOTOR_ID;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Climber extends SubsystemBase{
-   TalonFX motor = new TalonFX(MOTOR_ID);
+   TalonFX motor = new TalonFX(ClimberConstants.MOTOR_ID);
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
     private final TalonFXConfiguration conf;
 
-Mechanism2d Climbroot = new Mechanism2d(27, 27);
-MechanismRoot2d Climbbase = Climbroot.getRoot("ClimbBase", 2.25, 14.5);
-MechanismLigament2d climbersim = Climbbase.append(new MechanismLigament2d("ClimbArm", 10, 90));
+    Mechanism2d climbRoot = new Mechanism2d(27, 27);
+    MechanismRoot2d climbBase = climbRoot.getRoot("ClimbBase", 2.25, 14.5);
+    MechanismLigament2d climberSim = climbBase.append(new MechanismLigament2d("ClimbArm", 10, 90));
 
 
     public Climber(){
-        motor = new TalonFX(MOTOR_ID);
+        motor = new TalonFX(ClimberConstants.MOTOR_ID);
         conf = new TalonFXConfiguration();
 
         conf.Slot0.kP = 0;
@@ -37,6 +35,8 @@ MechanismLigament2d climbersim = Climbbase.append(new MechanismLigament2d("Climb
         conf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
         
         motor.getConfigurator().apply(conf);
+
+        SmartDashboard.putData("Mech2d", climbRoot);
     }
 
     public void extend(Current current){
@@ -52,22 +52,6 @@ MechanismLigament2d climbersim = Climbbase.append(new MechanismLigament2d("Climb
     } 
     
     public void extendsim(Double length){
-        climbersim.setLength(length);
-    }
-
-    public Command extendCommandsim(Double length){
-        return this.run(
-            () ->  {
-                extendsim(length);
-
-            });
-
-        }
-            
-
-
-
-
-
+        climberSim.setLength(length);
+    }            
 }
-

@@ -22,7 +22,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
-import frc.robot.subsystems.vision.*;;
+import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.climber.Climber;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
@@ -31,6 +32,7 @@ public class RobotContainer {
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
     public final Vision vision = Vision.createVision(drivetrain);
+    public final Climber climber = new Climber();
 
     public final FieldSimulation sim = new FieldSimulation();
 
