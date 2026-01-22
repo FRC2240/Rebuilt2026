@@ -15,6 +15,7 @@ import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
+import frc.robot.subsystems.vision.BaseVisionIO;
 
 //import java.util.function.Supplier;
 //import edu.wpi.first.math.geometry.Rotation2d;
