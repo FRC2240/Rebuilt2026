@@ -2,32 +2,24 @@ package frc.robot.subsystems.shooter;
 
 public class ShooterState {
 
-    double speedLeft;
-    double speedRight;
+    private double speed;
     public boolean canHit = true;
     
-    public ShooterState(double spdL, double spdR) {
-        speedLeft = spdL;
-        speedRight = spdR;
+    public ShooterState(double spd) {
+        speed = spd;
     }
     
-    public ShooterState(double spdL, double spdR, boolean isPossible) {
-        speedLeft = spdL;
-        speedRight = spdR;
+    public ShooterState(double spd, boolean isPossible) {
+        speed = spd;
         canHit = isPossible;
     }
 
     public void add(ShooterState other) {
-        speedLeft += other.getLeftSpeed();
-        speedRight += other.getRightSpeed();
+        speed += other.getSpeed();
 
     }
 
-    public double getLeftSpeed() {
-        return speedLeft;
-    }
-
-    public double getRightSpeed() {
-        return speedRight;
+    public double getSpeed() {
+        return speed;
     }
 }

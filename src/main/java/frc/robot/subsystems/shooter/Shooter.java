@@ -38,42 +38,26 @@ public class Shooter extends SubsystemBase{
     }
 
     // setOutput() takes values from -1 to 1
-    // This is for control of both motors at the same output.
+    // This is for control of both motors at the same output. Please use setState() for control/command implementation
     public void setOutput(double spd) {
         flywheelLeftMotor.set(spd);
         flywheelRightMotor.set(spd);
     }
 
-    // This is used by set state for both motors to be given seperate outputs.
-    public void setOutput(double spd, String dir) {
-        switch (dir) {
-            case "left":
-                flywheelLeftMotor.set(spd);
-            case "right":
-                flywheelRightMotor.set(spd);
-            default:
-                System.out.println("Speed defaulted to: " + flywheelLeftMotor.get());
-                flywheelLeftMotor.set(spd);
-                flywheelRightMotor.set(spd);
-        }
-    }
-
-    // This is for control of motors with differing outputs, for both to use one output see setOutput(spd).
+    // Sets output along with current state this is what should be turned into a command
     public void setState(ShooterState state) {
-        setOutput(state.getLeftSpeed(), "left");
-        setOutput(state.getRightSpeed(), "right");
+        setOutput(state.getSpeed());
         currState = state;
     }
 
     public double getOutput(String dir) {
-        switch (dir) {
-            case "left":
-                return flywheelLeftMotor.get();
-            case "right":
-                return flywheelRightMotor.get();
-            default:
-                return -99;
+        if(flywheelLeftMotor.get() >= flywheelRightMotor.get()) {
+            return flywheelLeftMotor.get();
         }
+        else {
+            return flywheelRightMotor.get();
+        }
+        // This has no Check if both go down, but at that point it should be obvious to the drive team.
     }
 
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
@@ -107,8 +91,8 @@ public class Shooter extends SubsystemBase{
         //We could do regressions
         //We could do Kinematics
         boolean canHit = true;
-        if(!canHit) return new ShooterState(currState.getLeftSpeed(),currState.getRightSpeed(), false);
+        if(!canHit) return new ShooterState(currState.getSpeed(), false);
 
-        return new ShooterState(0, 0);
+        return new ShooterState(0);
     }
 }
