@@ -64,6 +64,17 @@ public class Shooter extends SubsystemBase{
         currState = state;
     }
 
+    public double getOutput(String dir) {
+        switch (dir) {
+            case "left":
+                return flywheelLeftMotor.get();
+            case "right":
+                return flywheelRightMotor.get();
+            default:
+                return -99;
+        }
+    }
+
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
         // shooter velocity(prob some math to know if it can hit), hub is active
         //Math for if shooter velocity is good is needed
