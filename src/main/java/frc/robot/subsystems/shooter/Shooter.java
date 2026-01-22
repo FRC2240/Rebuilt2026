@@ -13,6 +13,7 @@ public class Shooter extends SubsystemBase{
     private TalonFX flywheelRightMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
 
     private ShooterState currState;
+    private boolean shootOverride = false;
 
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -76,10 +77,17 @@ public class Shooter extends SubsystemBase{
     }
 
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
-        // shooter velocity(prob some math to know if it can hit), hub is active
-        //Math for if shooter velocity is good is needed
-        Field.isHubActive();
-        return true;
+        if(shootOverride) return true;
+        // You must run setState(calculateShooterState(double)) before running this command.
+        // It will determine if the shot itself is possible.
+        // The following line checks this 
+        if(!currState.canHit) return false;
+
+        return Field.isHubActive();
+    }
+
+    public void canShootOverride() {
+        shootOverride = !shootOverride;
     }
 
     //TODO Implement once you know the robot architecture
@@ -98,6 +106,9 @@ public class Shooter extends SubsystemBase{
         //We could do a gradient where depending how far we are into the band(dist from hub, that is achieveable) we ramp up the motor output
         //We could do regressions
         //We could do Kinematics
+        boolean canHit = true;
+        if(!canHit) return new ShooterState(currState.getLeftSpeed(),currState.getRightSpeed(), false);
+
         return new ShooterState(0, 0);
     }
 }

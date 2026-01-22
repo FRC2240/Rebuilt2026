@@ -4,10 +4,17 @@ public class ShooterState {
 
     double speedLeft;
     double speedRight;
+    public boolean canHit = true;
     
     public ShooterState(double spdL, double spdR) {
         speedLeft = spdL;
         speedRight = spdR;
+    }
+    
+    public ShooterState(double spdL, double spdR, boolean isPossible) {
+        speedLeft = spdL;
+        speedRight = spdR;
+        canHit = isPossible;
     }
 
     public void add(ShooterState other) {
