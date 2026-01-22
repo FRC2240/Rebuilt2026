@@ -78,7 +78,7 @@ public class Shooter extends SubsystemBase{
 
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
         if(shootOverride) return true;
-        // You must run setState(calculateShooterState(double)) before running this command.
+        // You must run setState(calculateShooterState(double)) before running this command as it will update the current state
         // It will determine if the shot itself is possible.
         // The following line checks this 
         if(!currState.canHit) return false;
