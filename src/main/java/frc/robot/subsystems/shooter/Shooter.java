@@ -15,6 +15,8 @@ public class Shooter extends SubsystemBase{
     private ShooterState currState;
     private boolean shootOverride = false;
 
+    public boolean canHit = true;
+
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
@@ -90,9 +92,17 @@ public class Shooter extends SubsystemBase{
         //We could do a gradient where depending how far we are into the band(dist from hub, that is achieveable) we ramp up the motor output
         //We could do regressions
         //We could do Kinematics
-        boolean canHit = true;
-        if(!canHit) return new ShooterState(currState.getSpeed(), false);
+
+        //TODO: add calculations so that canHit will change if need be
+        
+
+        if(!canHit) {
+            this.canHit = true; // this does not affect the ShooterState and wetehr or not it can hit, it just resets to default
+            return new ShooterState(currState.getSpeed(), false);
+        }
 
         return new ShooterState(0);
     }
+
+    //TODO: if is shooting for tiernan, make public so tiernan can pipeline it into candle
 }
