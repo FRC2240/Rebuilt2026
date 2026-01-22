@@ -1,25 +1,19 @@
 package frc.robot.subsystems.shooter;
 
-import static edu.wpi.first.units.Units.Degrees;
-
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.GravityTypeValue;
 
-import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.Field;
 
 public class Shooter extends SubsystemBase{
 
-    private TalonFX flywheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_MOTOR_ID);
-    private TalonFX angleMotor = new TalonFX(ShooterConstants.ANGLE_MOTOR_ID);
-    private TalonFX loaderMotor = new TalonFX(ShooterConstants.LOADER_MOTOR_ID); // This is the motor that pushes balls into the flywheel, maybe move to indexer
+    private TalonFX flywheelLeftMotor = new TalonFX(ShooterConstants.FLYWHEEL_LEFT_MOTOR_ID);
+    private TalonFX flywheelRightMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
 
-    private MotionMagicTorqueCurrentFOC req = new MotionMagicTorqueCurrentFOC(0);
-
-    ShooterState currState;
+    private ShooterState currState;
+    private boolean shootOverride = false;
 
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -29,70 +23,76 @@ public class Shooter extends SubsystemBase{
         conf.Slot0.kD = 6;
 
 
-        flywheelMotor.getConfigurator().apply(conf);
+        flywheelLeftMotor.getConfigurator().apply(conf);
 
         conf.Slot0.kP = 10;
         conf.Slot0.kI = 6;
         conf.Slot0.kD = 6;
 
 
-        loaderMotor.getConfigurator().apply(conf);
-
-        conf.Slot0.kP = 10;
-        conf.Slot0.kI = 6;
-        conf.Slot0.kD = 6;
-        conf.Slot0.GravityType = GravityTypeValue.Arm_Cosine;
-
-
-        angleMotor.getConfigurator().apply(conf);
+        flywheelRightMotor.getConfigurator().apply(conf);
     }
 
     public ShooterState getCurrentState() {
         return currState;
     }
-    
-
-    public void setAngle(Angle angle) {
-        angleMotor.setControl(req.withPosition(angle));
-    }
 
     // setOutput() takes values from -1 to 1
+    // This is for control of both motors at the same output. Please use setState() for control/command implementation
     public void setOutput(double spd) {
-        flywheelMotor.set(spd);
+        flywheelLeftMotor.set(spd);
+        flywheelRightMotor.set(spd);
     }
 
+    // Sets output along with current state this is what should be turned into a command
     public void setState(ShooterState state) {
-        setAngle(state.getAngle());
         setOutput(state.getSpeed());
         currState = state;
     }
 
-    public void shoot() {
-        // Code for loader motor to feed the ball to flywheel will come when cad is done
-
+    public double getOutput(String dir) {
+        if(flywheelLeftMotor.get() >= flywheelRightMotor.get()) {
+            return flywheelLeftMotor.get();
+        }
+        else {
+            return flywheelRightMotor.get();
+        }
+        // This has no Check if both go down, but at that point it should be obvious to the drive team.
     }
 
+    public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
+        if(shootOverride) return true;
+        // You must run setState(calculateShooterState(double)) before running this command as it will update the current state
+        // It will determine if the shot itself is possible.
+        // The following line checks this 
+        if(!currState.canHit) return false;
 
+        return Field.isHubActive();
+    }
+
+    public void canShootOverride() {
+        shootOverride = !shootOverride;
+    }
 
     //TODO Implement once you know the robot architecture
     public LinearVelocity getBallVelocity() {
         //You will likely need to get the current flywheel rpm
+        //this could also be done via a regression
+        //switch for l/r/both
 
         return null;
     }
 
     // Returns target state for shooter
-    public ShooterState calculateShooterState() {
-        //Depending on the method, this will probably use Ball velocity, distance from hub, and potentially kinematics
-        // It also might take in the current shooter state and adjust it before returning it
-        return new ShooterState(ShooterConstants.MIN_ANGLE, 0);
-    }
+    public ShooterState calculateShooterState(double dist /* In Meters */) {
+        // If the shot is not possible(too clos/too far), return the current state(aka no change) and do something to alert the driver(controller vibrate?)
 
-    //Deffered beacuse plan right now is a fixed Shooter Angle
-    // Finds the angle of the physical shooter
-    public Angle rotsToTrueDeg(Angle rotations) {
-        //depends on the gear ratio for calculations
-        return Degrees.of(360);
+        //We could do a gradient where depending how far we are into the band(dist from hub, that is achieveable) we ramp up the motor output
+        //We could do regressions
+        //We could do Kinematics
+        boolean canHit = true;
+        if(!canHit) return new ShooterState(currState.getSpeed(), false);
+
+        return new ShooterState(0);
     }
-    
 }

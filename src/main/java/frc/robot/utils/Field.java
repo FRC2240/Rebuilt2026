@@ -33,7 +33,7 @@ public class Field {
           Inches.of(182.11),
           FIELD_WIDTH.div(2)));
 
-  public boolean isHubActive() {
+  public static boolean isHubActive() {
     // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
     Alliance disabledFirst = DriverStation.getGameSpecificMessage().charAt(0) == 'B' ? Alliance.Blue : Alliance.Red; 
     Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);

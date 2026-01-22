@@ -1,24 +1,22 @@
 package frc.robot.subsystems.shooter;
 
-import edu.wpi.first.units.measure.Angle;
-
 public class ShooterState {
 
-    Angle angle;
-    double speed;
+    private double speed;
+    public boolean canHit = true;
     
-    public ShooterState(Angle ang, double spd) {
-        angle = ang;
+    public ShooterState(double spd) {
         speed = spd;
+    }
+    
+    public ShooterState(double spd, boolean isPossible) {
+        speed = spd;
+        canHit = isPossible;
     }
 
     public void add(ShooterState other) {
-        angle = angle.plus(other.getAngle());
         speed += other.getSpeed();
-    }
 
-    public Angle getAngle() {
-        return angle;
     }
 
     public double getSpeed() {
