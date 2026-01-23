@@ -1,4 +1,4 @@
-package frc.robot.subsystems.hello;
+package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -6,7 +6,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
-public class rename {
+public class IntakeConstants {
     public static class Intake {
         public static final int INTAKE_ID = 6; // TBD
         public static final int HOPPER_ID = 7; // TBD
