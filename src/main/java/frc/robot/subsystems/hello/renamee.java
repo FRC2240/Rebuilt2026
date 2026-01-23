@@ -1,4 +1,4 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.hello;
 
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -6,19 +6,19 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Intake extends SubsystemBase {
-    private TalonFX hopper = new TalonFX(IntakeConstants.Intake.HOPPER_ID);
-    private TalonFX intake = new TalonFX(IntakeConstants.Intake.INTAKE_ID);
+public class renamee extends SubsystemBase {
+    private TalonFX hopper = new TalonFX(rename.Intake.renamee);
+    private TalonFX intake = new TalonFX(rename.Intake.renamee);
 
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
 
     public void extend() {
-        hopper.setPosition(IntakeConstants.Intake.EXTEND_DIST);
+        hopper.setPosition(rename.Intake.renamee);
 
     }
 
     public void enableIntake() {
-        intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.Intake.INTAKE_SPEED));
+        intake.setControl(new VelocityTorqueCurrentFOC(rename.Intake.renamee));
     }
 
     // commands
@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
 
     public Command reverseIntakeCommand() {
         return this.runOnce(
-                () -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.Intake.INTAKE_SPEED.negate())));
+                () -> intake.setControl(new VelocityTorqueCurrentFOC(rename.Intake.renamee.negate())));
     }
 
 }
