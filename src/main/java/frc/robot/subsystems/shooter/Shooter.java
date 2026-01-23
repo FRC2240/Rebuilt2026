@@ -16,6 +16,7 @@ public class Shooter extends SubsystemBase{
     private boolean shootOverride = false;
 
     public boolean canHit = true;
+    private boolean isShooting = false;
 
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -36,7 +37,7 @@ public class Shooter extends SubsystemBase{
     }
 
     public ShooterState getCurrentState() {
-        return currState;
+        return this.currState;
     }
 
     // setOutput() takes values from -1 to 1
@@ -49,7 +50,7 @@ public class Shooter extends SubsystemBase{
     // Sets output along with current state this is what should be turned into a command
     public void setState(ShooterState state) {
         setOutput(state.getSpeed());
-        currState = state;
+        this.currState = state;
     }
 
     public double getOutput(String dir) {
@@ -62,18 +63,23 @@ public class Shooter extends SubsystemBase{
         // This has no Check if both go down, but at that point it should be obvious to the drive team.
     }
 
+    public void shoot() {
+        //this may be moved to indexer
+    }
+
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
-        if(shootOverride) return true;
+        if(this.shootOverride) return true;
         // You must run setState(calculateShooterState(double)) before running this command as it will update the current state
         // It will determine if the shot itself is possible.
         // The following line checks this 
-        if(!currState.canHit) return false;
+        if(!this.currState.canHit) return false;
 
         return Field.isHubActive();
+        // We may want this to vibrate the controller, this functionality could be added to robot container, when bool is false
     }
 
     public void canShootOverride() {
-        shootOverride = !shootOverride;
+        this.shootOverride = !this.shootOverride;
     }
 
     //TODO Implement once you know the robot architecture
@@ -96,13 +102,15 @@ public class Shooter extends SubsystemBase{
         //TODO: add calculations so that canHit will change if need be
         
 
-        if(!canHit) {
-            this.canHit = true; // this does not affect the ShooterState and wetehr or not it can hit, it just resets to default
-            return new ShooterState(currState.getSpeed(), false);
+        if(!this.canHit) {
+            this.canHit = true; // this does not affect the ShooterState and whether or not it can hit, it just resets to default
+            return new ShooterState(this.currState.getSpeed(), false);
         }
 
         return new ShooterState(0);
     }
 
-    //TODO: if is shooting for tiernan, make public so tiernan can pipeline it into candle
+    public boolean isShooting() {
+        return this.isShooting;
+    }
 }
