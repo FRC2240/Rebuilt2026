@@ -1,25 +1,27 @@
 package frc.robot.subsystems.shooter;
 
+import edu.wpi.first.units.measure.AngularVelocity;
+
 public class ShooterState {
 
-    private double speed;
+    private AngularVelocity speed;
     public boolean canHit = true;
     
-    public ShooterState(double spd) {
+    public ShooterState(AngularVelocity spd) {
         speed = spd;
     }
     
-    public ShooterState(double spd, boolean isPossible) {
+    public ShooterState(AngularVelocity spd, boolean isPossible) {
         speed = spd;
         canHit = isPossible;
     }
 
     public void add(ShooterState other) {
-        speed += other.getSpeed();
+        speed = this.speed.plus(other.speed);
 
     }
 
-    public double getSpeed() {
+    public AngularVelocity getSpeed() {
         return speed;
     }
 }

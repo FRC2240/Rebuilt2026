@@ -1,8 +1,12 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Field;
@@ -11,6 +15,7 @@ public class Shooter extends SubsystemBase{
 
     private TalonFX flywheelLeftMotor = new TalonFX(ShooterConstants.FLYWHEEL_LEFT_MOTOR_ID);
     private TalonFX flywheelRightMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
+    private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
     private ShooterState currState;
     private boolean shootOverride = false;
@@ -42,9 +47,9 @@ public class Shooter extends SubsystemBase{
 
     // setOutput() takes values from -1 to 1
     // This is for control of both motors at the same output. Please use setState() for control/command implementation
-    public void setOutput(double spd) {
-        flywheelLeftMotor.set(spd);
-        flywheelRightMotor.set(spd);
+    public void setOutput(AngularVelocity vel) {
+        flywheelLeftMotor.setControl(req.withVelocity(vel));
+        flywheelRightMotor.setControl(req.withVelocity(vel));
     }
 
     // Sets output along with current state this is what should be turned into a command
@@ -53,12 +58,12 @@ public class Shooter extends SubsystemBase{
         this.currState = state;
     }
 
-    public double getOutput(String dir) {
+    public AngularVelocity getOutput(String dir) {
         if(flywheelLeftMotor.get() >= flywheelRightMotor.get()) {
-            return flywheelLeftMotor.get();
+            return flywheelLeftMotor.getVelocity().getValue();
         }
         else {
-            return flywheelRightMotor.get();
+            return flywheelRightMotor.getVelocity().getValue();
         }
         // This has no Check if both go down, but at that point it should be obvious to the drive team.
     }
@@ -107,7 +112,7 @@ public class Shooter extends SubsystemBase{
             return new ShooterState(this.currState.getSpeed(), false);
         }
 
-        return new ShooterState(0);
+        return new ShooterState(AngularVelocity.ofBaseUnits(0, RotationsPerSecond));
     }
 
     public boolean isShooting() {
