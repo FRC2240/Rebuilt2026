@@ -17,9 +17,9 @@ public class Shooter extends SubsystemBase{
     private TalonFX flywheelRightMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
-    private ShooterState currState;
-    private boolean shootOverride = false;
+    private AngularVelocity currSpeed;
 
+    private boolean shootOverride = false;
     public boolean canHit = true;
     private boolean isShooting = false;
 
@@ -41,21 +41,11 @@ public class Shooter extends SubsystemBase{
         flywheelRightMotor.getConfigurator().apply(conf);
     }
 
-    public ShooterState getCurrentState() {
-        return this.currState;
-    }
-
     // setOutput() takes values from -1 to 1
     // This is for control of both motors at the same output. Please use setState() for control/command implementation
     public void setOutput(AngularVelocity vel) {
         flywheelLeftMotor.setControl(req.withVelocity(vel));
         flywheelRightMotor.setControl(req.withVelocity(vel));
-    }
-
-    // Sets output along with current state this is what should be turned into a command
-    public void setState(ShooterState state) {
-        setOutput(state.getSpeed());
-        this.currState = state;
     }
 
     public AngularVelocity getOutput(String dir) {
@@ -74,10 +64,8 @@ public class Shooter extends SubsystemBase{
 
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
         if(this.shootOverride) return true;
-        // You must run setState(calculateShooterState(double)) before running this command as it will update the current state
-        // It will determine if the shot itself is possible.
-        // The following line checks this 
-        if(!this.currState.canHit) return false;
+
+        if(!this.canHit) return false;
 
         return Field.isHubActive();
         // We may want this to vibrate the controller, this functionality could be added to robot container, when bool is false
@@ -97,7 +85,7 @@ public class Shooter extends SubsystemBase{
     }
 
     // Returns target state for shooter
-    public ShooterState calculateShooterState(double dist /* In Meters */) {
+    public AngularVelocity calculateShooterOutput(double dist /* In Meters */) {
         // If the shot is not possible(too clos/too far), return the current state(aka no change) and do something to alert the driver(controller vibrate?)
 
         //We could do a gradient where depending how far we are into the band(dist from hub, that is achieveable) we ramp up the motor output
@@ -108,11 +96,11 @@ public class Shooter extends SubsystemBase{
         
 
         if(!this.canHit) {
-            this.canHit = true; // this does not affect the ShooterState and whether or not it can hit, it just resets to default
-            return new ShooterState(this.currState.getSpeed(), false);
+            this.canHit = true; // this does not affect whether or not it can hit, it just resets to default
+            return this.currSpeed;
         }
 
-        return new ShooterState(AngularVelocity.ofBaseUnits(0, RotationsPerSecond));
+        return AngularVelocity.ofBaseUnits(0, RotationsPerSecond);
     }
 
     public boolean isShooting() {
