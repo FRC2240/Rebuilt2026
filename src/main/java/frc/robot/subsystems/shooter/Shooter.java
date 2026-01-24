@@ -18,11 +18,13 @@ public class Shooter extends SubsystemBase {
 
     private TalonFX flywheelLeftMotor = new TalonFX(ShooterConstants.FLYWHEEL_LEFT_MOTOR_ID);
     private TalonFX flywheelRightMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
+    private TalonFX launchLeftMotor = new TalonFX(ShooterConstants.LAUNCH_LEFT_MOTOR_ID);
+    private TalonFX launchRightMotor = new TalonFX(ShooterConstants.LAUNCH_RIGHT_MOTOR_ID);
+
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
     private AngularVelocity currSpeed;
 
-    private boolean shootOverride = false;
     public boolean canHit = true;
     private boolean isShooting = false;
 
@@ -50,7 +52,12 @@ public class Shooter extends SubsystemBase {
         flywheelRightMotor.setControl(req.withVelocity(vel));
     }
 
-    public AngularVelocity getOutput(String dir) {
+    public void setLaunchOutput(AngularVelocity vel) {
+        launchLeftMotor.setControl(req.withVelocity(vel));
+        launchRightMotor.setControl(req.withVelocity(vel));
+    }
+
+    public AngularVelocity getOutput() {
         if (flywheelLeftMotor.get() >= flywheelRightMotor.get()) {
             return flywheelLeftMotor.getVelocity().getValue();
         } else {
@@ -60,25 +67,58 @@ public class Shooter extends SubsystemBase {
         // the drive team.
     }
 
-    public Command shoot() {
-        return Commands.none();
+    public void shoot() {
+        setLaunchOutput(ShooterConstants.LAUNCH_MOTOR_OUTPUT);
     }
 
-    public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do &&
-                                // isfacinghub
-        if (this.shootOverride)
-            return true;
+    // When using this add a .andThen(shooterObj.setLaunchOutput(0)) at the end so when the button is no longer held it turns off
+    // Also add a .Andthen(setIsSHooting(false))
+    public Command shootCommand(double dist, boolean facingHub) {
+        //The setoutput and isnear may need to be changed depending on how fast we can change the output
+        // you may be able to move the isnear stuff to canShoot()
+        // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
+        return Commands.run(() -> {
 
-        if (!this.canHit)
-            return false;
+            if (Field.inAllianceZone.getAsBoolean()) {
+            setOutput(calculateShooterOutput(dist));
+            }
+            else {
+                setOutput(ShooterConstants.PASSING_OUTPUT);
+            }
+        }, this)
+        .until(() -> {
+            return
+            getOutput().isNear(ShooterConstants.PASSING_OUTPUT, AngularVelocity.ofBaseUnits(3, RotationsPerSecond))
+            || // OR
+            getOutput().isNear(calculateShooterOutput(dist), AngularVelocity.ofBaseUnits(3, RotationsPerSecond));
+        })
+        .andThen(() -> {
+            currSpeed = getOutput();
+
+            if (!Field.inAllianceZone.getAsBoolean()){
+                this.isShooting = true;
+                shoot();
+            }
+            else if (canShoot(facingHub)) {
+                run(() -> {
+                    this.isShooting = true;
+                    shoot();
+                }); // Gives error whn I try to put a ", this" here
+            }
+            else {
+                //vibrate controller
+            }
+            canHit = true;
+        });
+    }
+
+    public Boolean canShoot(boolean isfacingHub) { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
+
+        if (!this.canHit) return false;
+
+        if (!isfacingHub) return false;
 
         return Field.isHubActive();
-        // We may want this to vibrate the controller, this functionality could be added
-        // to robot container, when bool is false
-    }
-
-    public void canShootOverride() {
-        this.shootOverride = !this.shootOverride;
     }
 
     // TODO Implement once you know the robot architecture
@@ -103,11 +143,14 @@ public class Shooter extends SubsystemBase {
         // TODO: add calculations so that canHit will change if need be
 
         if (!this.canHit) {
-            this.canHit = true; // this does not affect whether or not it can hit, it just resets to default
             return this.currSpeed;
         }
 
         return AngularVelocity.ofBaseUnits(0, RotationsPerSecond);
+    }
+
+    public void setIsShooting(boolean  val) {
+        this.isShooting = val;
     }
 
     public boolean isShooting() {
