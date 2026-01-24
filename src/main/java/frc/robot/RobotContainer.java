@@ -18,6 +18,7 @@ import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
@@ -32,6 +33,7 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
+    public final Candle candle = new Candle(shooter::isShooting, () -> shooter.canHit);
 
     public final FieldSimulation sim = new FieldSimulation();
 
