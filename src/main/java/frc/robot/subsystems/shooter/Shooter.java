@@ -44,9 +44,6 @@ public class Shooter extends SubsystemBase {
         flywheelRightMotor.getConfigurator().apply(conf);
     }
 
-    // setOutput() takes values from -1 to 1
-    // This is for control of both motors at the same output. Please use setState()
-    // for control/command implementation
     public void setOutput(AngularVelocity vel) {
         flywheelLeftMotor.setControl(req.withVelocity(vel));
         flywheelRightMotor.setControl(req.withVelocity(vel));
@@ -71,12 +68,8 @@ public class Shooter extends SubsystemBase {
         setLaunchOutput(ShooterConstants.LAUNCH_MOTOR_OUTPUT);
     }
 
-    // When using this add a .andThen(shooterObj.setLaunchOutput(0)) at the end so when the button is no longer held it turns off
-    // Also add a .Andthen(setIsSHooting(false))
-    public Command shootCommand(double dist, boolean facingHub) {
-        //The setoutput and isnear may need to be changed depending on how fast we can change the output
-        // you may be able to move the isnear stuff to canShoot()
-        // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
+    // you may be able to move the isNear() stuff to canShoot()
+    public Command setOutputCommand(double dist) {
         return Commands.run(() -> {
 
             if (Field.inAllianceZone.getAsBoolean()) {
@@ -91,8 +84,12 @@ public class Shooter extends SubsystemBase {
             getOutput().isNear(ShooterConstants.PASSING_OUTPUT, AngularVelocity.ofBaseUnits(3, RotationsPerSecond))
             || // OR
             getOutput().isNear(calculateShooterOutput(dist), AngularVelocity.ofBaseUnits(3, RotationsPerSecond));
-        })
-        .andThen(() -> {
+        });
+    }
+
+    public Command shootCommand(boolean facingHub) {
+        // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
+        return Commands.run(() -> {
             currSpeed = getOutput();
 
             if (!Field.inAllianceZone.getAsBoolean()){
@@ -100,16 +97,21 @@ public class Shooter extends SubsystemBase {
                 shoot();
             }
             else if (canShoot(facingHub)) {
-                run(() -> {
-                    this.isShooting = true;
-                    shoot();
-                }); // Gives error whn I try to put a ", this" here
+                this.isShooting = true;
+                shoot();
             }
             else {
                 //vibrate controller
             }
             canHit = true;
-        });
+        }, this);
+    }
+
+    public Command resetCommand() {
+        return Commands.runOnce(() -> {
+            setLaunchOutput(AngularVelocity.ofBaseUnits(0, RotationsPerSecond));
+            setIsShooting(false);
+        }, this);
     }
 
     public Boolean canShoot(boolean isfacingHub) { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
