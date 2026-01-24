@@ -49,14 +49,23 @@ public class RobotContainer {
         // Drive with joysticks
         drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
 
+        // climber coast by default
+        climber.setDefaultCommand(climber.coastCommand());
+
+        // intake enabled by default
+        intake.setDefaultCommand(intake.enableIntakeCommand());
+
+        // climber coast on disable
+        RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
+
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Deploy Intake
         joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
 
-        // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+        // disable Intake
+        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle slow mode
         joystick.back().onTrue(driveCommands.toggleSlowModeCommand());
