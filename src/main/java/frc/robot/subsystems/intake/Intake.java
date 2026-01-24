@@ -7,18 +7,18 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private TalonFX hopper = new TalonFX(IntakeConstants.Intake.HOPPER_ID);
-    private TalonFX intake = new TalonFX(IntakeConstants.Intake.INTAKE_ID);
+    private TalonFX hopper = new TalonFX(IntakeConstants.HOPPER_ID);
+    private TalonFX intake = new TalonFX(IntakeConstants.INTAKE_ID);
 
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
 
     public void extend() {
-        hopper.setPosition(IntakeConstants.Intake.EXTEND_DIST);
+        hopper.setPosition(IntakeConstants.EXTEND_DIST);
 
     }
 
     public void enableIntake() {
-        intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.Intake.INTAKE_SPEED));
+        intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED));
     }
 
     // commands
@@ -36,7 +36,7 @@ public class Intake extends SubsystemBase {
 
     public Command reverseIntakeCommand() {
         return this.runOnce(
-                () -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.Intake.INTAKE_SPEED.negate())));
+                () -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED.negate())));
     }
 
 }

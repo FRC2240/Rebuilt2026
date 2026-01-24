@@ -24,6 +24,8 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.climber.Climber;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
@@ -33,6 +35,9 @@ public class RobotContainer {
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
     public final Vision vision = Vision.createVision(drivetrain);
     public final Climber climber = new Climber();
+    public final Intake intake = new Intake();
+    public final Shooter shooter = new Shooter();
+
 
     public final FieldSimulation sim = new FieldSimulation();
 
@@ -56,18 +61,14 @@ public class RobotContainer {
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
 
-        sim.setDefaultCommand(Commands.run(() -> sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
-                    new Rotation2d(Degrees.of(45))), sim));
 
-        drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(() -> MetersPerSecond.of(10).times(Math.cos(5)))));
-        joystick.b().onTrue(driveCommands.toggleSlowModeCommand());
+        joystick.povUp().toggleOnTrue(Commands.runOnce(() -> climber.extendCommand()));
+        joystick.povDown().toggleOnTrue(Commands.runOnce(() -> intake.extendIntakeCommand()));
+        joystick.leftTrigger().toggleOnTrue(Commands.runOnce(() -> intake.enableIntakeCommand()));
+        joystick.back().toggleOnTrue(Commands.runOnce(() -> driveCommands.toggleSlowModeCommand()));
+        joystick.start().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.rightTrigger().whileTrue(Commands.runOnce(() -> shooter.shoot()));
 
-        joystick.button(1).onTrue(Commands.runOnce(() -> {
-            sim.addBall(new Translation3d(drivetrain.getTranslation()), MetersPerSecond.of(10), drivetrain.getHeading(),
-                    new Rotation2d(Degrees.of(45)));
-        }));
-        // Reset the field-centric heading on left bumper press.
-        joystick.leftBumper().whileTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
     }
 
     public Command getAutonomousCommand() {

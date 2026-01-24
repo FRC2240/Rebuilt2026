@@ -41,8 +41,8 @@ public class Climber extends SubsystemBase {
     motor.setControl(req.withOutput(current));
   }
 
-  public Command extendCommand(Current current) {
-    return this.run(() -> extend(current));
+  public Command extendCommand() {
+    return this.run(() -> extend(ClimberConstants.EXTEND_CURRENT));
   }
 
   public void extendsim(Double length) {
