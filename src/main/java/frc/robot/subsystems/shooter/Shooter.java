@@ -78,7 +78,6 @@ public class Shooter extends SubsystemBase {
         // you may be able to move the isnear stuff to canShoot()
         // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
         return Commands.run(() -> {
-            canHit = true;
 
             if (Field.inAllianceZone.getAsBoolean()) {
             setOutput(calculateShooterOutput(dist));
@@ -109,6 +108,7 @@ public class Shooter extends SubsystemBase {
             else {
                 //vibrate controller
             }
+            canHit = true;
         });
     }
 
