@@ -66,7 +66,7 @@ public class RobotContainer {
         joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
 
         // Shoot
-        joystick.rightTrigger().whileTrue(shooter.shoot());
+        joystick.rightTrigger().whileTrue(shooter.shootCommand(5, true));
     }
 
     public Command getAutonomousCommand() {
