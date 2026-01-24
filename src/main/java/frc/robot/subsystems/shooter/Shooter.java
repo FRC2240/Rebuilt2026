@@ -71,12 +71,8 @@ public class Shooter extends SubsystemBase {
         setLaunchOutput(ShooterConstants.LAUNCH_MOTOR_OUTPUT);
     }
 
-    // When using this add a .andThen(shooterObj.setLaunchOutput(0)) at the end so when the button is no longer held it turns off
-    // Also add a .Andthen(setIsSHooting(false))
-    public Command shootCommand(double dist, boolean facingHub) {
-        //The setoutput and isnear may need to be changed depending on how fast we can change the output
-        // you may be able to move the isnear stuff to canShoot()
-        // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
+    // you may be able to move the isNear() stuff to canShoot()
+    public Command setOutputCommand(double dist) {
         return Commands.run(() -> {
 
             if (Field.inAllianceZone.getAsBoolean()) {
@@ -91,25 +87,35 @@ public class Shooter extends SubsystemBase {
             getOutput().isNear(ShooterConstants.PASSING_OUTPUT, AngularVelocity.ofBaseUnits(3, RotationsPerSecond))
             || // OR
             getOutput().isNear(calculateShooterOutput(dist), AngularVelocity.ofBaseUnits(3, RotationsPerSecond));
-        })
-        .andThen(() -> {
-            currSpeed = getOutput();
+        });
+    }
+
+    // When using this add a .andThen(shooterObj.setLaunchOutput(0)) at the end so when the button is no longer held it turns off
+    // Also add a .Andthen(setIsSHooting(false))
+    public Command shootCommand(boolean facingHub) {
+        // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
+        return Commands.run(() -> {
 
             if (!Field.inAllianceZone.getAsBoolean()){
                 this.isShooting = true;
                 shoot();
             }
             else if (canShoot(facingHub)) {
-                run(() -> {
-                    this.isShooting = true;
-                    shoot();
-                }); // Gives error whn I try to put a ", this" here
+                this.isShooting = true;
+                shoot();
             }
             else {
                 //vibrate controller
             }
             canHit = true;
         });
+    }
+
+    public Command resetCommand() {
+        return Commands.runOnce(() -> {
+            setLaunchOutput(AngularVelocity.ofBaseUnits(0, RotationsPerSecond));
+            setIsShooting(false);
+        }, this);
     }
 
     public Boolean canShoot(boolean isfacingHub) { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do && isfacinghub
