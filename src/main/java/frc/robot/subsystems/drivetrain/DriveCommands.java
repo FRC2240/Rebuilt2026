@@ -243,20 +243,22 @@ public class DriveCommands {
     }
 
     public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> groundSpeedSupplier) {
-      return rotateToRotation(() -> {
-        LinearVelocity ballGroundSpeed = groundSpeedSupplier.get();
-        Translation2d robotTranslation = drivetrain.getTranslation();
-        Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-        Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-        Distance distanceToHub = Meters.of(translationToHub.getNorm());
-        Time ballTimeToHub = distanceToHub.div(ballGroundSpeed);        
+        return rotateToRotation(() -> {
+            LinearVelocity ballGroundSpeed = groundSpeedSupplier.get();
+            Translation2d robotTranslation = drivetrain.getTranslation();
+            Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
+            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+            Distance distanceToHub = Meters.of(translationToHub.getNorm());
+            Time ballTimeToHub = distanceToHub.div(ballGroundSpeed);
 
-        ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds, drivetrain.getHeading());
-        Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond, robotChassisSpeeds.vyMetersPerSecond);
-        Translation2d overshoot = robotVelocities.times(ballTimeToHub.in(Seconds));
+            ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
+                    drivetrain.getHeading());
+            Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond,
+                    robotChassisSpeeds.vyMetersPerSecond);
+            Translation2d overshoot = robotVelocities.times(ballTimeToHub.in(Seconds));
 
-        Translation2d correctedTranslation = translationToHub.minus(overshoot.times(0.1));
-        return correctedTranslation.getAngle();
-      });
+            Translation2d correctedTranslation = translationToHub.minus(overshoot.times(0.1));
+            return correctedTranslation.getAngle();
+        });
     }
 }

@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
@@ -40,6 +41,11 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                 TunerConstants.FrontRight,
                 TunerConstants.BackLeft,
                 TunerConstants.BackRight);
+
+        // Idle the swerve modules when disabled, ensuring the configured
+        // neutral mode is applied to the drive motors when disabled
+        final var idle = new SwerveRequest.Idle();
+        RobotModeTriggers.disabled().whileTrue(applyRequest(() -> idle).ignoringDisable(true));
 
         registerTelemetry(logger::telemeterize);
 

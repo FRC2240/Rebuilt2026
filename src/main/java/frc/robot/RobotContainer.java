@@ -4,15 +4,10 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.Degrees;
-import static edu.wpi.first.units.Units.MetersPerSecond;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -38,37 +33,39 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
 
-
     public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
-        configurePathPlanner();
+        configureAutoChooser();
         configureBindings();
     }
 
-    private void configurePathPlanner() {
-        NamedCommands.registerCommand("hub_align",
-                driveCommands.drive(null, driveCommands.rotateToFacePoint(() -> Field.HUB_CENTER_TRANSLATION.get())));
-
+    private void configureAutoChooser() {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
     }
 
     private void configureBindings() {
-        // Idle while the robot is disabled. This ensures the configured
-        // neutral mode is applied to the drive motors while disabled.
-        final var idle = new SwerveRequest.Idle();
-        RobotModeTriggers.disabled().whileTrue(
-                drivetrain.applyRequest(() -> idle).ignoringDisable(true));
+        // Drive with joysticks
+        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
 
+        // Extend Climber
+        joystick.povUp().toggleOnTrue(climber.extendCommand());
 
-        joystick.povUp().toggleOnTrue(Commands.runOnce(() -> climber.extendCommand()));
-        joystick.povDown().toggleOnTrue(Commands.runOnce(() -> intake.extendIntakeCommand()));
-        joystick.leftTrigger().toggleOnTrue(Commands.runOnce(() -> intake.enableIntakeCommand()));
-        joystick.back().toggleOnTrue(Commands.runOnce(() -> driveCommands.toggleSlowModeCommand()));
-        joystick.start().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric()));
-        joystick.rightTrigger().whileTrue(Commands.runOnce(() -> shooter.shoot()));
+        // Deploy Intake
+        joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
 
+        // Enable Intake
+        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+
+        // Toggle slow mode
+        joystick.back().onTrue(driveCommands.toggleSlowModeCommand());
+
+        // Zero the gyro
+        joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
+
+        // Shoot
+        joystick.rightTrigger().whileTrue(shooter.shoot());
     }
 
     public Command getAutonomousCommand() {
