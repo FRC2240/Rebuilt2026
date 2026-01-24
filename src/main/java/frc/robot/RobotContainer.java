@@ -47,7 +47,7 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Drive with joysticks
-        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
+        drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());

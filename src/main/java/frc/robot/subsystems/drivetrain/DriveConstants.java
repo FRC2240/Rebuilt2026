@@ -36,4 +36,6 @@ public class DriveConstants {
     public static final double CONTROLLER_OVERRIDE_THRESHOLD = 0.2;
     public static final double CONTROLLER_OVERRIDE_TIMEOUT = 0.3;
     public static final double CONTROLLER_DEADBAND = 0.1;
+
+    public static final Angle SHOOT_ROTATION_THRESHOLD = Degrees.of(4);
 }

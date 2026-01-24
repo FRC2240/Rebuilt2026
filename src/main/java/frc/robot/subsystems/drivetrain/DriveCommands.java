@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -10,6 +11,7 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -242,23 +244,58 @@ public class DriveCommands {
         });
     }
 
-    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> groundSpeedSupplier) {
+    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> shooterExitGroundSpeedSupplier) {
+        // Tuning constant: 1.0 is theoretical perfect, < 1.0 reduces compensation
+        final double LATERAL_GAIN = 0.85;
+
         return rotateToRotation(() -> {
-            LinearVelocity ballGroundSpeed = groundSpeedSupplier.get();
             Translation2d robotTranslation = drivetrain.getTranslation();
             Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-            Distance distanceToHub = Meters.of(translationToHub.getNorm());
-            Time ballTimeToHub = distanceToHub.div(ballGroundSpeed);
 
-            ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
+            // 1. Get Field-Relative Robot Velocity
+            ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                    drivetrain.getState().Speeds,
                     drivetrain.getHeading());
-            Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond,
-                    robotChassisSpeeds.vyMetersPerSecond);
-            Translation2d overshoot = robotVelocities.times(ballTimeToHub.in(Seconds));
 
-            Translation2d correctedTranslation = translationToHub.minus(overshoot.times(0.1));
-            return correctedTranslation.getAngle();
+            Translation2d robotVelocities = new Translation2d(
+                    fieldSpeeds.vxMetersPerSecond * LATERAL_GAIN,
+                    fieldSpeeds.vyMetersPerSecond * LATERAL_GAIN);
+
+            Translation2d relativeHubPos = hubTranslation.minus(robotTranslation);
+            double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
+
+            // Initial guess for Time of Flight
+            double timeOfFlight = relativeHubPos.getNorm() / exitSpeed;
+            Translation2d virtualTarget = relativeHubPos;
+
+            // 3. Run Lookahead Iterations (2-3 steps is usually plenty)
+            for (int i = 0; i < 3; i++) {
+                // Predict where the ball "thinks" the hub is relative to the launch
+                // We subtract the distance the robot's momentum will carry the ball
+                virtualTarget = relativeHubPos.minus(robotVelocities.times(timeOfFlight));
+
+                // Re-calculate Time of Flight based on the new distance to the virtual target
+                timeOfFlight = virtualTarget.getNorm() / exitSpeed;
+            }
+
+            return virtualTarget.getAngle();
         });
+    }
+
+    public boolean isAimedAtHub(LinearVelocity groundSpeed) {
+        Translation2d robotTranslation = drivetrain.getTranslation();
+        Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
+        Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+
+        ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
+                drivetrain.getHeading());
+        Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond,
+                robotChassisSpeeds.vyMetersPerSecond);
+        Translation2d ballVelocities = new Translation2d(groundSpeed.in(MetersPerSecond), drivetrain.getHeading());
+        Translation2d totalVelocities = robotVelocities.plus(ballVelocities);
+
+        return Math.abs(MathUtil.inputModulus(
+                translationToHub.getAngle().minus(totalVelocities.getAngle()).getDegrees(), -180,
+                180)) < DriveConstants.SHOOT_ROTATION_THRESHOLD.in(Degrees);
     }
 }
