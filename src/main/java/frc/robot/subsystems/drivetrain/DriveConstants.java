@@ -40,6 +40,6 @@ public class DriveConstants {
     // Multiplier for how much robot velocity and slip impacts the rotation to aim at hub
     public static final double AIM_LATERAL_GAIN = 0.85;
 
-    // Threshold to 
+    // Threshold for if the robot is facing the hub
     public static final Angle SHOOT_ROTATION_THRESHOLD = Degrees.of(4);
 }

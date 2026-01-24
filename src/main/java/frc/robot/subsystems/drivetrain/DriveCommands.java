@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.utils.Field;
 
-public class DriveCommands extends SubsystemBase{
+public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
     private CommandXboxController joystick;
 
@@ -285,8 +285,9 @@ public class DriveCommands extends SubsystemBase{
 
         ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
                 drivetrain.getHeading());
-        Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond,
-                robotChassisSpeeds.vyMetersPerSecond);
+        Translation2d robotVelocities = new Translation2d(
+                robotChassisSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
+                robotChassisSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
         Translation2d ballVelocities = new Translation2d(groundSpeed.in(MetersPerSecond), drivetrain.getHeading());
         Translation2d totalVelocities = robotVelocities.plus(ballVelocities);
 
