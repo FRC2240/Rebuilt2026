@@ -9,12 +9,6 @@ import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import edu.wpi.first.units.measure.Current;
-
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 
 public class Climber extends SubsystemBase {
     TalonFX motor = new TalonFX(ClimberConstants.MOTOR_ID);
@@ -28,8 +22,6 @@ public class Climber extends SubsystemBase {
         conf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         motor.getConfigurator().apply(conf);
-
-        SmartDashboard.putData("Mech2d", climbRoot);
     }
 
     public Command extendCommand() {
