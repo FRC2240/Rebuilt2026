@@ -50,22 +50,22 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
 
         // Extend Climber
-        joystick.povUp().toggleOnTrue(Commands.runOnce(() -> climber.extendCommand()));
+        joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Deploy Intake
-        joystick.povDown().toggleOnTrue(Commands.runOnce(() -> intake.extendIntakeCommand()));
+        joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
 
         // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(Commands.runOnce(() -> intake.enableIntakeCommand()));
+        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
 
         // Toggle slow mode
-        joystick.back().toggleOnTrue(Commands.runOnce(() -> driveCommands.toggleSlowModeCommand()));
+        joystick.back().onTrue(driveCommands.toggleSlowModeCommand());
 
         // Zero the gyro
-        joystick.start().onTrue(Commands.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
 
         // Shoot
-        joystick.rightTrigger().whileTrue(Commands.runOnce(() -> shooter.shoot()));
+        joystick.rightTrigger().whileTrue(shooter.shoot());
     }
 
     public Command getAutonomousCommand() {

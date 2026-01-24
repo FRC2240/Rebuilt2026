@@ -8,6 +8,8 @@ import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.Field;
 
@@ -57,8 +59,8 @@ public class Shooter extends SubsystemBase {
         // the drive team.
     }
 
-    public void shoot() {
-        // this may be moved to indexer
+    public Command shoot() {
+        return Commands.none();
     }
 
     public Boolean canShoot() { // When calling this wrap it in an if(isfacinghub) { canShoot() } or do &&

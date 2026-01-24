@@ -14,7 +14,6 @@ import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.units.measure.Time;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -71,7 +70,8 @@ public class FieldSimulation extends SubsystemBase {
     public void addBall(Translation3d position, LinearVelocity velocity, Rotation2d heading,
             Rotation2d pitch) {
         // Prevent this simulation from being used in real life
-        if (RobotBase.isReal()) return;
+        if (RobotBase.isReal())
+            return;
         balls.add(new Ball(
                 position.getMeasureX(),
                 position.getMeasureY(),
