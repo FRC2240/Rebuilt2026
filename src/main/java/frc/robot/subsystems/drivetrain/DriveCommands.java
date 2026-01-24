@@ -5,7 +5,6 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.Supplier;
 
@@ -17,18 +16,18 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.utils.Field;
 
-public class DriveCommands {
+public class DriveCommands extends SubsystemBase{
     private Drivetrain drivetrain;
     private CommandXboxController joystick;
 
@@ -56,6 +55,11 @@ public class DriveCommands {
         this.drivetrain = drivetrain;
         this.joystick = controller;
         this.limiter = new SwerveLimiter(drivetrain);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("hey", isAimedAtHub(MetersPerSecond.of(10)));
     }
 
     /**
