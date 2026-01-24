@@ -37,12 +37,8 @@ public class Climber extends SubsystemBase {
     SmartDashboard.putData("Mech2d", climbRoot);
   }
 
-  public void extend(Current current) {
-    motor.setControl(req.withOutput(current));
-  }
-
   public Command extendCommand() {
-    return this.run(() -> extend(ClimberConstants.EXTEND_CURRENT));
+    return this.run(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT)));
   }
 
   public void extendsim(Double length) {
