@@ -16,11 +16,6 @@ public class ShooterState {
         canHit = isPossible;
     }
 
-    public void add(ShooterState other) {
-        speed = this.speed.plus(other.speed);
-
-    }
-
     public AngularVelocity getSpeed() {
         return speed;
     }
