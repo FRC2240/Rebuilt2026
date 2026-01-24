@@ -45,7 +45,7 @@ public class Candle extends SubsystemBase {
         if (DriverStation.isAutonomous()) {
             color.Color = new RGBWColor(255, 0, 255, 0);
         } else if (shooting.get()) {
-            color.Color = new RGBWColor(255, 255, 255, 255);
+            color.Color = new RGBWColor(255, 170, 0, 0);
         } else if(canHit.get()){
             color.Color = new RGBWColor(0, 255, 0, 0);
         } else {
