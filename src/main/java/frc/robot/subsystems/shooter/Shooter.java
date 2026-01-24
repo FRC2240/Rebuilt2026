@@ -44,9 +44,6 @@ public class Shooter extends SubsystemBase {
         flywheelRightMotor.getConfigurator().apply(conf);
     }
 
-    // setOutput() takes values from -1 to 1
-    // This is for control of both motors at the same output. Please use setState()
-    // for control/command implementation
     public void setOutput(AngularVelocity vel) {
         flywheelLeftMotor.setControl(req.withVelocity(vel));
         flywheelRightMotor.setControl(req.withVelocity(vel));
@@ -93,6 +90,7 @@ public class Shooter extends SubsystemBase {
     public Command shootCommand(boolean facingHub) {
         // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
         return Commands.run(() -> {
+            currSpeed = getOutput();
 
             if (!Field.inAllianceZone.getAsBoolean()){
                 this.isShooting = true;
@@ -106,7 +104,7 @@ public class Shooter extends SubsystemBase {
                 //vibrate controller
             }
             canHit = true;
-        });
+        }, this);
     }
 
     public Command resetCommand() {
