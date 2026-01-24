@@ -1,32 +1,33 @@
 package frc.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.Seconds;
 
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
-import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
-import edu.wpi.first.units.measure.Time;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.utils.Field;
 
-public class DriveCommands {
+public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
     private CommandXboxController joystick;
 
@@ -54,6 +55,11 @@ public class DriveCommands {
         this.drivetrain = drivetrain;
         this.joystick = controller;
         this.limiter = new SwerveLimiter(drivetrain);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("hey", isAimedAtHub(MetersPerSecond.of(10)));
     }
 
     /**
@@ -242,23 +248,51 @@ public class DriveCommands {
         });
     }
 
-    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> groundSpeedSupplier) {
+    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> shooterExitGroundSpeedSupplier) {
         return rotateToRotation(() -> {
-            LinearVelocity ballGroundSpeed = groundSpeedSupplier.get();
             Translation2d robotTranslation = drivetrain.getTranslation();
             Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-            Distance distanceToHub = Meters.of(translationToHub.getNorm());
-            Time ballTimeToHub = distanceToHub.div(ballGroundSpeed);
 
-            ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
+            ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+                    drivetrain.getState().Speeds,
                     drivetrain.getHeading());
-            Translation2d robotVelocities = new Translation2d(robotChassisSpeeds.vxMetersPerSecond,
-                    robotChassisSpeeds.vyMetersPerSecond);
-            Translation2d overshoot = robotVelocities.times(ballTimeToHub.in(Seconds));
 
-            Translation2d correctedTranslation = translationToHub.minus(overshoot.times(0.1));
-            return correctedTranslation.getAngle();
+            Translation2d robotVelocities = new Translation2d(
+                    fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
+                    fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
+
+            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+            double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
+
+            double timeOfFlight = translationToHub.getNorm() / exitSpeed;
+            Translation2d virtualTarget = translationToHub;
+
+            for (int i = 0; i < 3; i++) {
+                virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
+
+                // Re-calculate time of flight based on the new distance to the virtual target
+                timeOfFlight = virtualTarget.getNorm() / exitSpeed;
+            }
+
+            return virtualTarget.getAngle();
         });
+    }
+
+    public boolean isAimedAtHub(LinearVelocity groundSpeed) {
+        Translation2d robotTranslation = drivetrain.getTranslation();
+        Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
+        Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+
+        ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
+                drivetrain.getHeading());
+        Translation2d robotVelocities = new Translation2d(
+                robotChassisSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
+                robotChassisSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
+        Translation2d ballVelocities = new Translation2d(groundSpeed.in(MetersPerSecond), drivetrain.getHeading());
+        Translation2d totalVelocities = robotVelocities.plus(ballVelocities);
+
+        return Math.abs(MathUtil.inputModulus(
+                translationToHub.getAngle().minus(totalVelocities.getAngle()).getDegrees(), -180,
+                180)) < DriveConstants.SHOOT_ROTATION_THRESHOLD.in(Degrees);
     }
 }

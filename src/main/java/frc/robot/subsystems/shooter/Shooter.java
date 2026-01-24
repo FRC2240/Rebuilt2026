@@ -1,5 +1,6 @@
 package frc.robot.subsystems.shooter;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -86,7 +87,7 @@ public class Shooter extends SubsystemBase {
         // this could also be done via a regression
         // switch for l/r/both
 
-        return null;
+        return MetersPerSecond.of(5);
     }
 
     // Returns target state for shooter
