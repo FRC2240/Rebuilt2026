@@ -24,18 +24,18 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.climber.Climber;
-import frc.robot.subsystems.intake.intake;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-
     public static final Drivetrain drivetrain = new Drivetrain();
     public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
     public final Vision vision = Vision.createVision(drivetrain);
     public final Climber climber = new Climber();
-    public final intake intake = new intake();
+    public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
 
 
@@ -60,7 +60,7 @@ public class RobotContainer {
         final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
                 drivetrain.applyRequest(() -> idle).ignoringDisable(true));
-                
+
 
         joystick.povUp().toggleOnTrue(Commands.runOnce(() -> climber.extendCommand()));
         joystick.povDown().toggleOnTrue(Commands.runOnce(() -> intake.extendIntakeCommand()));
