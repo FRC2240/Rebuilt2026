@@ -1,42 +1,29 @@
 package frc.robot.subsystems.intake;
 
-import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private TalonFX hopper = new TalonFX(IntakeConstants.HOPPER_ID);
-    private TalonFX intake = new TalonFX(IntakeConstants.INTAKE_ID);
+  private TalonFX hopper = new TalonFX(IntakeConstants.HOPPER_ID);
+  private TalonFX intake = new TalonFX(IntakeConstants.INTAKE_ID);
 
-    TorqueCurrentFOC req = new TorqueCurrentFOC(0);
+  public Command extendIntakeCommand() {
+    return runOnce(() -> hopper.setControl(new PositionTorqueCurrentFOC(IntakeConstants.EXTENDED_POSITION)));
+  }
 
-    public void extend() {
-        hopper.setPosition(IntakeConstants.EXTEND_DIST);
+  public Command enableIntakeCommand() {
+    return runOnce(() -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED)));
+  }
 
-    }
+  public Command disableIntakeCommand() {
+    return runOnce(() -> intake.stopMotor());
+  }
 
-    public void enableIntake() {
-        intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED));
-    }
-
-    // commands
-    public Command extendIntakeCommand() {
-        return this.run(() -> extend());
-    }
-
-    public Command enableIntakeCommand() {
-        return this.runOnce(() -> enableIntake());
-    }
-
-    public Command disableIntakeCommand() {
-        return this.runOnce(() -> intake.stopMotor());
-    }
-
-    public Command reverseIntakeCommand() {
-        return this.runOnce(
-                () -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED.negate())));
-    }
-
+  public Command reverseIntakeCommand() {
+    return runOnce(() -> intake.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED.unaryMinus())));
+  }
 }

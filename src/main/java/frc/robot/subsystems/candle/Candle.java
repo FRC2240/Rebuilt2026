@@ -21,18 +21,18 @@ public class Candle extends SubsystemBase {
 
     private final SolidColor color = new SolidColor(0, CandleConstants.LED_NUM - 1);
 
-    public Candle(){
+    public Candle() {
         LEDConfigs conf = new LEDConfigs();
-        conf.StripType = StripTypeValue.RGB;
+        conf.StripType = StripTypeValue.RGBW;
         conf.BrightnessScalar = CandleConstants.BRIGTHNESS;
         candle.getConfigurator().apply(conf);
 
         color.Color = new RGBWColor(0, 0, 0, 0);
         candle.setControl(color);
-    } 
+    }
 
     @Override
-    public void periodic(){
+    public void periodic() {
         Optional<Alliance> alliance = DriverStation.getAlliance();
 
         if (DriverStation.isAutonomous()) {
@@ -49,9 +49,10 @@ public class Candle extends SubsystemBase {
             if (DriverStation.isDisabled()) {
                 count++;
             } else {
-                colorOn = true; // you do this so that color on is true when you leave disabled state
+                // Ensures the colorOn is true when enabled
+                colorOn = true;
             }
-            //blinking every second if disabled
+            // blinking every second if disabled
             if (count > 20) {
                 count = 0;
                 colorOn = !colorOn;
@@ -64,6 +65,5 @@ public class Candle extends SubsystemBase {
 
         candle.setControl(color);
     }
-    
+
 }
- 
