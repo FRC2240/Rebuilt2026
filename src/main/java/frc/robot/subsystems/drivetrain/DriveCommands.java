@@ -249,36 +249,28 @@ public class DriveCommands extends SubsystemBase{
     }
 
     public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> shooterExitGroundSpeedSupplier) {
-        // Tuning constant: 1.0 is theoretical perfect, < 1.0 reduces compensation
-        final double LATERAL_GAIN = 0.85;
-
         return rotateToRotation(() -> {
             Translation2d robotTranslation = drivetrain.getTranslation();
             Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
 
-            // 1. Get Field-Relative Robot Velocity
             ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
                     drivetrain.getState().Speeds,
                     drivetrain.getHeading());
 
             Translation2d robotVelocities = new Translation2d(
-                    fieldSpeeds.vxMetersPerSecond * LATERAL_GAIN,
-                    fieldSpeeds.vyMetersPerSecond * LATERAL_GAIN);
+                    fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
+                    fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
 
-            Translation2d relativeHubPos = hubTranslation.minus(robotTranslation);
+            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
             double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
 
-            // Initial guess for Time of Flight
-            double timeOfFlight = relativeHubPos.getNorm() / exitSpeed;
-            Translation2d virtualTarget = relativeHubPos;
+            double timeOfFlight = translationToHub.getNorm() / exitSpeed;
+            Translation2d virtualTarget = translationToHub;
 
-            // 3. Run Lookahead Iterations (2-3 steps is usually plenty)
             for (int i = 0; i < 3; i++) {
-                // Predict where the ball "thinks" the hub is relative to the launch
-                // We subtract the distance the robot's momentum will carry the ball
-                virtualTarget = relativeHubPos.minus(robotVelocities.times(timeOfFlight));
+                virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
 
-                // Re-calculate Time of Flight based on the new distance to the virtual target
+                // Re-calculate time of flight based on the new distance to the virtual target
                 timeOfFlight = virtualTarget.getNorm() / exitSpeed;
             }
 
