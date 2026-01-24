@@ -90,8 +90,6 @@ public class Shooter extends SubsystemBase {
         });
     }
 
-    // When using this add a .andThen(shooterObj.setLaunchOutput(0)) at the end so when the button is no longer held it turns off
-    // Also add a .Andthen(setIsSHooting(false))
     public Command shootCommand(boolean facingHub) {
         // Currently no way to shoot/pass while in allianceZone and not facing hub or when hub is inactive
         return Commands.run(() -> {
