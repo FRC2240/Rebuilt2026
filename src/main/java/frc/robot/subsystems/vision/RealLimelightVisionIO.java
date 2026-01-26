@@ -15,7 +15,6 @@ import edu.wpi.first.networktables.DoubleArraySubscriber;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.RobotController;
-import frc.robot.subsystems.vision.BaseVisionIO;
 
 //import java.util.function.Supplier;
 //import edu.wpi.first.math.geometry.Rotation2d;
@@ -51,8 +50,8 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     // overrides default method
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
-        // checks controller connection based of off if there was an update in the last 250 ms
-        inputs.controller_found = ((RobotController.getFPGATime() - latency_subscriber.getLastChange()) / 1000) < 250; 
+        // checks camera connection based of off if there was an update in the last 250 ms
+        inputs.cam_connected = ((RobotController.getFPGATime() - latency_subscriber.getLastChange()) / 1000) < 250; 
         // update all inputs
         inputs.angle_to_tag = 
             new rotation(
@@ -81,7 +80,7 @@ public class RealLimelightVisionIO implements BaseVisionIO {
             //https://github.com/LimelightVision/limelightlib-wpijava/blob/main/LimelightHelpers.java
             // lines 700-800
             for (int i = 11; i < raw_data.value.length; i+=7) { 
-                //TODO document here
+                // adds each tag ID as tag IDs start at 11 and increment by 7
                 april_tag_IDs.add((int) raw_data.value[i]);
             }
 
