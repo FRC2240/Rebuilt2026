@@ -1,3 +1,5 @@
+// please note that hardware metrics aren't taken here
+
 package frc.robot.subsystems.vision;
 
 import java.util.Set;

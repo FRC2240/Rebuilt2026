@@ -30,6 +30,9 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     private final DoubleSubscriber latency_subscriber;
     private final DoubleSubscriber rot_x_subscriber;
     private final DoubleSubscriber rot_y_subscriber;
+
+    private final DoubleArraySubscriber hardwareSubscriber;
+
     private final DoubleArraySubscriber metatag1Subscriber;
     private final DoubleArraySubscriber metatag2Subscriber;
 
@@ -43,6 +46,9 @@ public class RealLimelightVisionIO implements BaseVisionIO {
         latency_subscriber = table.getDoubleTopic("tl").subscribe(0.0); //these exact strings must be used
         rot_x_subscriber = table.getDoubleTopic("tx").subscribe(0.0);
         rot_y_subscriber = table.getDoubleTopic("ty").subscribe(0.0);
+
+        hardwareSubscriber = table.getDoubleArrayTopic("hw").subscribe(new double[] {});
+
         metatag1Subscriber = table.getDoubleArrayTopic("botpose_wpiblue").subscribe(new double[] {});
         metatag2Subscriber = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
     }
@@ -52,7 +58,8 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     public void update_inputs(BaseVisionIOInput inputs) {
         // checks camera connection based of off if there was an update in the last 250 ms
         inputs.cam_connected = ((RobotController.getFPGATime() - latency_subscriber.getLastChange()) / 1000) < 250; 
-        // update all inputs
+
+        // updates angle to tag
         inputs.angle_to_tag = 
             new rotation(
                 Rotation2d.fromDegrees(rot_x_subscriber.get()), 
@@ -69,6 +76,13 @@ public class RealLimelightVisionIO implements BaseVisionIO {
         Set<Integer> april_tag_IDs = new HashSet<>();
         // in a linked list each index is called in order and leads to the next
         List<pose_estimation_data> pose_estimation_data = new LinkedList<>();
+
+        //hardware metrics taken 
+        double[] hw = hardwareSubscriber.get();
+        if (hw.length == 4) {
+            inputs.temp = hw[0];
+            inputs.fps = hw[3];
+        }
 
         // for each bit of raw data that has changed since the last call
         for (var raw_data : metatag1Subscriber.readQueue()) {
