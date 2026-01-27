@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.BaseVisionIO;
 import frc.robot.subsystems.vision.BaseVisionIO.BaseVisionIOInput;
 import frc.robot.subsystems.vision.BaseVisionIO.vision_configuration_type;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -106,9 +105,9 @@ public class Vision extends SubsystemBase {
 
             //sends alert if condition met
             //TODO heat and fps warnings
-            overHeat[i].set(false);
+            overHeat[i].set(input[i].temp > 70); //temp in celcius
             disconnect[i].set(!input[i].cam_connected);
-            fps[i].set(false);
+            fps[i].set(input[i].fps < 30); //needs to be determined
 
             // Logger.processInputs("Vision/Camera" + i, input[i]);
         }
