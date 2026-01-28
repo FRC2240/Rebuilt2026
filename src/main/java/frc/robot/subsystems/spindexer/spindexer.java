@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
-public class spindexer extends SubsystemBase {
+public class Spindexer extends SubsystemBase {
 
     private TalonFX spindexer = new TalonFX(spindexerConstants.SPINDEXER_MOTOR_ID);
 
-    public spindexer() {
+    public Spindexer() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = 0;
         spindexer.getConfigurator().apply(config);

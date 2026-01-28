@@ -6,13 +6,14 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 
+
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.candle.Candle;
@@ -33,6 +34,7 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
     public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
+    public final Spindexer spindexer = new Spindexer();
 
     public final FieldSimulation sim = new FieldSimulation();
 
@@ -50,6 +52,10 @@ public class RobotContainer {
         // Testing suff. Please do not remove
         // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
+
+
+        // Enable spindexer
+        spindexer.setDefaultCommand(spindexer.enableCommand());
 
         // Drive with joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
@@ -80,6 +86,8 @@ public class RobotContainer {
 
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
+
+
     }
 
     public Command getAutonomousCommand() {
