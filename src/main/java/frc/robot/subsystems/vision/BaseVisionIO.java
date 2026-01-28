@@ -11,7 +11,11 @@ public interface BaseVisionIO {
         public pose_estimation_data[] pose_estimation_data = new pose_estimation_data[0];
         // Rot. object stores angles: zero by default
         public rotation angle_to_tag = new rotation(Rotation2d.kZero, Rotation2d.kZero);
-        public boolean controller_found = false;
+        
+        // for Alerts
+        public boolean cam_connected = false;
+        public double temp;
+        public double fps;
     }
 
     // a record is like an array

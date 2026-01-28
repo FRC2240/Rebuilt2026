@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.BaseVisionIO;
 import frc.robot.subsystems.vision.BaseVisionIO.BaseVisionIOInput;
 import frc.robot.subsystems.vision.BaseVisionIO.vision_configuration_type;
 import frc.robot.subsystems.drivetrain.Drivetrain;
@@ -20,7 +19,10 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+
+import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -45,6 +47,11 @@ public class Vision extends SubsystemBase {
     // AutoLogged auto generated class
     private final BaseVisionIOInput[] input;
 
+    //alerts for each camera
+    private final Alert[] overHeat;
+    private final Alert[] disconnect;
+    private final Alert[] fps;
+
     public final Field2d[] fields;
 
     // elipces means multiple objects of vision_IO_Base class can be passed in so
@@ -63,6 +70,24 @@ public class Vision extends SubsystemBase {
             fields[i] = new Field2d();
             SmartDashboard.putData("Vision/camera" + i, fields[i]);
         }
+
+        this.overHeat = new Alert[IO_base.length];
+        for (int i = 0; i < IO_base.length; i++) {
+            overHeat[i] = new Alert(
+                "camera " + Integer.toString(i) + " Overheating", AlertType.kWarning);
+        }
+
+        this.disconnect = new Alert[IO_base.length];
+        for (int i = 0; i < IO_base.length; i++) {
+            disconnect[i] = new Alert(
+                "camera " + Integer.toString(i) + " is disconnected", AlertType.kWarning);
+        }
+
+        this.fps = new Alert[IO_base.length];
+        for (int i = 0; i < IO_base.length; i++) {
+            fps[i] = new Alert(
+                "camera " + Integer.toString(i) + " has low fps", AlertType.kWarning);
+        }
     }
 
     // returns X angle to nearest tag, method
@@ -73,8 +98,16 @@ public class Vision extends SubsystemBase {
     // updates input and logs for each camera
     @Override
     public void periodic() {
+        
+
         for (int i = 0; i < IO_base.length; i++) {
             IO_base[i].update_inputs(input[i]);
+
+            //sends alert if condition met
+            overHeat[i].set(input[i].temp > 70); //temp in celcius
+            disconnect[i].set(!input[i].cam_connected);
+            fps[i].set(input[i].fps < 30); //needs to be determined
+
             // Logger.processInputs("Vision/Camera" + i, input[i]);
         }
 

@@ -1,3 +1,5 @@
+// please note that hardware metrics aren't taken here
+
 package frc.robot.subsystems.vision;
 
 import java.util.Set;
@@ -28,7 +30,7 @@ public class PhotonVisionIO implements BaseVisionIO{
     @Override 
     public void update_inputs(BaseVisionIOInput inputs){
         //instance variable tells if controller is found
-        inputs.controller_found = camera.isConnected();
+        inputs.cam_connected = camera.isConnected();
 
         Set<Short> april_tag_IDs = new HashSet<>();
         List<pose_estimation_data> pose_estimation_data = new LinkedList<>();
