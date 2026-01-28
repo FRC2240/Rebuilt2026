@@ -32,7 +32,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
-    public final Candle candle = new Candle(() -> true, shootingController::isShooting);
+    public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
     public final FieldSimulation sim = new FieldSimulation();
 

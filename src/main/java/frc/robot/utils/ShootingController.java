@@ -58,7 +58,7 @@ public class ShootingController {
                 - velocity.in(RotationsPerSecond)) < SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond);
     }
 
-    private boolean hubShootRequirementsMet() {
+    public boolean hubShootRequirementsMet() {
         return isDrivetrainAimedAtHub() &&
                 isShooterAtVelocity(getShooterVelocityForPosition()) &&
                 Field.isHubActive() &&
