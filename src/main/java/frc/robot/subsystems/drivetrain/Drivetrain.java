@@ -173,7 +173,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     }
 
     public Command rezeroGyro() {
-        return runOnce(() -> resetRotation(Rotation2d.kZero));
+        return runOnce(() -> resetRotation(Rotation2d.kZero)).ignoringDisable(true);
     }
 
     public Pose2d getPose() {
