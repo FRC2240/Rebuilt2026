@@ -8,7 +8,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public class Spindexer extends SubsystemBase {
 
-    private TalonFX spindexer = new TalonFX(spindexerConstants.SPINDEXER_MOTOR_ID);
+    private TalonFX spindexer = new TalonFX(spindexerConstantss.SPINDEXER_MOTOR_ID);
 
     public Spindexer() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -18,7 +18,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public void enable() {
-        spindexer.setControl(new VelocityTorqueCurrentFOC(spindexerConstants.ENABLED));
+        spindexer.setControl(new VelocityTorqueCurrentFOC(spindexerConstantss.ENABLED));
     }
 
     public void disable() {
@@ -35,7 +35,7 @@ public class Spindexer extends SubsystemBase {
 
     public Command reverseCommand() {
         return this
-                .runOnce(() -> spindexer.setControl(new VelocityTorqueCurrentFOC(spindexerConstants.ENABLED.unaryMinus())));
+                .runOnce(() -> spindexer.setControl(new VelocityTorqueCurrentFOC(spindexerConstantss.ENABLED.unaryMinus())));
     }
 
 }
