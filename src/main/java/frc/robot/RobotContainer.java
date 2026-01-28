@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
@@ -30,7 +31,8 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
-    public final Candle candle = new Candle(() -> true, () -> shooter.canHit);
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
+    public final Candle candle = new Candle(() -> true, shootingController::isShooting);
 
     public final FieldSimulation sim = new FieldSimulation();
 
@@ -50,7 +52,7 @@ public class RobotContainer {
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
         // Drive with joysticks
-        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
+        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // climber coast by default
         climber.setDefaultCommand(climber.coastCommand());
