@@ -76,7 +76,7 @@ public class RobotContainer {
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
 
         // Zero the gyro
-        joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
+        joystick.start().onTrue(drivetrain.rezeroGyro());
 
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());

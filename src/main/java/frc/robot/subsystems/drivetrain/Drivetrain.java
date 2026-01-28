@@ -172,6 +172,10 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
+    public Command rezeroGyro() {
+        return runOnce(() -> resetRotation(Rotation2d.kZero));
+    }
+
     public Pose2d getPose() {
         return getState().Pose;
     }
