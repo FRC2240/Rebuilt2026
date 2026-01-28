@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
@@ -29,7 +30,7 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
-    public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
+    public final Candle candle = new Candle(() -> true, () -> shooter.canHit);
 
     public final FieldSimulation sim = new FieldSimulation();
 
@@ -49,7 +50,16 @@ public class RobotContainer {
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
         // Drive with joysticks
-        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
+
+        // climber coast by default
+        climber.setDefaultCommand(climber.coastCommand());
+
+        // intake enabled by default
+        intake.setDefaultCommand(intake.enableIntakeCommand());
+
+        // climber coast on disable
+        RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());
@@ -57,8 +67,8 @@ public class RobotContainer {
         // Deploy Intake
         joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
 
-        // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+        // disable Intake
+        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle slow mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());

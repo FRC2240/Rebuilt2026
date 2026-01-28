@@ -5,6 +5,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
+import com.ctre.phoenix6.controls.CoastOut;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Climber extends SubsystemBase {
     TalonFX motor = new TalonFX(ClimberConstants.MOTOR_ID);
     TorqueCurrentFOC req = new TorqueCurrentFOC(0);
+    CoastOut coast = new CoastOut();
 
     public Climber() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -26,5 +28,9 @@ public class Climber extends SubsystemBase {
 
     public Command extendCommand() {
         return this.run(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT)));
+    }
+
+    public Command coastCommand() {
+        return this.run(() -> motor.setControl(coast));
     }
 }
