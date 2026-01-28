@@ -22,6 +22,8 @@ public class ShootingController {
     // Inches to Rotations Per Second
     private final InterpolatingDoubleTreeMap distanceToVelocityMap = new InterpolatingDoubleTreeMap();
 
+    private boolean isCurrentlyShooting = false;
+
     public ShootingController(Drivetrain drivetrain, Shooter shooter) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
@@ -29,6 +31,10 @@ public class ShootingController {
         // Set values for the tree map
         distanceToVelocityMap.put(0., 0.);
         distanceToVelocityMap.put(10., 10.);
+    }
+
+    public boolean isShooting() {
+        return isCurrentlyShooting;
     }
 
     private AngularVelocity getShooterVelocityForPosition() {
@@ -52,6 +58,13 @@ public class ShootingController {
                 - velocity.in(RotationsPerSecond)) < SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond);
     }
 
+    private boolean hubShootRequirementsMet() {
+        return isDrivetrainAimedAtHub() &&
+                isShooterAtVelocity(getShooterVelocityForPosition()) &&
+                Field.isHubActive() &&
+                Field.inAllianceZone();
+    }
+
     /**
      * Command to aim and shoot into the hub.
      * Only shoots when the robot has the correct heading, the shooter has the
@@ -64,11 +77,11 @@ public class ShootingController {
                 shooter.setVelocityCommand(this::getShooterVelocityForPosition),
                 drivetrain.commands.drive(null, drivetrain.commands.rotateToAimAtHub()),
 
-                // Shoots when all of the conditions are met
-                shooter.indexer.enableCommand().onlyWhile(() -> isDrivetrainAimedAtHub() &&
-                        isShooterAtVelocity(getShooterVelocityForPosition()) &&
-                        Field.inAllianceZone() &&
-                        Field.isHubActive()));
+                // Shoots when all of the conditions are met.
+                shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+
+                // Set the `isCurrentlyShooting` variable
+                Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
     }
 
     /**
@@ -89,6 +102,6 @@ public class ShootingController {
                 return shootIntoHub();
             else
                 return shootIntoAllianceZone();
-        });
+        }).finallyDo(() -> isCurrentlyShooting = false);
     }
 }
