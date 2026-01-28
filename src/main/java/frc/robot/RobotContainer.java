@@ -48,8 +48,6 @@ public class RobotContainer {
         // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
-        shooter.indexer.setDefaultCommand(shooter.indexer.disableCommand());
-
         // Drive with joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 

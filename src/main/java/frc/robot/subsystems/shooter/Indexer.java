@@ -25,6 +25,8 @@ public class Indexer extends SubsystemBase {
 
         leftMotor.getConfigurator().apply(conf);
         rightMotor.getConfigurator().apply(conf);
+        
+        setDefaultCommand(disableCommand());
     }
 
     public void setVelocity(AngularVelocity velocity) {
