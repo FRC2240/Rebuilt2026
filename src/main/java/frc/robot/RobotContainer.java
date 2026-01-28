@@ -4,16 +4,13 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
@@ -48,6 +45,10 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        // Testing suff. Please do not remove
+        //sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
+        //drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
+
         // Drive with joysticks
         drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
 
@@ -76,7 +77,8 @@ public class RobotContainer {
         joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
 
         // Shoot
-        joystick.rightTrigger().whileTrue(shooter.shoot());
+        joystick.rightTrigger().whileTrue(shooter.setOutputCommand(5).andThen(shooter.shootCommand(true)));
+        joystick.rightTrigger().onFalse(shooter.resetCommand());
     }
 
     public Command getAutonomousCommand() {

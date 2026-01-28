@@ -15,12 +15,6 @@
           "data": {
             "pathName": "New Path"
           }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "hub_align"
-          }
         }
       ]
     }
