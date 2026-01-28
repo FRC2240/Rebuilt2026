@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
@@ -21,14 +20,16 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private static final CommandXboxController joystick = new CommandXboxController(0);
 
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
+    // Drivetrain (and joystick) is static to make the pose getting methods global.
+    // This will be fixed later with a singelton utility class.
+    public static final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
 
     public final FieldSimulation sim = new FieldSimulation();
 
@@ -44,12 +45,14 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Testing suff. Please do not remove
-        //sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
-        //drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
+        // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
+        // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
+
+        shooter.indexer.setDefaultCommand(shooter.indexer.disableCommand());
 
         // Drive with joysticks
-        drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
-        
+        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());
 
@@ -60,13 +63,13 @@ public class RobotContainer {
         joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
 
         // Toggle slow mode
-        joystick.back().onTrue(driveCommands.toggleSlowModeCommand());
+        joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
 
         // Zero the gyro
         joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
 
         // Shoot
-        
+        joystick.rightTrigger().whileTrue(shootingController.shoot());
     }
 
     public Command getAutonomousCommand() {

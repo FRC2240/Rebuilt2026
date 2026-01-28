@@ -36,13 +36,13 @@ public class Indexer extends SubsystemBase {
      * Starts the shooter indexer motors
      */
     public Command enableCommand() {
-        return runOnce(() -> setVelocity(ShooterConstants.LAUNCH_MOTOR_OUTPUT));
+        return runOnce(() -> setVelocity(ShooterConstants.LAUNCH_MOTOR_OUTPUT)).andThen(run(() -> {}));
     }
 
     /**
-     * Stops the shooter indexer motors
+     * Stops the shooter indexer motors. 
      */
     public Command disableCommand() {
-        return runOnce(() -> setVelocity(RotationsPerSecond.of(0)));
+        return runOnce(() -> setVelocity(RotationsPerSecond.of(0))).andThen(run(() -> {}));
     }
 }

@@ -2,6 +2,8 @@ package frc.robot.subsystems.shooter;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -42,6 +44,10 @@ public class Shooter extends SubsystemBase {
 
     public Command setVelocityCommand(AngularVelocity velocity) {
         return runOnce(() -> setVelocity(velocity));
+    }
+
+    public Command setVelocityCommand(Supplier<AngularVelocity> velocitySupplier) {
+        return run(() -> setVelocity(velocitySupplier.get()));
     }
 
     /**

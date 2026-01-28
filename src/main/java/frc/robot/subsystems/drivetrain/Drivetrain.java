@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
@@ -35,12 +36,16 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     // Drive swerve request for Pathplanner control.
     private final SwerveRequest.ApplyRobotSpeeds ppDrive = new SwerveRequest.ApplyRobotSpeeds();
 
-    public Drivetrain() {
+    public final DriveCommands commands;
+
+    public Drivetrain(CommandXboxController controller) {
         super(TunerConstants.DrivetrainConstants,
                 TunerConstants.FrontLeft,
                 TunerConstants.FrontRight,
                 TunerConstants.BackLeft,
                 TunerConstants.BackRight);
+
+        this.commands = new DriveCommands(this, controller);
 
         // Idle the swerve modules when disabled, ensuring the configured
         // neutral mode is applied to the drive motors when disabled

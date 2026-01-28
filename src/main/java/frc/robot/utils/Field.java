@@ -1,6 +1,7 @@
 package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -51,14 +52,28 @@ public class Field {
                 || (!isInactiveFirst && isSecondInactiveActive);
     }
 
+    public static Translation2d getTranslationToHub() {
+        return HUB_CENTER_TRANSLATION.get().minus(RobotContainer.drivetrain.getTranslation());
+    }
+
+    public static Distance getDistanceToHub() {
+        return Meters.of(Field.getTranslationToHub().getNorm());
+    }
+
     /**
-     * Trigger for if the robot is in the alliance zone corresponding to their
-     * alliance. If no alliance has been set, defaults to red.
+     * Boolean method for if the robot is in the alliance zone corresponding to
+     * their alliance. If no alliance has been set, defaults to red.
      */
-    public static final Trigger inAllianceZone = new Trigger(() -> {
+    public static boolean inAllianceZone() {
         Translation2d translation = RobotContainer.drivetrain.getTranslation();
         Rectangle2d allianceZone = ALLIANCE_ZONE.get();
 
         return allianceZone.contains(translation);
-    });
+    }
+
+    /**
+     * Trigger for if the robot is in the alliance zone corresponding to their
+     * alliance. If no alliance has been set, defaults to red.
+     */
+    public static final Trigger inAllianceZoneTrigger = new Trigger(Field::inAllianceZone);
 }
