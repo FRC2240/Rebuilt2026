@@ -104,7 +104,6 @@ public class Vision extends SubsystemBase {
             IO_base[i].update_inputs(input[i]);
 
             //sends alert if condition met
-            //TODO heat and fps warnings
             overHeat[i].set(input[i].temp > 70); //temp in celcius
             disconnect[i].set(!input[i].cam_connected);
             fps[i].set(input[i].fps < 30); //needs to be determined
