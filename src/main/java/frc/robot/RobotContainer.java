@@ -11,7 +11,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
@@ -22,10 +21,11 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private static final CommandXboxController joystick = new CommandXboxController(0);
 
-    public static final Drivetrain drivetrain = new Drivetrain();
-    public final DriveCommands driveCommands = new DriveCommands(drivetrain, joystick);
+    // Drivetrain (and joystick) is static to make the pose getting methods global.
+    // This will be fixed later with a singelton utility class.
+    public static final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
@@ -46,8 +46,8 @@ public class RobotContainer {
 
     private void configureBindings() {
         // Testing suff. Please do not remove
-        //sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
-        //drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
+        // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
+        // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
         // Drive with joysticks
         drivetrain.setDefaultCommand(driveCommands.controlWithJoysticks());
@@ -71,14 +71,13 @@ public class RobotContainer {
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle slow mode
-        joystick.back().onTrue(driveCommands.toggleSlowModeCommand());
+        joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
 
         // Zero the gyro
         joystick.start().onTrue(Commands.runOnce(drivetrain::seedFieldCentric));
 
         // Shoot
-        joystick.rightTrigger().whileTrue(shooter.setOutputCommand(5).andThen(shooter.shootCommand(true)));
-        joystick.rightTrigger().onFalse(shooter.resetCommand());
+        joystick.rightTrigger().whileTrue(shootingController.shoot());
     }
 
     public Command getAutonomousCommand() {

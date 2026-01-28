@@ -278,6 +278,13 @@ public class DriveCommands extends SubsystemBase {
         });
     }
 
+    public Supplier<AngularVelocity> rotateToAimAtHub() {
+        return rotateToRotation(() -> {
+            Translation2d translationToHub = Field.getTranslationToHub();
+            return translationToHub.getAngle();
+        });
+    }
+
     public boolean isAimedAtHub(LinearVelocity groundSpeed) {
         Translation2d robotTranslation = drivetrain.getTranslation();
         Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
