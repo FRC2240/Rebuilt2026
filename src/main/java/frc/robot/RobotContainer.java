@@ -32,9 +32,10 @@ public class RobotContainer {
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
-    public final ShootingController shootingController = new ShootingController(drivetrain, shooter);
-    public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
     public final Spindexer spindexer = new Spindexer();
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer);
+    public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
+
 
     public final FieldSimulation sim = new FieldSimulation();
 

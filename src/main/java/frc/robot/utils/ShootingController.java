@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.spindexer.Spindexer;
 
 public class ShootingController {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1);
@@ -18,15 +19,17 @@ public class ShootingController {
 
     private final Drivetrain drivetrain;
     private final Shooter shooter;
+    private final Spindexer spindexer;
 
     // Inches to Rotations Per Second
     private final InterpolatingDoubleTreeMap distanceToVelocityMap = new InterpolatingDoubleTreeMap();
 
     private boolean isCurrentlyShooting = false;
 
-    public ShootingController(Drivetrain drivetrain, Shooter shooter) {
+    public ShootingController(Drivetrain drivetrain, Shooter shooter, Spindexer spindexer) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
+        this.spindexer = spindexer;
 
         // Set values for the tree map
         distanceToVelocityMap.put(0., 0.);
@@ -79,6 +82,7 @@ public class ShootingController {
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+                spindexer.enableCommand().onlyWhile (this ::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));

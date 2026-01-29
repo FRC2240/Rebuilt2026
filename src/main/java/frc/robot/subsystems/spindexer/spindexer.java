@@ -14,6 +14,7 @@ public class Spindexer extends SubsystemBase {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.Slot0.kP = 0;
         spindexer.getConfigurator().apply(config);
+        setDefaultCommand(disableCommand());
 
     }
 
@@ -26,7 +27,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command enableCommand() {
-        return this.runOnce(() -> enable());
+        return this.runOnce(() -> enable()).andThen(run(() -> {}));
     }
 
     public Command disableCommand() {
