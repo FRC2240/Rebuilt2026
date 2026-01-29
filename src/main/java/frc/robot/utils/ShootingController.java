@@ -9,9 +9,11 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class ShootingController {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1);
@@ -68,6 +70,18 @@ public class ShootingController {
                 Field.inAllianceZone();
     }
 
+    private boolean isDrivetrainAimedAtPassPoint() {
+        return Math.abs(drivetrain.getHeading().minus(Field.getTranslationToPassPoint().getAngle())
+                .getDegrees()) < DRIVETRAIN_HEADING_THRESHOLD.in(Degrees);
+    }
+
+    public boolean passRequirementsMet() {
+        return isDrivetrainAimedAtPassPoint() &&
+                isShooterAtVelocity(ShooterConstants.PASSING_OUTPUT) && 
+                RobotContainer.drivetrain.commands.isInChannel() &&
+                !Field.inAllianceZone();
+    }
+
     /**
      * Command to aim and shoot into the hub.
      * Only shoots when the robot has the correct heading, the shooter has the
@@ -82,7 +96,7 @@ public class ShootingController {
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
-                spindexer.enableCommand().onlyWhile (this ::hubShootRequirementsMet),
+                spindexer.enableCommand().onlyWhile (this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
@@ -93,7 +107,17 @@ public class ShootingController {
      * into the hub (foul) or go outside of the field (foul)
      */
     private Command shootIntoAllianceZone() {
-        return Commands.none(); // TODO
+        return Commands.parallel(
+            shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
+            // maybe add a translation to move past "hub line"
+            drivetrain.commands.drive(null, drivetrain.commands.rotateToPass()),
+
+            shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
+            spindexer.enableCommand().onlyWhile (this::hubShootRequirementsMet),
+
+
+            Commands.run(() -> isCurrentlyShooting = passRequirementsMet())
+        );
     }
 
     /**

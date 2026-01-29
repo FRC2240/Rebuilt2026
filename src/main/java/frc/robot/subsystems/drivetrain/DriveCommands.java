@@ -1,6 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
-import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -10,17 +10,16 @@ import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -55,11 +54,6 @@ public class DriveCommands extends SubsystemBase {
         this.drivetrain = drivetrain;
         this.joystick = controller;
         this.limiter = new SwerveLimiter(drivetrain);
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putBoolean("hey", isAimedAtHub(MetersPerSecond.of(10)));
     }
 
     /**
@@ -284,22 +278,20 @@ public class DriveCommands extends SubsystemBase {
             return translationToHub.getAngle();
         });
     }
+    
+    // Returns angle to nearest passing point 
+    public Supplier<AngularVelocity> rotateToPass() {
+        return rotateToRotation(() -> {
+            Translation2d translationToPassingPoint = Field.getTranslationToPassPoint();
+            return translationToPassingPoint.getAngle(); 
+        });
+    }
 
-    public boolean isAimedAtHub(LinearVelocity groundSpeed) {
-        Translation2d robotTranslation = drivetrain.getTranslation();
-        Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-        Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-
-        ChassisSpeeds robotChassisSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(drivetrain.getState().Speeds,
-                drivetrain.getHeading());
-        Translation2d robotVelocities = new Translation2d(
-                robotChassisSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
-                robotChassisSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
-        Translation2d ballVelocities = new Translation2d(groundSpeed.in(MetersPerSecond), drivetrain.getHeading());
-        Translation2d totalVelocities = robotVelocities.plus(ballVelocities);
-
-        return Math.abs(MathUtil.inputModulus(
-                translationToHub.getAngle().minus(totalVelocities.getAngle()).getDegrees(), -180,
-                180)) < DriveConstants.SHOOT_ROTATION_THRESHOLD.in(Degrees);
+    public boolean isInChannel() {
+        Distance m = drivetrain.getPose().getMeasureY();
+        // The 'random' values are [FIELD_WIDTH / 2] +- 23.5(hubWidth(47)/2) +- 9(1.5 ball diameters)
+        return (m.lt(Distance.ofBaseUnits(126.35, Inches)) 
+            || 
+            m.gt(Distance.ofBaseUnits(191.35, Inches)));
     }
 }
