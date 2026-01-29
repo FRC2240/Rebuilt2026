@@ -9,7 +9,6 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -77,8 +76,7 @@ public class ShootingController {
 
     public boolean passRequirementsMet() {
         return isDrivetrainAimedAtPassPoint() &&
-                isShooterAtVelocity(ShooterConstants.PASSING_OUTPUT) && 
-                RobotContainer.drivetrain.commands.isInChannel() &&
+                isShooterAtVelocity(ShooterConstants.PASSING_OUTPUT) &&
                 !Field.inAllianceZone();
     }
 
