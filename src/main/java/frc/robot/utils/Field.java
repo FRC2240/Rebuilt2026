@@ -3,6 +3,8 @@ package frc.robot.utils;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Rectangle2d;
@@ -34,6 +36,17 @@ public class Field {
                     Inches.of(182.11),
                     FIELD_WIDTH.div(2)));
 
+    public static final AllianceRelativeTranslation2d PASSING_TARGET_RIGHT_TRANSLATION = AllianceRelativeTranslation2d
+    .fromBlueTranslation(new Translation2d(
+        Inches.of(90.78),
+        Inches.of(82.92)));
+
+    // The Y-values are (FEILD_WIDTH / 2) +- 75.93
+    public static final AllianceRelativeTranslation2d PASSING_TARGET_LEFT_TRANSLATION = AllianceRelativeTranslation2d
+    .fromBlueTranslation(new Translation2d(
+        Inches.of(90.78),
+        Inches.of(234.78)));
+
     public static boolean isHubActive() {
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
         Alliance disabledFirst = DriverStation.getGameSpecificMessage().charAt(0) == 'B' ? Alliance.Blue : Alliance.Red;
@@ -58,6 +71,18 @@ public class Field {
 
     public static Distance getDistanceToHub() {
         return Meters.of(Field.getTranslationToHub().getNorm());
+    }
+
+    // Returns the translation for the nearest passing point(of 2)
+    public static Translation2d getTranslationToPassPoint() {
+        Supplier<Translation2d> robotTranslation = RobotContainer.drivetrain::getTranslation;
+
+        double dist_right = robotTranslation.get().getDistance(PASSING_TARGET_RIGHT_TRANSLATION.get());
+        double dist_left = robotTranslation.get().getDistance(PASSING_TARGET_LEFT_TRANSLATION.get());
+
+        if(dist_right > dist_left) return PASSING_TARGET_LEFT_TRANSLATION.get().minus(RobotContainer.drivetrain.getTranslation());
+
+        return PASSING_TARGET_RIGHT_TRANSLATION.get().minus(RobotContainer.drivetrain.getTranslation());
     }
 
     /**
