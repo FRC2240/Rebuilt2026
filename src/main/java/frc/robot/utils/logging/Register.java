@@ -12,6 +12,7 @@ public class Register<T> {
     public static HashMap<String, StructArrayPublisher<Translation2d>> arrayMap = new HashMap<>();
 
     public static void registerT2d(String key) {
+        key = "VisualLogger/" + key;
         StructPublisher<Translation2d> publisher = NetworkTableInstance.getDefault()
                 .getStructTopic(key, Translation2d.struct).publish();
 
@@ -19,6 +20,7 @@ public class Register<T> {
     }
 
     public static void registerT2dArray(String key) {
+        key = "VisualLogger/" + key;
         StructArrayPublisher<Translation2d> arrayPublisher = NetworkTableInstance.getDefault()
                 .getStructArrayTopic((key), Translation2d.struct).publish();
 

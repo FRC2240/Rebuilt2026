@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
+import frc.robot.utils.logging.Register;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.climber.Climber;
@@ -42,6 +43,7 @@ public class RobotContainer {
     public RobotContainer() {
         configureAutoChooser();
         configureBindings();
+        configurePublishers();
     }
 
     private void configureAutoChooser() {
@@ -89,6 +91,13 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(shootingController.shoot());
 
 
+    }
+
+    private void configurePublishers() {
+        Register.registerT2d("PassingTargets/Right");
+        Register.registerT2d("PassingTargets/Left");
+        Register.registerT2dArray("Lines/Active");
+        Register.registerT2dArray("Testing/Triangle");
     }
 
     public Command getAutonomousCommand() {
