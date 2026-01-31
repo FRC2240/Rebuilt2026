@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
+import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -25,16 +26,18 @@ public class RealLimelightVisionIO implements BaseVisionIO {
 
     // tracks if rewind capture taken
     private boolean captured = false;
-
-    //network table
-    private NetworkTable table;
+    private boolean been_enabled = false;
 
     // supliers store functions so they are more like variables
     private final Supplier<Rotation2d> rotation_supplier;
 
+
     // publisher sends data in/on a topic which works like a channel subscriber on
     // same topic receives it
     private final DoubleArrayPublisher orientation_publisher;
+
+    private final DoubleArrayTopic rewind_topic;
+    private final DoubleArrayPublisher rewind_publisher;
 
     private final DoubleSubscriber latency_subscriber;
     private final DoubleSubscriber rot_x_subscriber;
@@ -46,15 +49,18 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     private final DoubleArraySubscriber metatag2Subscriber;
 
     public RealLimelightVisionIO(String name, Supplier<Rotation2d> rotation_supplier) {
-        this.table = NetworkTableInstance.getDefault().getTable(name);
+        NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
 
         // enables rewind to play back footage
-        table.getEntry("rewind_enable_set").setBoolean(true);
+        table.getEntry("rewind_enable_set").setDouble(1);
 
         this.rotation_supplier = rotation_supplier;
         //https://docs.limelightvision.io/docs/docs-limelight/apis/complete-networktables-api
         //string keys are already defined by limelight see above
         orientation_publisher = table.getDoubleArrayTopic("robot_orientation_set").publish();
+
+        rewind_topic = table.getDoubleArrayTopic("capture_rewind");
+        rewind_publisher = rewind_topic.publish();
 
         latency_subscriber = table.getDoubleTopic("tl").subscribe(0.0); //these exact strings must be used
         rot_x_subscriber = table.getDoubleTopic("tx").subscribe(0.0);
@@ -69,13 +75,21 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     // overrides default method
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
+
+        if (DriverStation.isEnabled()) {
+            been_enabled = true;
+        }
+
         //rwnd
-        if (DriverStation.isDisabled() && !captured) {
+        if (DriverStation.isDisabled() && !captured && been_enabled) {
             captured = true;
-            DoubleArrayPublisher rewind_publisher = table.getDoubleArrayTopic("capture_rewind").publish();
-            
-            // each time counter (index 0) is incremented a capture is take so 1 is to take 1 capture
-            rewind_publisher.set(new double[] {1, 30});
+            double[] currentArray = rewind_topic.getEntry(new double[] {}).get();
+            double counter = (currentArray.length > 0) ? currentArray[0] : 0;
+
+            double[] setter = {++counter, VisionConstants.REWIND_TIME};
+
+            // each time counter (index 0) is incremented a capture is taken
+            rewind_publisher.set(setter);
         }
 
         // checks camera connection based of off if there was an update in the last 250 ms
