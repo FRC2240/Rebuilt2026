@@ -12,36 +12,35 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
-    private TalonFX hopperMotor = new TalonFX(IntakeConstants.HOPPER_ID);
-    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_ID);
+    private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+    private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 
     public Intake() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
         conf.Slot0.kP = 1;
 
-        hopperMotor.getConfigurator().apply(conf);
+        pivotMotor.getConfigurator().apply(conf);
         intakeMotor.getConfigurator().apply(conf);
     }
 
-    public void spin(AngularVelocity speed) {
-        intakeMotor.setControl(new VelocityTorqueCurrentFOC(speed));
+    public Command setIntakeVelocity(AngularVelocity velocity) {
+        return runOnce(() -> intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity)));
     }
 
     public Command extendIntakeCommand() {
-        return runOnce(() -> hopperMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.EXTENDED_POSITION)));
+        return runOnce(() -> pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.EXTENDED_POSITION)));
     }
 
     public Command enableIntakeCommand() {
-        return run(() -> spin(IntakeConstants.INTAKE_SPEED));
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY);
     }
 
     public Command disableIntakeCommand() {
-        return run(() -> spin(RotationsPerSecond.of(0)));
+        return setIntakeVelocity(RotationsPerSecond.of(0));
     }
 
     public Command reverseIntakeCommand() {
-        return runOnce(
-                () -> intakeMotor.setControl(new VelocityTorqueCurrentFOC(IntakeConstants.INTAKE_SPEED.unaryMinus())));
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus());
     }
 }

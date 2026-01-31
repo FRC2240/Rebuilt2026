@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-    private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_LEFT_MOTOR_ID);
-    private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.FLYWHEEL_RIGHT_MOTOR_ID);
+    private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.LEFT_FEEDER_MOTOR_ID);
+    private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.RIGHT_FEEDER_MOTOR_ID);
 
     private StatusSignal<AngularVelocity> leftMotorVelocity = leftFlywheelMotor.getVelocity();
     private StatusSignal<AngularVelocity> rightMotorVelocity = rightFlywheelMotor.getVelocity();

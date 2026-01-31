@@ -6,10 +6,10 @@ import edu.wpi.first.units.measure.AngularVelocity;
 
 public class ShooterConstants {
 
-    public static final int FLYWHEEL_LEFT_MOTOR_ID = 50;
-    public static final int FLYWHEEL_RIGHT_MOTOR_ID = 51;
-    public static final int LAUNCH_LEFT_MOTOR_ID = 52;
-    public static final int LAUNCH_RIGHT_MOTOR_ID = 53;
+    public static final int LEFT_FLYWHEEL_MOTOR_ID = 50;
+    public static final int RIGHT_FLYWHEEL_MOTOR_ID = 51;
+    public static final int LEFT_FEEDER_MOTOR_ID = 52;
+    public static final int RIGHT_FEEDER_MOTOR_ID = 53;
 
     // There is only a specific range or band that we can shoot from.
     // This is becasue too close to hub and it will hit the hub instead of going in and too far will be outside of field

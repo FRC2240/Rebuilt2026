@@ -87,8 +87,6 @@ public class RobotContainer {
 
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
-
-
     }
 
     public Command getAutonomousCommand() {

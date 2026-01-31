@@ -14,13 +14,14 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.shooter.ShooterConstants;
 
-public class ShootingController {
+public class ShootingController extends SubsystemBase {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1);
     private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(5);
 
@@ -140,7 +141,8 @@ public class ShootingController {
         }).finallyDo(() -> isCurrentlyShooting = false);
     }
 
-    public static void publishCurrentTarget() {
+    @Override
+    public void periodic() {
         Supplier<Translation2d> robotTranslation = RobotContainer.drivetrain::getTranslation;
         
         if (Field.inAllianceZone()) {
