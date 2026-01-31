@@ -64,7 +64,7 @@ public class RobotContainer {
         // climber coast by default
         climber.setDefaultCommand(climber.coastCommand());
 
-        // intake enabled by default
+        // Intake extends at start, enabled by default
         intake.setDefaultCommand(intake.enableIntakeCommand());
 
         // climber coast on disable
@@ -73,10 +73,10 @@ public class RobotContainer {
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());
 
-        // Deploy Intake
-        joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
+        // Reverse Intake
+        joystick.povDown().toggleOnTrue(intake.reverseIntakeCommand());
 
-        // disable Intake
+        // Disable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle slow mode

@@ -4,20 +4,23 @@ Control scheme
 
 Joystick - drive
 
-POV up - (toggle?) climb
-POV down - reverse intake
+POV up - toggles climb
 
-Right Trigger - shoot
-Left Trigger - toggle intake
+POV down - reverses intake
+
+Left Trigger - toggles intake
+
+Right Trigger - hold to shoot
 
 Hamburger - rezero
-dual screen - slow mode
+
+Dual Screen - slow mode
 
 ## IDs
 ### Swerve
-10, 11, 12
-20, 21, 22
-30, 31, 32
+10, 11, 12,
+20, 21, 22,
+30, 31, 32,
 40, 41, 42
 
 ### Shooter / Feeder

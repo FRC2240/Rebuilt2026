@@ -15,6 +15,8 @@ public class Intake extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 
+    private boolean isExtended = false;
+
     public Intake() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
@@ -33,6 +35,10 @@ public class Intake extends SubsystemBase {
     }
 
     public Command enableIntakeCommand() {
+        if(!this.isExtended) {
+            this.isExtended = true;
+            return extendIntakeCommand().andThen(setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY));
+        }
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY);
     }
 
