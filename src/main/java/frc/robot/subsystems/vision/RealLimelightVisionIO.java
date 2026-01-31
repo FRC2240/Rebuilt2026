@@ -70,10 +70,11 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
         //rwnd
-        // each time counter (index 0) is incremented a capture is take so 1 is to take 1 capture
         if (DriverStation.isDisabled() && !captured) {
             captured = true;
             DoubleArrayPublisher rewind_publisher = table.getDoubleArrayTopic("capture_rewind").publish();
+            
+            // each time counter (index 0) is incremented a capture is take so 1 is to take 1 capture
             rewind_publisher.set(new double[] {1, 30});
         }
 
