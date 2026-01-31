@@ -4,11 +4,17 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -26,6 +32,9 @@ public class ShootingController {
     private final InterpolatingDoubleTreeMap distanceToVelocityMap = new InterpolatingDoubleTreeMap();
 
     private boolean isCurrentlyShooting = false;
+
+    public static StructArrayPublisher<Translation2d> arrayPublisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic(("Target_Line"), Translation2d.struct).publish();
 
     public ShootingController(Drivetrain drivetrain, Shooter shooter, Spindexer spindexer) {
         this.drivetrain = drivetrain;
@@ -129,5 +138,33 @@ public class ShootingController {
             else
                 return shootIntoAllianceZone();
         }).finallyDo(() -> isCurrentlyShooting = false);
+    }
+
+    public static void publishCurrentTarget() {
+        Supplier<Translation2d> robotTranslation = RobotContainer.drivetrain::getTranslation;
+        
+        if (Field.inAllianceZone()) {
+            publish(new Translation2d[] {robotTranslation.get(), Field.HUB_CENTER_TRANSLATION.get()});
+            return;
+        }
+        
+        double dist_right = robotTranslation.get().getDistance(Field.PASSING_TARGET_RIGHT_TRANSLATION.get());
+        double dist_left = robotTranslation.get().getDistance(Field.PASSING_TARGET_LEFT_TRANSLATION.get());
+
+        if (robotTranslation.get() != null) {
+            if (dist_right > dist_left) {
+                publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
+                return;
+            }
+            publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_RIGHT_TRANSLATION.get()});
+            return;
+        }
+
+        // This means the Robot's translation was null while outside of Alliance Zone
+        publish(new Translation2d[] {robotTranslation.get(), new Translation2d(0, 0)});
+    }
+
+    public static void publish(Translation2d[] arr) {
+        arrayPublisher.set(arr);
     }
 }

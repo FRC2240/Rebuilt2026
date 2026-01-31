@@ -81,7 +81,7 @@ public class Field {
         double dist_left = robotTranslation.get().getDistance(PASSING_TARGET_LEFT_TRANSLATION.get());
 
         if(dist_right > dist_left) return PASSING_TARGET_LEFT_TRANSLATION.get().minus(RobotContainer.drivetrain.getTranslation());
-
+        
         return PASSING_TARGET_RIGHT_TRANSLATION.get().minus(RobotContainer.drivetrain.getTranslation());
     }
 
