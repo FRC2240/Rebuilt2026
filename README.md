@@ -12,3 +12,22 @@ Left Trigger - toggle intake
 
 Hamburger - rezero
 dual screen - slow mode
+
+## IDs
+### Swerve
+10, 11, 12
+20, 21, 22
+30, 31, 32
+40, 41, 42
+
+### Shooter / Feeder
+50, 51, 52, 53
+
+### Intake
+54, 55
+
+### Climber
+56
+
+### Candle
+57
