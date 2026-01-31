@@ -21,10 +21,6 @@ public class Robot extends TimedRobot {
     }
 
     @Override
-    public void robotInit() {
-    }
-
-    @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
         ShootingController.publishCurrentTarget();
