@@ -8,6 +8,8 @@ import java.util.function.Supplier;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -16,7 +18,6 @@ import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.target.TargetTracking;
 import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class ShootingController {
@@ -26,18 +27,19 @@ public class ShootingController {
     private final Drivetrain drivetrain;
     private final Shooter shooter;
     private final Spindexer spindexer;
-    private final TargetTracking tracker;
 
     // Inches to Rotations Per Second
     private final InterpolatingDoubleTreeMap distanceToVelocityMap = new InterpolatingDoubleTreeMap();
 
     private boolean isCurrentlyShooting = false;
 
-    public ShootingController(Drivetrain drivetrain, Shooter shooter, Spindexer spindexer, TargetTracking tracker) {
+    public static StructArrayPublisher<Translation2d> arrayPublisher = NetworkTableInstance.getDefault()
+                .getStructArrayTopic(("Target_Line"), Translation2d.struct).publish();
+
+    public ShootingController(Drivetrain drivetrain, Shooter shooter, Spindexer spindexer) {
         this.drivetrain = drivetrain;
         this.shooter = shooter;
         this.spindexer = spindexer;
-        this.tracker = tracker;
 
         // Set values for the tree map
         distanceToVelocityMap.put(0., 0.);
@@ -142,7 +144,7 @@ public class ShootingController {
         Supplier<Translation2d> robotTranslation = RobotContainer.drivetrain::getTranslation;
         
         if (Field.inAllianceZone()) {
-            TargetTracking.publish(new Translation2d[] {robotTranslation.get(), Field.HUB_CENTER_TRANSLATION.get()});
+            publish(new Translation2d[] {robotTranslation.get(), Field.HUB_CENTER_TRANSLATION.get()});
             return;
         }
         
@@ -151,16 +153,18 @@ public class ShootingController {
 
         if (robotTranslation.get() != null) {
             if (dist_right > dist_left) {
-                TargetTracking.publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
+                publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
                 return;
             }
-            TargetTracking.publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_RIGHT_TRANSLATION.get()});
+            publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_RIGHT_TRANSLATION.get()});
             return;
         }
 
         // This means the Robot's translation was null while outside of Alliance Zone
-        TargetTracking.publish(new Translation2d[] {robotTranslation.get(), new Translation2d(0, 0)});
+        publish(new Translation2d[] {robotTranslation.get(), new Translation2d(0, 0)});
     }
 
-    
+    public static void publish(Translation2d[] arr) {
+        arrayPublisher.set(arr);
+    }
 }

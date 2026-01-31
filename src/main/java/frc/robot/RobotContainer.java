@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.target.TargetTracking;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.candle.Candle;
@@ -34,8 +33,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
-    public final TargetTracking tracker = new TargetTracking();
-    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, tracker);
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer);
     public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
 
