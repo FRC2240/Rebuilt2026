@@ -98,8 +98,6 @@ public class Vision extends SubsystemBase {
     // updates input and logs for each camera
     @Override
     public void periodic() {
-        
-
         for (int i = 0; i < IO_base.length; i++) {
             IO_base[i].update_inputs(input[i]);
 
