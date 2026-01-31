@@ -40,7 +40,6 @@ public class RobotContainer {
     public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
-        RobotPosition.init(drivetrain);
         configureAutoChooser();
         configureBindings();
     }
