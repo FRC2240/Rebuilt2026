@@ -36,10 +36,4 @@ public class DriveConstants {
     public static final double CONTROLLER_OVERRIDE_THRESHOLD = 0.2;
     public static final double CONTROLLER_OVERRIDE_TIMEOUT = 0.3;
     public static final double CONTROLLER_DEADBAND = 0.1;
-
-    // Multiplier for how much robot velocity and slip impacts the rotation to aim at hub
-    public static final double AIM_LATERAL_GAIN = 0.85;
-
-    // Threshold for if the robot is facing the hub
-    public static final Angle SHOOT_ROTATION_THRESHOLD = Degrees.of(4);
 }
