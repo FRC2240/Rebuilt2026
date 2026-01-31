@@ -21,6 +21,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 import edu.wpi.first.wpilibj.Alert;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -98,8 +99,6 @@ public class Vision extends SubsystemBase {
     // updates input and logs for each camera
     @Override
     public void periodic() {
-        
-
         for (int i = 0; i < IO_base.length; i++) {
             IO_base[i].update_inputs(input[i]);
 
