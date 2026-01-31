@@ -23,11 +23,11 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
-    private static final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController joystick = new CommandXboxController(0);
 
     // Drivetrain (and joystick) is static to make the pose getting methods global.
     // This will be fixed later with a singelton utility class.
-    public static final Drivetrain drivetrain = new Drivetrain(joystick);
+    public final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
     public final Climber climber = new Climber();
     public final Intake intake = new Intake();
