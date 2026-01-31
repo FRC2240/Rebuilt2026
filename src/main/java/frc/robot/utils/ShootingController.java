@@ -10,6 +10,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -157,7 +158,10 @@ public class ShootingController extends SubsystemBase {
     @Override
     public void periodic() {
         publishTargetLine();
-
-        // TODO: Put condition states for shooting to SD
+        SmartDashboard.putBoolean("hubShootRequirementsMet", hubShootRequirementsMet());
+        SmartDashboard.putBoolean("isDrivetrainAimedAtPassPoint", isDrivetrainAimedAtPassPoint());
+        SmartDashboard.putBoolean("arePassRequirementsMet", passRequirementsMet());
+        SmartDashboard.putBoolean("isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
+        SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity(getShooterVelocityForPosition()));
     }
 }
