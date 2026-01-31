@@ -287,19 +287,4 @@ public class DriveCommands extends SubsystemBase {
         });
     }
     */
-
-    public Supplier<AngularVelocity> rotateToAimAtHub() {
-        return rotateToRotation(() -> {
-            Translation2d translationToHub = Field.getTranslationToHub();
-            return translationToHub.getAngle();
-        });
-    }
-    
-    // Returns angle to nearest passing point 
-    public Supplier<AngularVelocity> rotateToPass() {
-        return rotateToRotation(() -> {
-            Translation2d translationToPassingPoint = Field.getTranslationToPassPoint();
-            return translationToPassingPoint.getAngle(); 
-        });
-    }
 }

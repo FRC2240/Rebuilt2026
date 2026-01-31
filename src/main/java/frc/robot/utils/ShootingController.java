@@ -98,7 +98,7 @@ public class ShootingController extends SubsystemBase {
                 // Constantly sets the correct velocity for the shooter and heading for the
                 // drivebase
                 shooter.setVelocityCommand(this::getShooterVelocityForPosition),
-                drivetrain.commands.drive(null, drivetrain.commands.rotateToAimAtHub()),
+                drivetrain.commands.drive(null, drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
@@ -116,7 +116,7 @@ public class ShootingController extends SubsystemBase {
         return Commands.parallel(
                 shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
                 // maybe add a translation to move past "hub line"
-                drivetrain.commands.drive(null, drivetrain.commands.rotateToPass()),
+                drivetrain.commands.drive(null, drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
                 shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
