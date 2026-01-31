@@ -17,7 +17,7 @@ public class VisionConstants {
   public static double MAX_UNCERTAINTY = 0.3;
   public static double MAX_Z_ERROR = 0.2; 
 
-  public static int REWIND_TIME = 5; 
+  public static int MAX_REWIND_TIME = 165; 
 
   // Standard deviation coefficents, for 1 meter distance and 1 tag
   // (Adjusted automatically based on distance and # of tags)

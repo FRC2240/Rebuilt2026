@@ -10,11 +10,12 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
+
 import edu.wpi.first.networktables.DoubleArrayPublisher;
 import edu.wpi.first.networktables.DoubleArraySubscriber;
-import edu.wpi.first.networktables.DoubleArrayTopic;
 import edu.wpi.first.networktables.DoubleSubscriber;
 import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
@@ -26,7 +27,7 @@ public class RealLimelightVisionIO implements BaseVisionIO {
 
     // tracks if rewind capture taken
     private boolean captured = false;
-    private boolean been_enabled = false;
+    // private boolean been_enabled = false; for an on disable situation
 
     // supliers store functions so they are more like variables
     private final Supplier<Rotation2d> rotation_supplier;
@@ -36,8 +37,7 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     // same topic receives it
     private final DoubleArrayPublisher orientation_publisher;
 
-    private final DoubleArrayTopic rewind_topic;
-    private final DoubleArrayPublisher rewind_publisher;
+    private final NetworkTableEntry rewind_entry;
 
     private final DoubleSubscriber latency_subscriber;
     private final DoubleSubscriber rot_x_subscriber;
@@ -59,8 +59,7 @@ public class RealLimelightVisionIO implements BaseVisionIO {
         //string keys are already defined by limelight see above
         orientation_publisher = table.getDoubleArrayTopic("robot_orientation_set").publish();
 
-        rewind_topic = table.getDoubleArrayTopic("capture_rewind");
-        rewind_publisher = rewind_topic.publish();
+        rewind_entry = table.getEntry("capture_rewind");
 
         latency_subscriber = table.getDoubleTopic("tl").subscribe(0.0); //these exact strings must be used
         rot_x_subscriber = table.getDoubleTopic("tx").subscribe(0.0);
@@ -75,21 +74,22 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     // overrides default method
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
-
+        /* 
         if (DriverStation.isEnabled()) {
             been_enabled = true;
         }
+        */
 
         //rwnd
-        if (DriverStation.isDisabled() && !captured && been_enabled) {
+        if (DriverStation.isDisabled() && !captured) {
             captured = true;
-            double[] currentArray = rewind_topic.getEntry(new double[] {}).get();
+            double[] currentArray = rewind_entry.getDoubleArray(new double[] {});
             double counter = (currentArray.length > 0) ? currentArray[0] : 0;
 
-            double[] setter = {++counter, VisionConstants.REWIND_TIME};
+            double[] setter = {++counter, VisionConstants.MAX_REWIND_TIME};
 
             // each time counter (index 0) is incremented a capture is taken
-            rewind_publisher.set(setter);
+            rewind_entry.setDoubleArray(setter);
         }
 
         // checks camera connection based of off if there was an update in the last 250 ms
