@@ -7,9 +7,9 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 
 public class IntakeConstants {
-  public static final int INTAKE_ID = 54; // TBD
-  public static final int HOPPER_ID = 55; // TBD
+  public static final int INTAKE_MOTOR_ID = 54; 
+  public static final int PIVOT_MOTOR_ID = 55;
 
   public static final Angle EXTENDED_POSITION = Degrees.of(40); // TBD
-  public static final AngularVelocity INTAKE_SPEED = RotationsPerSecond.of(5); // TBD
+  public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(5); // TBD
 }

@@ -11,8 +11,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Indexer extends SubsystemBase {
-    private TalonFX leftMotor = new TalonFX(ShooterConstants.LAUNCH_LEFT_MOTOR_ID);
-    private TalonFX rightMotor = new TalonFX(ShooterConstants.LAUNCH_RIGHT_MOTOR_ID);
+    private TalonFX leftMotor = new TalonFX(ShooterConstants.LEFT_FEEDER_MOTOR_ID);
+    private TalonFX rightMotor = new TalonFX(ShooterConstants.RIGHT_FEEDER_MOTOR_ID);
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
