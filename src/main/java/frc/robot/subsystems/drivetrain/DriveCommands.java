@@ -23,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.utils.Field;
 
 public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
@@ -220,7 +219,7 @@ public class DriveCommands extends SubsystemBase {
             Translation2d currentTranslation = drivetrain.getTranslation();
             Rotation2d angle = currentTranslation.minus(point).getAngle();
 
-            return new Translation2d(distance.in(Meters), angle);
+            return new Translation2d(distance.in(Meters), angle).plus(point);
         });
     }
 
