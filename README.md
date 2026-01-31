@@ -31,3 +31,6 @@ dual screen - slow mode
 
 ### Candle
 57
+
+### Spindexer
+58
