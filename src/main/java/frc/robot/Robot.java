@@ -4,14 +4,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.Field;
-import frc.robot.utils.logging.LogDataMethods;
-import frc.robot.utils.logging.VisualLogger;
+import frc.robot.utils.ShootingController;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -25,22 +22,12 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        VisualLogger.publishPoint("PassingTargets/Right", Field.PASSING_TARGET_RIGHT_TRANSLATION.get());
-        VisualLogger.publishPoint("PassingTargets/Left", Field.PASSING_TARGET_LEFT_TRANSLATION.get());
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-
-        VisualLogger.publishLine("Lines/Active",
-            RobotContainer.drivetrain.getTranslation(),
-            LogDataMethods.shooterGetTargetLogic());
-
-        VisualLogger.publishPolygon("Testing/Triangle",
-            new Translation2d[] { RobotContainer.drivetrain.getTranslation(), 
-                Field.PASSING_TARGET_RIGHT_TRANSLATION.get(), 
-                Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
+        ShootingController.publishCurrentTarget();
     }
 
     @Override
