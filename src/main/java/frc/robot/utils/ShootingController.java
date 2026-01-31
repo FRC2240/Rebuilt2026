@@ -4,8 +4,6 @@ import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import java.util.function.Supplier;
-
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -15,7 +13,6 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -34,8 +31,8 @@ public class ShootingController extends SubsystemBase {
 
     private boolean isCurrentlyShooting = false;
 
-    public static StructArrayPublisher<Translation2d> arrayPublisher = NetworkTableInstance.getDefault()
-                .getStructArrayTopic(("Target_Line"), Translation2d.struct).publish();
+    public static StructArrayPublisher<Translation2d> targetLinePublisher = NetworkTableInstance.getDefault()
+            .getStructArrayTopic(("Target_Line"), Translation2d.struct).publish();
 
     public ShootingController(Drivetrain drivetrain, Shooter shooter, Spindexer spindexer) {
         this.drivetrain = drivetrain;
@@ -104,7 +101,7 @@ public class ShootingController extends SubsystemBase {
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
-                spindexer.enableCommand().onlyWhile (this::hubShootRequirementsMet),
+                spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
@@ -116,16 +113,14 @@ public class ShootingController extends SubsystemBase {
      */
     private Command shootIntoAllianceZone() {
         return Commands.parallel(
-            shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
-            // maybe add a translation to move past "hub line"
-            drivetrain.commands.drive(null, drivetrain.commands.rotateToPass()),
+                shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
+                // maybe add a translation to move past "hub line"
+                drivetrain.commands.drive(null, drivetrain.commands.rotateToPass()),
 
-            shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
-            spindexer.enableCommand().onlyWhile (this::hubShootRequirementsMet),
+                shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
+                spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
-
-            Commands.run(() -> isCurrentlyShooting = passRequirementsMet())
-        );
+                Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
     }
 
     /**
@@ -141,32 +136,28 @@ public class ShootingController extends SubsystemBase {
         }).finallyDo(() -> isCurrentlyShooting = false);
     }
 
-    @Override
-    public void periodic() {
-        Supplier<Translation2d> robotTranslation = RobotContainer.drivetrain::getTranslation;
-        
-        if (Field.inAllianceZone()) {
-            publish(new Translation2d[] {robotTranslation.get(), Field.HUB_CENTER_TRANSLATION.get()});
-            return;
-        }
-        
-        double dist_right = robotTranslation.get().getDistance(Field.PASSING_TARGET_RIGHT_TRANSLATION.get());
-        double dist_left = robotTranslation.get().getDistance(Field.PASSING_TARGET_LEFT_TRANSLATION.get());
+    /**
+     * Publishes a trajectory to network tables with a line from the robot to it's
+     * potential target
+     */
+    private void publishTargetLine() {
+        Translation2d robotTranslation = drivetrain.getTranslation();
 
-        if (robotTranslation.get() != null) {
-            if (dist_right > dist_left) {
-                publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
-                return;
-            }
-            publish(new Translation2d[] {robotTranslation.get(), Field.PASSING_TARGET_RIGHT_TRANSLATION.get()});
-            return;
-        }
+        // If the robot is in the alliance zone, aim at hub. Otherwise, aim at passing
+        // point
+        Translation2d targetTranslation;
+        if (Field.inAllianceZone())
+            targetTranslation = Field.HUB_CENTER_TRANSLATION.get();
+        else
+            targetTranslation = Field.getTranslationOfPassPoint();
 
-        // This means the Robot's translation was null while outside of Alliance Zone
-        publish(new Translation2d[] {robotTranslation.get(), new Translation2d(0, 0)});
+        targetLinePublisher.set(new Translation2d[] { robotTranslation, targetTranslation });
     }
 
-    public static void publish(Translation2d[] arr) {
-        arrayPublisher.set(arr);
+    @Override
+    public void periodic() {
+        publishTargetLine();
+
+        // TODO: Put condition states for shooting to SD
     }
 }
