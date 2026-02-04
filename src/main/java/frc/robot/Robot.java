@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Inches;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -25,22 +27,28 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        VisualLogger.publishPoint("PassingTargets/Right", Field.PASSING_TARGET_RIGHT_TRANSLATION.get());
-        VisualLogger.publishPoint("PassingTargets/Left", Field.PASSING_TARGET_LEFT_TRANSLATION.get());
+        VisualLogger.publishPoint("PassingTargets/Right", Field.PASSING_TARGET_RIGHT_TRANSLATION.getBlueTranslation());
+        VisualLogger.publishPoint("PassingTargets/Left", Field.PASSING_TARGET_LEFT_TRANSLATION.getBlueTranslation());
+
+        VisualLogger.publishLine("Lines/Left", new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), Field.PASSING_TARGET_LEFT_TRANSLATION.getBlueTranslation());
+        VisualLogger.publishLine("Lines/Right", new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), Field.PASSING_TARGET_RIGHT_TRANSLATION.getBlueTranslation());
+
+
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
+        VisualLogger.publishPoint("Deadzone/Point", new Translation2d(LogDataMethods.isInDeadZone(), LogDataMethods.isInDeadZone()));
 
         VisualLogger.publishLine("Lines/Active",
             RobotContainer.drivetrain.getTranslation(),
             LogDataMethods.shooterGetTargetLogic());
 
-        VisualLogger.publishPolygon("Testing/Triangle",
-            new Translation2d[] { RobotContainer.drivetrain.getTranslation(), 
-                Field.PASSING_TARGET_RIGHT_TRANSLATION.get(), 
-                Field.PASSING_TARGET_LEFT_TRANSLATION.get()});
+        VisualLogger.publishPolygon("Testing/Triangle", //158.85 is midline
+            new Translation2d[] { new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), 
+                new Translation2d(Inches.of(200), Field.FIELD_WIDTH.div(2).minus(Inches.of(50))), 
+                new Translation2d(Inches.of(200), Field.FIELD_WIDTH.div(2).plus(Inches.of(50)))});
     }
 
     @Override

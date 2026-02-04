@@ -97,7 +97,10 @@ public class RobotContainer {
         Register.registerT2d("PassingTargets/Right");
         Register.registerT2d("PassingTargets/Left");
         Register.registerT2dArray("Lines/Active");
+        Register.registerT2dArray("Lines/Left");
+        Register.registerT2dArray("Lines/Right");
         Register.registerT2dArray("Testing/Triangle");
+        Register.registerT2d("Deadzone/Point");
     }
 
     public Command getAutonomousCommand() {
