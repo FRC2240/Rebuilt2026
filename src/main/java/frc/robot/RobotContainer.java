@@ -80,6 +80,9 @@ public class RobotContainer {
 
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
+
+        // Reverse intake
+        joystick.povDown().whileTrue(intake.reverseIntakeCommand());
     }
 
     private void configureDefaults() {
