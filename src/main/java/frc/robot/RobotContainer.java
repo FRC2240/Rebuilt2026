@@ -47,6 +47,12 @@ public class RobotContainer {
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
     }
 
+    private void addNamedCommands() {
+
+        // Shoot
+        NamedCommands.registerCommand("shoot", shootingController.shoot());
+    }
+
     private void configureAutoChooser() {
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -90,12 +96,6 @@ public class RobotContainer {
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
-    }
-
-    private void addNamedCommands() {
-
-        // Shoot
-        NamedCommands.registerCommand("shoot", shootingController.shoot());
     }
 
     public Command getAutonomousCommand() {
