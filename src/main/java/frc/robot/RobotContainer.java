@@ -59,10 +59,7 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Testing stuff. Please do not remove
-        // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
-        // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
-
+        
         // Climber Coast on Disable
         RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
