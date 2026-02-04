@@ -5,7 +5,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +43,8 @@ public class RobotContainer {
         configureAutoChooser();
         configureBindings();
         configureDefaults();
+        addNamedCommands();
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
     }
 
     private void configureAutoChooser() {
@@ -51,26 +53,23 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Testing suff. Please do not remove
+        // Testing stuff. Please do not remove
         // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
-        // climber coast on disable
+        // Climber Coast on Disable
         RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
         // Extend Climber
         joystick.povUp().toggleOnTrue(climber.extendCommand());
 
-        // Deploy Intake
-        joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
-
         // Enable Intake
         joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
 
-        // Toggle slow mode
+        // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
 
-        // Zero the gyro
+        // Zero the Gyro
         joystick.start().onTrue(drivetrain.rezeroGyro());
 
         // Shoot
@@ -79,19 +78,26 @@ public class RobotContainer {
 
     private void configureDefaults() {
 
-        // spindexer disable
+        // Spindexer Disable
         spindexer.setDefaultCommand(spindexer.disableCommand());
 
-         // climber coast
+        // Climber Coast
         climber.setDefaultCommand(climber.coastCommand());
 
-        // intake enabled
-        intake.setDefaultCommand(intake.disableIntakeCommand());
+        // Intake Enabled
+        intake.setDefaultCommand(intake.enableIntakeCommand());
 
-        // drive with joysticks
+        // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
     }
+
+    private void addNamedCommands() {
+
+        // Shoot
+        NamedCommands.registerCommand("shoot", shootingController.shoot());
+    }
+
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
