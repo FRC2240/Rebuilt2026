@@ -2,6 +2,7 @@ package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -10,10 +11,12 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -22,6 +25,9 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 public class ShootingController extends SubsystemBase {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1);
     private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(5);
+
+    private static final Distance MIN_DISTANCE_FROM_HUB = Meters.of(1.5);
+    private static final Distance MAX_DISTANCE_FROM_HUB = Meters.of(5);
 
     private final Drivetrain drivetrain;
     private final Shooter shooter;
@@ -65,6 +71,24 @@ public class ShootingController extends SubsystemBase {
                 .getDegrees()) < DRIVETRAIN_HEADING_THRESHOLD.in(Degrees);
     }
 
+    private boolean isValidDistanceFromHub() {
+        Distance dist = Field.getDistanceToHub();
+        return dist.compareTo(MIN_DISTANCE_FROM_HUB) > 0 && dist.compareTo(MAX_DISTANCE_FROM_HUB) < 0;
+    }
+
+    /**
+     * Drives to a point that is in the valid distance ring.
+     * Targets the middle of the valid distance ring as to reach a valid pose faster
+     */
+    private DriveCommands.TranslationalVelocity driveToValidDistanceFromHub() {
+        if (isValidDistanceFromHub())
+            return DriveCommands.TranslationalVelocity.none();
+
+        Distance middle = MAX_DISTANCE_FROM_HUB.plus(MIN_DISTANCE_FROM_HUB).div(2);
+        return drivetrain.commands
+                .driveToDistanceFromPoint(Field.HUB_CENTER_TRANSLATION::get, () -> middle).get();
+    }
+
     private boolean isShooterAtVelocity(AngularVelocity velocity) {
         return Math.abs(shooter.getVelocity().in(RotationsPerSecond)
                 - velocity.in(RotationsPerSecond)) < SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond);
@@ -72,6 +96,7 @@ public class ShootingController extends SubsystemBase {
 
     public boolean hubShootRequirementsMet() {
         return isDrivetrainAimedAtHub() &&
+                isValidDistanceFromHub() &&
                 isShooterAtVelocity(getShooterVelocityForPosition()) &&
                 Field.isHubActive() &&
                 Field.inAllianceZone();
@@ -98,14 +123,17 @@ public class ShootingController extends SubsystemBase {
                 // Constantly sets the correct velocity for the shooter and heading for the
                 // drivebase
                 shooter.setVelocityCommand(this::getShooterVelocityForPosition),
-                drivetrain.commands.drive(null, drivetrain.commands.rotateToAimAtHub()),
+
+                drivetrain.commands.drive(this::driveToValidDistanceFromHub,
+                        drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
-                Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
+                Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
+                .until(() -> !Field.inAllianceZone());
     }
 
     /**
@@ -116,7 +144,8 @@ public class ShootingController extends SubsystemBase {
         return Commands.parallel(
                 shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
                 // maybe add a translation to move past "hub line"
-                drivetrain.commands.drive(null, drivetrain.commands.rotateToPass()),
+                drivetrain.commands.drive(null,
+                        drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
                 shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
@@ -129,12 +158,11 @@ public class ShootingController extends SubsystemBase {
      * robot's position on the field
      */
     public Command shoot() {
-        return Commands.deferredProxy(() -> {
-            if (Field.inAllianceZone())
-                return shootIntoHub();
-            else
-                return shootIntoAllianceZone();
-        }).finallyDo(() -> isCurrentlyShooting = false);
+        return Commands.either(
+                shootIntoHub(),
+                shootIntoAllianceZone(),
+                Field::inAllianceZone)
+                .finallyDo(() -> isCurrentlyShooting = false);
     }
 
     /**

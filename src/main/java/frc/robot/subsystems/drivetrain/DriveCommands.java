@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -22,7 +23,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.utils.Field;
 
 public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
@@ -209,6 +209,21 @@ public class DriveCommands extends SubsystemBase {
     }
 
     /**
+     * Drives the robot to the nearest point at a distance from a point
+     */
+    public Supplier<TranslationalVelocity> driveToDistanceFromPoint(Supplier<Translation2d> pointSupplier, Supplier<Distance> distanceSupplier) {
+        return driveToPoint(() -> {
+            Translation2d point = pointSupplier.get();
+            Distance distance = distanceSupplier.get();
+
+            Translation2d currentTranslation = drivetrain.getTranslation();
+            Rotation2d angle = currentTranslation.minus(point).getAngle();
+
+            return new Translation2d(distance.in(Meters), angle).plus(point);
+        });
+    }
+
+    /**
      * Calculates angular velocity to rotate to the rotation specified by the
      * supplier
      */
@@ -240,6 +255,7 @@ public class DriveCommands extends SubsystemBase {
         });
     }
 
+    /*
     public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> shooterExitGroundSpeedSupplier) {
         return rotateToRotation(() -> {
             Translation2d robotTranslation = drivetrain.getTranslation();
@@ -269,19 +285,5 @@ public class DriveCommands extends SubsystemBase {
             return virtualTarget.getAngle();
         });
     }
-
-    public Supplier<AngularVelocity> rotateToAimAtHub() {
-        return rotateToRotation(() -> {
-            Translation2d translationToHub = Field.getTranslationToHub();
-            return translationToHub.getAngle();
-        });
-    }
-    
-    // Returns angle to nearest passing point 
-    public Supplier<AngularVelocity> rotateToPass() {
-        return rotateToRotation(() -> {
-            Translation2d translationToPassingPoint = Field.getTranslationToPassPoint();
-            return translationToPassingPoint.getAngle(); 
-        });
-    }
+    */
 }
