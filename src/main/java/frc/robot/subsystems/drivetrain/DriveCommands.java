@@ -108,7 +108,7 @@ public class DriveCommands extends SubsystemBase {
 
     /**
      * Drives the robot with the specified translation and rotation suppliers.
-     * Note that the parameters can be null for no control.
+     * Note that the parameters can be null for no control or no limit.
      */
     public Command drive(Supplier<TranslationalVelocity> translationSupplier,
             Supplier<AngularVelocity> rotationSupplier, LinearVelocity maxLinearVelocity,
@@ -119,12 +119,14 @@ public class DriveCommands extends SubsystemBase {
         return drive(() -> {
             if (translationSupplier == null)
                 return noTranslation;
+            if (maxLinearVelocity == null)
+                return translationSupplier.get();
 
             TranslationalVelocity translation = translationSupplier.get();
             double requestedVelocity = Math.sqrt(
                     Math.pow(translation.x.in(MetersPerSecond), 2) + Math.pow(translation.y.in(MetersPerSecond), 2));
             if (requestedVelocity > maxLinearVelocity.in(MetersPerSecond)) {
-                double scaleFactor = requestedVelocity / maxLinearVelocity.in(MetersPerSecond);
+                double scaleFactor =  maxLinearVelocity.in(MetersPerSecond) / requestedVelocity;
                 translation.x = translation.x.times(scaleFactor);
                 translation.y = translation.y.times(scaleFactor);
             }
@@ -133,7 +135,9 @@ public class DriveCommands extends SubsystemBase {
         }, () -> {
             if (rotationSupplier == null)
                 return noRotation;
-            
+            if (maxAngularVelocity == null)
+                return rotationSupplier.get();
+
             double rps = rotationSupplier.get().in(RotationsPerSecond);
             return RotationsPerSecond.of(
                     Math.min(Math.max(rps, -maxAngularVelocity.in(RotationsPerSecond)),
