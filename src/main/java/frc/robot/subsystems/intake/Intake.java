@@ -33,7 +33,9 @@ public class Intake extends SubsystemBase {
     }
 
     public Command enableIntakeCommand() {
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY);
+        // Runs after setting control to prevent the default (enable) commmand from
+        // being called until desired
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {}));
     }
 
     public Command disableIntakeCommand() {
@@ -41,6 +43,6 @@ public class Intake extends SubsystemBase {
     }
 
     public Command reverseIntakeCommand() {
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus());
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {}));
     }
 }

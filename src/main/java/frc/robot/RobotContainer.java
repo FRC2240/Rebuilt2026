@@ -42,6 +42,7 @@ public class RobotContainer {
     public RobotContainer() {
         configureAutoChooser();
         configureBindings();
+        configureDefaults();
     }
 
     private void configureAutoChooser() {
@@ -54,19 +55,6 @@ public class RobotContainer {
         // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
         // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
 
-
-        // Enable spindexer
-        spindexer.setDefaultCommand(spindexer.enableCommand());
-
-        // Drive with joysticks
-        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
-
-        // climber coast by default
-        climber.setDefaultCommand(climber.coastCommand());
-
-        // intake enabled by default
-        intake.setDefaultCommand(intake.enableIntakeCommand());
-
         // climber coast on disable
         RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
@@ -76,8 +64,8 @@ public class RobotContainer {
         // Deploy Intake
         joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
 
-        // disable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
+        // Enable Intake
+        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
 
         // Toggle slow mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
@@ -89,6 +77,21 @@ public class RobotContainer {
         joystick.rightTrigger().whileTrue(shootingController.shoot());
     }
 
+    private void configureDefaults() {
+
+        // spindexer disable
+        spindexer.setDefaultCommand(spindexer.disableCommand());
+
+         // climber coast
+        climber.setDefaultCommand(climber.coastCommand());
+
+        // intake enabled
+        intake.setDefaultCommand(intake.disableIntakeCommand());
+
+        // drive with joysticks
+        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+
+    }
     public Command getAutonomousCommand() {
         return autoChooser.getSelected();
     }
