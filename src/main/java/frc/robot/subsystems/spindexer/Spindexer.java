@@ -19,7 +19,6 @@ public class Spindexer extends SubsystemBase {
         config.Slot0.kP = 0;
         motor.getConfigurator().apply(config);
 
-        setDefaultCommand(disableCommand());
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
@@ -37,7 +36,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command reverseCommand() {
-        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus());
+        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {}));
     }
 
 }

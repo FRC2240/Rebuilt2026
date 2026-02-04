@@ -25,12 +25,14 @@ public class Climber extends SubsystemBase {
 
         motor.getConfigurator().apply(conf);
     }
-
+ 
     public Command extendCommand() {
-        return this.run(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT)));
+        // Runs after setting control to prevent the default (coast) commmand from
+        // being called until desired
+        return this.runOnce(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT))).andThen(run(() -> {}));
     }
 
     public Command coastCommand() {
-        return this.run(() -> motor.setControl(coast));
+        return this.runOnce(() -> motor.setControl(coast));
     }
 }
