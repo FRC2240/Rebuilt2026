@@ -124,8 +124,11 @@ public class ShootingController extends SubsystemBase {
                 // drivebase
                 shooter.setVelocityCommand(this::getShooterVelocityForPosition),
 
-                drivetrain.commands.drive(this::driveToValidDistanceFromHub,
-                        drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
+                // Aims and drives to a valid distance. If both are done, brakes the drivebase
+                new DynamicEither(drivetrain.commands.brake(),
+                        drivetrain.commands.drive(this::driveToValidDistanceFromHub,
+                                drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
+                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub()),
 
                 // Shoots when all of the conditions are met.
                 shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
