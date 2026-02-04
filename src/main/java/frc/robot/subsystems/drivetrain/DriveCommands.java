@@ -29,6 +29,7 @@ public class DriveCommands extends SubsystemBase {
     private CommandXboxController joystick;
 
     private final SwerveRequest.ApplyFieldSpeeds driveChassisSpeeds = new SwerveRequest.ApplyFieldSpeeds();
+    SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveLimiter limiter;
 
     private boolean slowModeEnabled = false;
@@ -84,6 +85,10 @@ public class DriveCommands extends SubsystemBase {
         if (Math.abs(value) > deadband)
             return value;
         return 0;
+    }
+
+    public Command brake() {
+        return drivetrain.applyRequest(() -> brake);
     }
 
     /**
