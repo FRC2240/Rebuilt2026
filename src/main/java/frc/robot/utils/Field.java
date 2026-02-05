@@ -38,13 +38,23 @@ public class Field {
     public static final AllianceRelativeTranslation2d PASSING_TARGET_RIGHT_TRANSLATION = AllianceRelativeTranslation2d
             .fromBlueTranslation(new Translation2d(
                     Inches.of(90.78),
-                    Inches.of(82.92)));
+                    Inches.of(102.92)));
 
-    // The Y-values are (FEILD_WIDTH / 2) +- 75.93
+    // The Y-values are (FEILD_WIDTH / 2) +- 55.93
     public static final AllianceRelativeTranslation2d PASSING_TARGET_LEFT_TRANSLATION = AllianceRelativeTranslation2d
             .fromBlueTranslation(new Translation2d(
                     Inches.of(90.78),
-                    Inches.of(234.78)));
+                    Inches.of(214.78)));
+
+    public static final AllianceRelativeRectangle2d PASSING_DEADZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(50))), 
+                        new Translation2d(
+                                Inches.of(200), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(50)))));
 
     public static boolean isHubActive() {
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
@@ -101,6 +111,13 @@ public class Field {
         Rectangle2d allianceZone = ALLIANCE_ZONE.get();
 
         return allianceZone.contains(translation);
+    }
+
+    public static boolean isInPassingDeadzone() {
+        Translation2d translation = RobotPosition.getTranslation();
+        Rectangle2d deadzone = PASSING_DEADZONE.get();
+
+        return deadzone.contains(translation);
     }
 
     /**
