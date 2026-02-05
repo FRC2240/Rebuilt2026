@@ -9,28 +9,34 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-    private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.LEFT_FEEDER_MOTOR_ID);
-    private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.RIGHT_FEEDER_MOTOR_ID);
+    private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.LEFT_FLYWHEEL_MOTOR_ID);
+    private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.RIGHT_FLYWHEEL_MOTOR_ID);
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
     // Declared here to keep it tied to the shooter.
-    public final Indexer indexer = new Indexer();
+    public final Feeder feeder = new Feeder();
 
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 1;
+        conf.Slot0.kP = 5;
         conf.Slot0.kI = 0;
         conf.Slot0.kD = 0;
 
         leftFlywheelMotor.getConfigurator().apply(conf);
         rightFlywheelMotor.getConfigurator().apply(conf);
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Shooter Current Velocity", getVelocity().in(RotationsPerSecond));
     }
 
     public void setVelocity(AngularVelocity velocity) {

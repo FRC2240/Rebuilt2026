@@ -131,7 +131,7 @@ public class ShootingController extends SubsystemBase {
                         () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub()),
 
                 // Shoots when all of the conditions are met.
-                shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+                shooter.feeder.enableCommand().onlyWhile(this::hubShootRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
@@ -150,7 +150,7 @@ public class ShootingController extends SubsystemBase {
                 drivetrain.commands.drive(null,
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
-                shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
+                shooter.feeder.enableCommand().onlyWhile(this::passRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));

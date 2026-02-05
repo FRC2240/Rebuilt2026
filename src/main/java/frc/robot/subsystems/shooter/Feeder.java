@@ -10,28 +10,27 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Indexer extends SubsystemBase {
-    private TalonFX leftMotor = new TalonFX(ShooterConstants.LEFT_FEEDER_MOTOR_ID);
-    private TalonFX rightMotor = new TalonFX(ShooterConstants.RIGHT_FEEDER_MOTOR_ID);
+public class Feeder extends SubsystemBase {
+    private TalonFX motor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
-    public Indexer() {
+    public Feeder() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
         conf.Slot0.kP = 1;
         conf.Slot0.kI = 0;
         conf.Slot0.kD = 0;
 
-        leftMotor.getConfigurator().apply(conf);
-        rightMotor.getConfigurator().apply(conf);
+        motor.getConfigurator().apply(conf);
+
         
         setDefaultCommand(disableCommand());
     }
 
     public void setVelocity(AngularVelocity velocity) {
-        leftMotor.setControl(req.withVelocity(velocity));
-        rightMotor.setControl(req.withVelocity(velocity));
+        motor.setControl(req.withVelocity(velocity));
+
     }
 
     /**
