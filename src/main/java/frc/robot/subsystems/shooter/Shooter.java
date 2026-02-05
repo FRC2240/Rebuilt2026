@@ -36,12 +36,13 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter Current Velocity", getVelocity().in(RotationsPerSecond));
+        SmartDashboard.putNumber("Left Velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Right Velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {
         leftFlywheelMotor.setControl(req.withVelocity(velocity));
-        rightFlywheelMotor.setControl(req.withVelocity(velocity));
+        rightFlywheelMotor.setControl(req.withVelocity(velocity.unaryMinus()));
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
@@ -57,7 +58,7 @@ public class Shooter extends SubsystemBase {
      */
     public AngularVelocity getVelocity() {
         double leftVelocity = leftFlywheelMotor.getVelocity().getValueAsDouble();
-        double rightVelocity = rightFlywheelMotor.getVelocity().getValueAsDouble();
+        double rightVelocity = -rightFlywheelMotor.getVelocity().getValueAsDouble();
 
         return RotationsPerSecond.of(Math.max(leftVelocity, rightVelocity));
     }
