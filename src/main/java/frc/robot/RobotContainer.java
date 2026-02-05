@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -45,6 +47,7 @@ public class RobotContainer {
         configureDefaults();
         addNamedCommands();
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
+        SmartDashboard.putNumber("Shooter Wanted RPS", 0);
     }
 
     private void addNamedCommands() {
@@ -70,7 +73,7 @@ public class RobotContainer {
         joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
@@ -83,6 +86,8 @@ public class RobotContainer {
 
         // Reverse intake
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
+
+        joystick.b().whileTrue(shooter.feeder.enableCommand());
     }
 
     private void configureDefaults() {
@@ -99,6 +104,7 @@ public class RobotContainer {
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
+        shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
     }
 
     public Command getAutonomousCommand() {

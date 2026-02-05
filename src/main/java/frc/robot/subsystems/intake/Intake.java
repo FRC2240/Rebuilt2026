@@ -39,7 +39,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command disableIntakeCommand() {
-        return setIntakeVelocity(RotationsPerSecond.of(0));
+        return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {}));
     }
 
     public Command reverseIntakeCommand() {
