@@ -4,7 +4,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -17,9 +16,6 @@ public class Shooter extends SubsystemBase {
 
     private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.LEFT_FEEDER_MOTOR_ID);
     private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.RIGHT_FEEDER_MOTOR_ID);
-
-    private StatusSignal<AngularVelocity> leftMotorVelocity = leftFlywheelMotor.getVelocity();
-    private StatusSignal<AngularVelocity> rightMotorVelocity = rightFlywheelMotor.getVelocity();
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
@@ -54,8 +50,8 @@ public class Shooter extends SubsystemBase {
      * Gets the highest velocity of the two motors, as to not fail if a motor fails
      */
     public AngularVelocity getVelocity() {
-        double leftVelocity = leftMotorVelocity.getValueAsDouble();
-        double rightVelocity = rightMotorVelocity.getValueAsDouble();
+        double leftVelocity = leftFlywheelMotor.getVelocity().getValueAsDouble();
+        double rightVelocity = rightFlywheelMotor.getVelocity().getValueAsDouble();
 
         return RotationsPerSecond.of(Math.max(leftVelocity, rightVelocity));
     }
