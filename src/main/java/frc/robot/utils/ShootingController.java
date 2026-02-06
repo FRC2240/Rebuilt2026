@@ -150,7 +150,7 @@ public class ShootingController extends SubsystemBase {
                 drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(),
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
-                shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
+                shooter.feeder.enableCommand().onlyWhile(this::passRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::passRequirementsMet),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
