@@ -109,6 +109,7 @@ public class ShootingController extends SubsystemBase {
 
     public boolean passRequirementsMet() {
         return isDrivetrainAimedAtPassPoint() &&
+                !Field.isInPassingDeadzone() &&
                 isShooterAtVelocity(ShooterConstants.PASSING_OUTPUT) &&
                 !Field.inAllianceZone();
     }
@@ -146,12 +147,11 @@ public class ShootingController extends SubsystemBase {
     private Command shootIntoAllianceZone() {
         return Commands.parallel(
                 shooter.setVelocityCommand(ShooterConstants.PASSING_OUTPUT),
-                // maybe add a translation to move past "hub line"
-                drivetrain.commands.drive(null,
+                drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(),
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
-                shooter.feeder.enableCommand().onlyWhile(this::passRequirementsMet),
-                spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+                shooter.indexer.enableCommand().onlyWhile(this::passRequirementsMet),
+                spindexer.enableCommand().onlyWhile(this::passRequirementsMet),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
     }
