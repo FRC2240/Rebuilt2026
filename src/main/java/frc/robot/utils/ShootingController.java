@@ -132,7 +132,7 @@ public class ShootingController extends SubsystemBase {
                         () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub()),
 
                 // Shoots when all of the conditions are met.
-                shooter.indexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+                shooter.feeder.enableCommand().onlyWhile(this::hubShootRequirementsMet),
                 spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
