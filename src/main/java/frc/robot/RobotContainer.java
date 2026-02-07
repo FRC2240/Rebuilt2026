@@ -42,10 +42,11 @@ public class RobotContainer {
     public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
-        configureAutoChooser();
-        configureBindings();
-        configureDefaults();
         addNamedCommands();
+        configureAutoChooser();
+        configureDefaults();
+        configureBindings();
+        
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
         SmartDashboard.putNumber("Shooter Wanted RPS", 0);
     }
