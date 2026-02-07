@@ -88,7 +88,7 @@ public class Vision extends SubsystemBase {
         for (int i = 0; i < IO_base.length; i++) {
             fps[i] = new Alert(
                 "camera " + Integer.toString(i) + " has low fps", AlertType.kWarning);
-        }
+        }      
     }
 
     // returns X angle to nearest tag, method
@@ -103,7 +103,7 @@ public class Vision extends SubsystemBase {
             IO_base[i].update_inputs(input[i]);
 
             //sends alert if condition met
-            overHeat[i].set(input[i].temp > 70); //temp in celcius
+            overHeat[i].set(input[i].temp > 85); //temp in celcius
             disconnect[i].set(!input[i].cam_connected);
             fps[i].set(input[i].fps < 30); //needs to be determined
 
