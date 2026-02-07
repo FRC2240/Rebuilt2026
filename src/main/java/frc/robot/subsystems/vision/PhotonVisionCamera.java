@@ -16,12 +16,12 @@ import org.photonvision.PhotonCamera;
 import edu.wpi.first.math.geometry.Transform3d;
 import frc.robot.utils.Field;
 
-public class PhotonVisionIO implements BaseVisionIO{
+public class PhotonVisionCamera implements CameraInterface{
     protected final PhotonCamera camera;
     protected final Transform3d camera_pos;
 
     //constructor method for camera objects
-    public PhotonVisionIO(String name, Transform3d camera_pos){
+    public PhotonVisionCamera(String name, Transform3d camera_pos){
         camera = new PhotonCamera(name);
         this.camera_pos = camera_pos;
     }
