@@ -36,8 +36,8 @@ public class Vision extends SubsystemBase {
                     new LimelightCamera("limelight-mounted", drivetrain::getHeading));
         } else {
             return new Vision(drivetrain::addVisionMeasurement,
-                    new SimPhoton("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
-                    new SimPhoton("camera_1", drivetrain::getPose, VisionConstants.CAMERA_1_POS));
+                    new SimPhotonCamera("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
+                    new SimPhotonCamera("camera_1", drivetrain::getPose, VisionConstants.CAMERA_1_POS));
         }
     }
 

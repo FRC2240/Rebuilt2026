@@ -10,7 +10,7 @@ import frc.robot.utils.Field;
 
 import java.util.function.Supplier;
 
-public class SimPhoton extends PhotonVisionCamera {
+public class SimPhotonCamera extends PhotonVisionCamera {
 
     private static VisionSystemSim vision_sim;
     
@@ -19,7 +19,7 @@ public class SimPhoton extends PhotonVisionCamera {
     private final Supplier<Pose2d> pose_supplier;
 
 
-    public SimPhoton(String name, Supplier<Pose2d> pose_supplier, Transform3d camera_pos){
+    public SimPhotonCamera(String name, Supplier<Pose2d> pose_supplier, Transform3d camera_pos){
         super(name, camera_pos);
         this.pose_supplier = pose_supplier;
 
