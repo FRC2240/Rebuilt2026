@@ -26,11 +26,6 @@ public class Climber extends SubsystemBase {
         motor.getConfigurator().apply(conf);
     }
 
-    @Override
-    public void periodic() {
-        SmartDashboard.putNumber("pivotMotor Velocity", motor.getVelocity().getValueAsDouble());
-    }
-
     public Command extendCommand() {
         // Runs after setting control to prevent the default (coast) commmand from
         // being called until desired
