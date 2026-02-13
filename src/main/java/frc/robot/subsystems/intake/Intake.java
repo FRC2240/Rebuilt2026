@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -24,6 +25,12 @@ public class Intake extends SubsystemBase {
         intakeMotor.getConfigurator().apply(conf);
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("pivotMotor Velocity", pivotMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("intakeMotor Velocity", pivotMotor.getVelocity().getValueAsDouble());
+    }
+
     public Command setIntakeVelocity(AngularVelocity velocity) {
         return runOnce(() -> intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity)));
     }
@@ -35,14 +42,17 @@ public class Intake extends SubsystemBase {
     public Command enableIntakeCommand() {
         // Runs after setting control to prevent the default (enable) commmand from
         // being called until desired
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {}));
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
+        }));
     }
 
     public Command disableIntakeCommand() {
-        return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {}));
+        return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {
+        }));
     }
 
     public Command reverseIntakeCommand() {
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {}));
+        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
+        }));
     }
 }

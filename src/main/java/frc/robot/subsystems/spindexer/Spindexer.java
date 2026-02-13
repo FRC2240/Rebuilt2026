@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -21,6 +22,11 @@ public class Spindexer extends SubsystemBase {
 
     }
 
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("pivotMotor Velocity", motor.getVelocity().getValueAsDouble());
+    }
+
     public Command setVelocityCommand(AngularVelocity velocity) {
         return runOnce(() -> motor.setControl(new VelocityTorqueCurrentFOC(velocity)));
     }
@@ -28,7 +34,8 @@ public class Spindexer extends SubsystemBase {
     public Command enableCommand() {
         // Runs after setting control to prevent the default (disable) commmand from
         // being called until desired
-        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY).andThen(run(() -> {}));
+        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY).andThen(run(() -> {
+        }));
     }
 
     public Command disableCommand() {
@@ -36,7 +43,8 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command reverseCommand() {
-        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {}));
+        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {
+        }));
     }
 
 }
