@@ -1,17 +1,23 @@
 package frc.robot.utils;
 
 import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.InchesPerSecond;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
 import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -25,6 +31,9 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 public class ShootingController extends SubsystemBase {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1);
     private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(5);
+
+    private static final LinearVelocity DRIVETRAIN_STILL_LINEAR_TOLERANCE = InchesPerSecond.of(3);
+    private static final AngularVelocity DRIVETRAIN_STILL_ANGULAR_TOLERANCE = DegreesPerSecond.of(10);
 
     private static final Distance MIN_DISTANCE_FROM_HUB = Meters.of(1.5);
     private static final Distance MAX_DISTANCE_FROM_HUB = Meters.of(5);
@@ -98,8 +107,21 @@ public class ShootingController extends SubsystemBase {
         return isDrivetrainAimedAtHub() &&
                 isValidDistanceFromHub() &&
                 isShooterAtVelocity(getShooterVelocityForPosition()) &&
-                //Field.isHubActive() &&
+                // Field.isHubActive() &&
                 Field.inAllianceZone();
+    }
+
+    /**
+     * Returns true if the robot is reasonably still
+     */
+    public boolean isRobotStill() {
+        ChassisSpeeds speeds = drivetrain.getState().Speeds;
+        LinearVelocity linearVelocity = MetersPerSecond
+                .of(Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2)));
+
+        return linearVelocity.isNear(MetersPerSecond.of(0), DRIVETRAIN_STILL_LINEAR_TOLERANCE) &&
+                RadiansPerSecond.of(speeds.omegaRadiansPerSecond).isNear(DegreesPerSecond.of(0),
+                        DRIVETRAIN_STILL_ANGULAR_TOLERANCE);
     }
 
     private boolean isDrivetrainAimedAtPassPoint() {
@@ -129,11 +151,10 @@ public class ShootingController extends SubsystemBase {
                 new DynamicEither(drivetrain.commands.brake(),
                         drivetrain.commands.drive(this::driveToValidDistanceFromHub,
                                 drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
-                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub()),
+                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
 
                 // Shoots when all of the conditions are met.
-                shooter.feeder.enableCommand().onlyWhile(this::hubShootRequirementsMet),
-                spindexer.enableCommand().onlyWhile(this::hubShootRequirementsMet),
+                feed().onlyWhile(this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
@@ -150,10 +171,18 @@ public class ShootingController extends SubsystemBase {
                 drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(),
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
-                shooter.feeder.enableCommand().onlyWhile(this::passRequirementsMet),
-                spindexer.enableCommand().onlyWhile(this::passRequirementsMet),
+                feed().onlyWhile(this::passRequirementsMet),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
+    }
+
+    /**
+     * Command to enable the spindexer and the feeder at once
+     */
+    public Command feed() {
+        return Commands.parallel(
+                shooter.feeder.enableCommand(),
+                spindexer.enableCommand());
     }
 
     /**
@@ -189,10 +218,10 @@ public class ShootingController extends SubsystemBase {
     @Override
     public void periodic() {
         publishTargetLine();
-        SmartDashboard.putBoolean("hubShootRequirementsMet", hubShootRequirementsMet());
-        SmartDashboard.putBoolean("isDrivetrainAimedAtPassPoint", isDrivetrainAimedAtPassPoint());
-        SmartDashboard.putBoolean("arePassRequirementsMet", passRequirementsMet());
-        SmartDashboard.putBoolean("isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
-        SmartDashboard.putBoolean("isShooterAtVelocity", isShooterAtVelocity(getShooterVelocityForPosition()));
+        SmartDashboard.putBoolean("shooting/hubShootRequirementsMet", hubShootRequirementsMet());
+        SmartDashboard.putBoolean("shooting/isDrivetrainAimedAtPassPoint", isDrivetrainAimedAtPassPoint());
+        SmartDashboard.putBoolean("shooting/arePassRequirementsMet", passRequirementsMet());
+        SmartDashboard.putBoolean("shooting/isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
+        SmartDashboard.putBoolean("shooting/isShooterAtVelocity", isShooterAtVelocity(getShooterVelocityForPosition()));
     }
 }
