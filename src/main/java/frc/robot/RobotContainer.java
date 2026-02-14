@@ -19,7 +19,6 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.candle.Candle;
-import frc.robot.subsystems.climber.Climber;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -31,7 +30,7 @@ public class RobotContainer {
     // This will be fixed later with a singelton utility class.
     public final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
-    public final Climber climber = new Climber();
+    // public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
@@ -50,7 +49,7 @@ public class RobotContainer {
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
         SmartDashboard.putNumber("Shooter Wanted RPS", 0);
         SmartDashboard.putNumber("Spindexer Wanted RPS", 0);
-        SmartDashboard.putNumber("Intake Wanted Velocity", 0);
+        SmartDashboard.putNumber("Intake Wanted RPS", 0);
         SmartDashboard.putNumber("Feeder Wanted RPS", 0);
     }
 
@@ -68,10 +67,10 @@ public class RobotContainer {
     private void configureBindings() {
         
         // Climber Coast on Disable
-        RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
+        //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
         // Extend Climber
-        joystick.povUp().toggleOnTrue(climber.extendCommand());
+        //joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Enable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
@@ -94,13 +93,13 @@ public class RobotContainer {
     private void configureDefaults() {
 
         // Spindexer Disable
-        spindexer.setDefaultCommand(spindexer.disableCommand());
+        //spindexer.setDefaultCommand(spindexer.disableCommand());
 
         // Climber Coast
-        climber.setDefaultCommand(climber.coastCommand());
+        // climber.setDefaultCommand(climber.coastCommand());
 
         // Intake Enabled
-        intake.setDefaultCommand(intake.enableIntakeCommand());
+        //intake.setDefaultCommand(intake.enableIntakeCommand());
 
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());

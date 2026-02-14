@@ -31,9 +31,8 @@ public class Vision extends SubsystemBase {
     public static Vision createVision(Drivetrain drivetrain) {
         if (RobotBase.isReal()) {
             return new Vision(drivetrain::addVisionMeasurement,
-                    new PhotonVisionCamera("photoncam-left", CAMERA_0_POS),
-                    new PhotonVisionCamera("photoncam-right", CAMERA_1_POS),
-                    new LimelightCamera("limelight-mounted", drivetrain::getHeading));
+                    new LimelightCamera("limelight-left", drivetrain::getHeading),
+                    new LimelightCamera("limelight-right", drivetrain::getHeading));
         } else {
             return new Vision(drivetrain::addVisionMeasurement,
                     new SimPhotonCamera("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
