@@ -101,6 +101,9 @@ public class RobotContainer {
         // Intake Enabled
         //intake.setDefaultCommand(intake.enableIntakeCommand());
 
+        //Feeder Disable
+        //shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
+
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
