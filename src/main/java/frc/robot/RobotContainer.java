@@ -49,6 +49,9 @@ public class RobotContainer {
         
         RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
         SmartDashboard.putNumber("Shooter Wanted RPS", 0);
+        SmartDashboard.putNumber("Spindexer Wanted RPS", 0);
+        SmartDashboard.putNumber("Intake Wanted Velocity", 0);
+        SmartDashboard.putNumber("Feeder Wanted RPS", 0);
     }
 
     private void addNamedCommands() {
@@ -103,6 +106,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
+        spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
+        intake.setDefaultCommand(intake.setIntakeVelocity(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Intake Wanted RPS", 0))));
+        shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
     }
 
     public Command getAutonomousCommand() {

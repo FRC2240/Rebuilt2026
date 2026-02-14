@@ -2,6 +2,8 @@ package frc.robot.subsystems.spindexer;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -13,6 +15,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public class Spindexer extends SubsystemBase {
 
+    private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
     private TalonFX motor = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
 
     public Spindexer() {
@@ -22,6 +25,10 @@ public class Spindexer extends SubsystemBase {
 
     }
 
+    public void setVelocity(AngularVelocity velocity) {
+        motor.setControl(request.withVelocity(velocity));
+    }
+  
     @Override
     public void periodic() {
         SmartDashboard.putNumber("spindexer Velocity", motor.getVelocity().getValueAsDouble());
@@ -29,6 +36,10 @@ public class Spindexer extends SubsystemBase {
 
     public Command setVelocityCommand(AngularVelocity velocity) {
         return runOnce(() -> motor.setControl(new VelocityTorqueCurrentFOC(velocity)));
+    }
+
+    public Command setVelocityCommand(Supplier<AngularVelocity> velocity) {
+        return run(() -> setVelocity(velocity.get()));
     }
 
     public Command enableCommand() {
