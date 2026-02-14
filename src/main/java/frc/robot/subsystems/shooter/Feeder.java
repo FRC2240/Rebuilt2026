@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -26,8 +27,12 @@ public class Feeder extends SubsystemBase {
 
         motor.getConfigurator().apply(conf);
 
-        
         setDefaultCommand(disableCommand());
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Feeder Velocity", motor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {
@@ -43,13 +48,15 @@ public class Feeder extends SubsystemBase {
      * Starts the shooter indexer motors
      */
     public Command enableCommand() {
-        return runOnce(() -> setVelocity(ShooterConstants.LAUNCH_MOTOR_OUTPUT)).andThen(run(() -> {}));
+        return runOnce(() -> setVelocity(ShooterConstants.LAUNCH_MOTOR_OUTPUT)).andThen(run(() -> {
+        }));
     }
 
     /**
-     * Stops the shooter indexer motors. 
+     * Stops the shooter indexer motors.
      */
     public Command disableCommand() {
-        return runOnce(() -> setVelocity(RotationsPerSecond.of(0))).andThen(run(() -> {}));
+        return runOnce(() -> setVelocity(RotationsPerSecond.of(0))).andThen(run(() -> {
+        }));
     }
 }

@@ -21,10 +21,13 @@ dual screen - slow mode
 40, 41, 42
 
 ### Shooter / Feeder
-50, 51, 52, 53
+Left Flywheel: 50 
+Right Flywheel: 51 
+Feeder: 52
 
 ### Intake
-54, 55
+Intake: 54
+Pivot: 55
 
 ### Climber
 56

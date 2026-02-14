@@ -7,9 +7,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.CoastOut;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 
 public class Climber extends SubsystemBase {
     TalonFX motor = new TalonFX(ClimberConstants.MOTOR_ID);
@@ -25,11 +25,12 @@ public class Climber extends SubsystemBase {
 
         motor.getConfigurator().apply(conf);
     }
- 
+
     public Command extendCommand() {
         // Runs after setting control to prevent the default (coast) commmand from
         // being called until desired
-        return this.runOnce(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT))).andThen(run(() -> {}));
+        return this.runOnce(() -> motor.setControl(req.withOutput(ClimberConstants.EXTEND_CURRENT))).andThen(run(() -> {
+        }));
     }
 
     public Command coastCommand() {
