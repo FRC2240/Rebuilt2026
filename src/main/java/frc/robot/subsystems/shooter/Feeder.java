@@ -26,8 +26,6 @@ public class Feeder extends SubsystemBase {
         conf.Slot0.kD = 0;
 
         motor.getConfigurator().apply(conf);
-
-        setDefaultCommand(disableCommand());
     }
 
     @Override
