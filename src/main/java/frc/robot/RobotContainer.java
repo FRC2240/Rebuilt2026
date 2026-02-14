@@ -108,7 +108,7 @@ public class RobotContainer {
         shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
         spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
         intake.setDefaultCommand(intake.setIntakeVelocity(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Intake Wanted RPS", 0))));
-        shooter.feeder.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
+        shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
     }
 
     public Command getAutonomousCommand() {
