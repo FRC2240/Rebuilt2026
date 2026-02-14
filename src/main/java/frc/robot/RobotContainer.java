@@ -31,7 +31,7 @@ public class RobotContainer {
     // This will be fixed later with a singelton utility class.
     public final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
-    public final Climber climber = new Climber();
+    // public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
@@ -68,10 +68,10 @@ public class RobotContainer {
     private void configureBindings() {
         
         // Climber Coast on Disable
-        RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
+        //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
         // Extend Climber
-        joystick.povUp().toggleOnTrue(climber.extendCommand());
+        //joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Enable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
@@ -97,7 +97,7 @@ public class RobotContainer {
         spindexer.setDefaultCommand(spindexer.disableCommand());
 
         // Climber Coast
-        climber.setDefaultCommand(climber.coastCommand());
+        // climber.setDefaultCommand(climber.coastCommand());
 
         // Intake Enabled
         intake.setDefaultCommand(intake.enableIntakeCommand());
