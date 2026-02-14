@@ -56,8 +56,10 @@ public class Field {
                                 Inches.of(200), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(50)))));
 
-                                /* Currently commented out due to no FMS
     public static boolean isHubActive() {
+        // Game specific message does not exist if the FMS is not attached
+        if (!DriverStation.isFMSAttached()) return true;
+
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
         Alliance disabledFirst = DriverStation.getGameSpecificMessage().charAt(0) == 'B' ? Alliance.Blue : Alliance.Red;
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);
@@ -73,7 +75,7 @@ public class Field {
 
         return areBothActive || (isInactiveFirst && isFirstInactiveActive)
                 || (!isInactiveFirst && isSecondInactiveActive);
-    }*/
+    }
 
     public static Translation2d getTranslationToHub() {
         return HUB_CENTER_TRANSLATION.get().minus(RobotPosition.getTranslation());
