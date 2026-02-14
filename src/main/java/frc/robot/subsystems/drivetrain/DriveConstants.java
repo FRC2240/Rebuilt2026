@@ -16,7 +16,7 @@ import frc.robot.generated.TunerConstants;
 public class DriveConstants {
     // Maximum robot speed
     public static final LinearVelocity MAX_SPEED = TunerConstants.kSpeedAt12Volts;
-    public static final AngularVelocity MAX_ANGULAR_RATE = RotationsPerSecond.of(5);
+    public static final AngularVelocity MAX_ANGULAR_RATE = RotationsPerSecond.of(1);
 
     // Maximum robot speed when in slow mode
     public static final LinearVelocity MAX_SLOW_SPEED = MAX_SPEED.div(4);

@@ -14,19 +14,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public class Spindexer extends SubsystemBase {
-
-    private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
     private TalonFX motor = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
 
     public Spindexer() {
         TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0;
+        config.Slot0.kP = 2;
         motor.getConfigurator().apply(config);
 
     }
 
     public void setVelocity(AngularVelocity velocity) {
-        motor.setControl(request.withVelocity(velocity));
+        motor.setControl(new VelocityTorqueCurrentFOC(velocity));
     }
   
     @Override

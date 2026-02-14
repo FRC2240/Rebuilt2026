@@ -21,7 +21,7 @@ public class Feeder extends SubsystemBase {
     public Feeder() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 1;
+        conf.Slot0.kP = 3;
         conf.Slot0.kI = 0;
         conf.Slot0.kD = 0;
 

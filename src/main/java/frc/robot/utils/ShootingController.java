@@ -48,7 +48,7 @@ public class ShootingController extends SubsystemBase {
 
         // Set values for the tree map
         distanceToVelocityMap.put(0., 0.);
-        distanceToVelocityMap.put(10., 10.);
+        distanceToVelocityMap.put(10., 60.);
     }
 
     public boolean isShooting() {
@@ -98,7 +98,7 @@ public class ShootingController extends SubsystemBase {
         return isDrivetrainAimedAtHub() &&
                 isValidDistanceFromHub() &&
                 isShooterAtVelocity(getShooterVelocityForPosition()) &&
-                Field.isHubActive() &&
+                //Field.isHubActive() &&
                 Field.inAllianceZone();
     }
 

@@ -10,6 +10,6 @@ public class IntakeConstants {
   public static final int INTAKE_MOTOR_ID = 54; 
   public static final int PIVOT_MOTOR_ID = 55;
 
-  public static final Angle EXTENDED_POSITION = Degrees.of(40); // TBD
-  public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(-55); // TBD
+  public static final Angle EXTENDED_POSITION = Degrees.of(0); 
+  public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(55); 
 }
