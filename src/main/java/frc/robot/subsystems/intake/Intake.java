@@ -2,6 +2,8 @@ package frc.robot.subsystems.intake;
 
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -15,8 +17,11 @@ public class Intake extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
 
+    VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
+
     public Intake() {
-        TalonFXConfiguration conf = new TalonFXConfiguration();
+    
+         TalonFXConfiguration conf = new TalonFXConfiguration();
 
         conf.Slot0.kP = 1;
 
@@ -24,8 +29,16 @@ public class Intake extends SubsystemBase {
         intakeMotor.getConfigurator().apply(conf);
     }
 
+    public void setVelocity(AngularVelocity velocity) {
+        intakeMotor.setControl(request.withVelocity(velocity));
+    }
+
     public Command setIntakeVelocity(AngularVelocity velocity) {
         return runOnce(() -> intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity)));
+    }
+
+    public Command setIntakeVelocity(Supplier<AngularVelocity> velocity) {
+        return runOnce(() -> setVelocity(velocity.get()));
     }
 
     public Command extendIntakeCommand() {
