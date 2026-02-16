@@ -3,7 +3,6 @@ package frc.robot.utils;
 import java.util.function.BooleanSupplier;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 
 /**
  * This command type repeatedley checks the condition for which command to run. 
@@ -20,7 +19,7 @@ public class DynamicEither extends Command {
         this.trueCommand = trueCommand;
         this.falseCommand = falseCommand;
         this.condition = condition;
-        addRequirements(trueCommand.getRequirements().toArray(new Subsystem[0]));
+        addRequirements(trueCommand.getRequirements());
     }
 
     @Override
