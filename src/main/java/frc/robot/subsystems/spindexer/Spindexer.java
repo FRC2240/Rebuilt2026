@@ -26,7 +26,6 @@ public class Spindexer extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         motor.getConfigurator().apply(conf);
-
     }
 
     public void setVelocity(AngularVelocity velocity) {

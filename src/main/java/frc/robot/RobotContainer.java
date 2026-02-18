@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerConstants;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.candle.Candle;
@@ -47,6 +48,7 @@ public class RobotContainer {
         configureBindings();
         
         SmartDashboard.putNumber("Intake Wanted RPS", 0);
+        SmartDashboard.putNumber("Desired Spindexer Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
     }
 
     private void addNamedCommands() {

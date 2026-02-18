@@ -3,7 +3,6 @@ package frc.robot.subsystems.candle;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.LEDConfigs;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;

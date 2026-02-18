@@ -24,13 +24,12 @@ public class Intake extends SubsystemBase {
     
          TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 1;
+        conf.Slot0.kP = 5;
 
         conf.CurrentLimits.SupplyCurrentLimit = 50;
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         intakeMotor.getConfigurator().apply(conf);
-
     }
 
     public void setVelocity(AngularVelocity velocity) {
