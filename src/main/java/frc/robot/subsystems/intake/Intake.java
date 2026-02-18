@@ -21,8 +21,18 @@ public class Intake extends SubsystemBase {
     private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
 
     public Intake() {
-        TalonFXConfiguration conf = new TalonFXConfiguration();
-        conf.Slot0.kP = 5;
+    
+         TalonFXConfiguration conf = new TalonFXConfiguration();
+
+        conf.Slot0.kP = 1;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        pivotMotor.getConfigurator().apply(conf);
         intakeMotor.getConfigurator().apply(conf);
 
     }

@@ -18,10 +18,14 @@ public class Spindexer extends SubsystemBase {
     private TalonFX motor = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
 
     public Spindexer() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 2;
-        motor.getConfigurator().apply(config);
-        SmartDashboard.putNumber("Desired Spindexer Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
+        TalonFXConfiguration conf = new TalonFXConfiguration();
+
+        conf.Slot0.kP = 2;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        motor.getConfigurator().apply(conf);
 
     }
 

@@ -20,6 +20,10 @@ public class Climber extends SubsystemBase {
 
         conf.Slot0.kP = 0;
         conf.Slot0.kD = 0;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+        
         conf.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
         motor.getConfigurator().apply(conf);

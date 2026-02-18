@@ -3,6 +3,7 @@ package frc.robot.subsystems.candle;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.LEDConfigs;
 import com.ctre.phoenix6.hardware.CANdle;
 import com.ctre.phoenix6.signals.RGBWColor;
@@ -28,7 +29,7 @@ public class Candle extends SubsystemBase {
     public Candle(Supplier<Boolean> shooting, Supplier<Boolean> canHit) { 
         this.shooting = shooting;
         this.canHit = canHit;
-        
+
         LEDConfigs conf = new LEDConfigs();
         conf.StripType = StripTypeValue.RGBW;
         conf.BrightnessScalar = CandleConstants.BRIGTHNESS;
@@ -36,6 +37,12 @@ public class Candle extends SubsystemBase {
 
         color.Color = new RGBWColor(0, 0, 0, 0);
         candle.setControl(color);    
+
+        CurrentLimitsConfigs conf2 = new CurrentLimitsConfigs();
+
+        conf2.SupplyCurrentLimit = 20;
+        
+        candle.getConfigurator().apply(conf);
     }
 
     @Override
