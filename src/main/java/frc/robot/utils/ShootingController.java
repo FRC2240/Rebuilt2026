@@ -167,6 +167,13 @@ public class ShootingController extends SubsystemBase {
                 shooter.feeder.setEnabledCommand(this::hubShootRequirementsMet),
                 spindexer.setEnabledCommand(this::hubShootRequirementsMet),
 
+                // Raise intake while feeding to shuffle balls forward
+                new DynamicEither(
+                    intake.pivot.rampCommand(), 
+                    Commands.none(),
+                    this::hubShootRequirementsMet
+                ),
+
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
                 .until(() -> !Field.inAllianceZone());
