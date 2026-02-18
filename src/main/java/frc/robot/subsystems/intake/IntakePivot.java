@@ -20,6 +20,12 @@ public class IntakePivot extends SubsystemBase{
         conf.Slot0.kP = 5;
         conf.Slot0.kI = 2;
 
+        conf.Slot1.kP = 5;
+        conf.Slot1.kI = 2;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
         pivotMotor.getConfigurator().apply(conf);
         pivotMotor.setPosition(Rotations.of(0));
     }
@@ -43,6 +49,6 @@ public class IntakePivot extends SubsystemBase{
     }
 
     public Command rampCommand() {
-        return setPositionCommand(IntakeConstants.PIVOT_RAMP_POSITION);
+        return runOnce(() -> pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1))).andThen(run(() -> {}));
     }
 }
