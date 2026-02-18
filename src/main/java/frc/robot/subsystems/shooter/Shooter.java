@@ -26,8 +26,8 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 5;
-        conf.Slot0.kI = 0;
+        conf.Slot0.kP = 7;
+        conf.Slot0.kI = 2;
         conf.Slot0.kD = 0;
 
         leftFlywheelMotor.getConfigurator().apply(conf);

@@ -34,7 +34,7 @@ public class RobotContainer {
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
-    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer);
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
     public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
 
@@ -46,11 +46,7 @@ public class RobotContainer {
         configureDefaults();
         configureBindings();
         
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.extendIntakeCommand());
-        SmartDashboard.putNumber("Shooter Wanted RPS", 0);
-        SmartDashboard.putNumber("Spindexer Wanted RPS", 0);
         SmartDashboard.putNumber("Intake Wanted RPS", 0);
-        SmartDashboard.putNumber("Feeder Wanted RPS", 0);
     }
 
     private void addNamedCommands() {
@@ -65,7 +61,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        
         // Climber Coast on Disable
         //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
@@ -92,8 +87,10 @@ public class RobotContainer {
 
     private void configureDefaults() {
 
+        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.pivot.extendCommand());
+
         // Spindexer Disable
-        //spindexer.setDefaultCommand(spindexer.disableCommand());
+        spindexer.setDefaultCommand(spindexer.disableCommand());
 
         // Climber Coast
         // climber.setDefaultCommand(climber.coastCommand());
@@ -102,15 +99,15 @@ public class RobotContainer {
         //intake.setDefaultCommand(intake.enableIntakeCommand());
 
         //Feeder Disable
-        //shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
+        shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
 
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
-        shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
-        spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
+        //shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
+        //spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
         intake.setDefaultCommand(intake.setIntakeVelocity(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Intake Wanted RPS", 0))));
-        shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
+        //shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
     }
 
     public Command getAutonomousCommand() {
