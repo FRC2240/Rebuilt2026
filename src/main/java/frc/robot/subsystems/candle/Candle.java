@@ -37,12 +37,6 @@ public class Candle extends SubsystemBase {
 
         color.Color = new RGBWColor(0, 0, 0, 0);
         candle.setControl(color);    
-
-        CurrentLimitsConfigs conf2 = new CurrentLimitsConfigs();
-
-        conf2.SupplyCurrentLimit = 20;
-        
-        candle.getConfigurator().apply(conf);
     }
 
     @Override
