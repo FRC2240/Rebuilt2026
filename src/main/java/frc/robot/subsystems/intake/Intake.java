@@ -26,6 +26,12 @@ public class Intake extends SubsystemBase {
 
         conf.Slot0.kP = 1;
 
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
         pivotMotor.getConfigurator().apply(conf);
         intakeMotor.getConfigurator().apply(conf);
     }

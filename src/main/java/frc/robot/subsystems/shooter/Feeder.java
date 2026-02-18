@@ -25,6 +25,9 @@ public class Feeder extends SubsystemBase {
         conf.Slot0.kI = 0;
         conf.Slot0.kD = 0;
 
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
         motor.getConfigurator().apply(conf);
     }
 
