@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.RobotController;
 //import java.util.function.Supplier;
 //import edu.wpi.first.math.geometry.Rotation2d;
 
-public class RealLimelightVisionIO implements BaseVisionIO {
+public class LimelightCamera implements CameraInterface {
 
     // tracks if rewind capture taken
     private boolean captured = false;
@@ -48,7 +48,7 @@ public class RealLimelightVisionIO implements BaseVisionIO {
     private final DoubleArraySubscriber metatag1Subscriber;
     private final DoubleArraySubscriber metatag2Subscriber;
 
-    public RealLimelightVisionIO(String name, Supplier<Rotation2d> rotation_supplier) {
+    public LimelightCamera(String name, Supplier<Rotation2d> rotation_supplier) {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
 
         // enables rewind to play back footage
