@@ -30,6 +30,9 @@ public class Shooter extends SubsystemBase {
         conf.Slot0.kI = 2;
         conf.Slot0.kD = 0;
 
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 140;
+
         leftFlywheelMotor.getConfigurator().apply(conf);
         rightFlywheelMotor.getConfigurator().apply(conf);
     }

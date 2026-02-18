@@ -21,10 +21,15 @@ public class Intake extends SubsystemBase {
     private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
 
     public Intake() {
-        TalonFXConfiguration conf = new TalonFXConfiguration();
-        conf.Slot0.kP = 5;
-        intakeMotor.getConfigurator().apply(conf);
+    
+         TalonFXConfiguration conf = new TalonFXConfiguration();
 
+        conf.Slot0.kP = 5;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        intakeMotor.getConfigurator().apply(conf);
     }
 
     public void setVelocity(AngularVelocity velocity) {

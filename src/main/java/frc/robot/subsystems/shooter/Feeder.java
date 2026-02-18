@@ -26,6 +26,9 @@ public class Feeder extends SubsystemBase {
         conf.Slot0.kD = 0;
         // -80 30
 
+        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
         motor.getConfigurator().apply(conf);
         SmartDashboard.putNumber("Desired Feeder Velocity", ShooterConstants.FEED_VELOCITY.in(RotationsPerSecond));
     }

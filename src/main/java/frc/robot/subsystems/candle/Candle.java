@@ -28,7 +28,7 @@ public class Candle extends SubsystemBase {
     public Candle(Supplier<Boolean> shooting, Supplier<Boolean> canHit) { 
         this.shooting = shooting;
         this.canHit = canHit;
-        
+
         LEDConfigs conf = new LEDConfigs();
         conf.StripType = StripTypeValue.RGBW;
         conf.BrightnessScalar = CandleConstants.BRIGTHNESS;
