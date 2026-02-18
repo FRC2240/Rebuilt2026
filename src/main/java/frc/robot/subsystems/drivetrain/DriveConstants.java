@@ -27,7 +27,7 @@ public class DriveConstants {
 
     // PID controllers for autonomous driving
     public static final PIDController TRANSLATION_PID_CONTROLLER = new PIDController(5, 0, 1);
-    public static final PIDController ROTATION_PID_CONTROLLER = new PIDController(5, 0, 0);
+    public static final PIDController ROTATION_PID_CONTROLLER = new PIDController(6, 0, 0);
 
     public static final Distance TRANSLATION_FINISHED_THRESHOLD = Inches.of(2);
     public static final Angle ROTATION_FINISHED_THRESHOLD = Degrees.of(2);
