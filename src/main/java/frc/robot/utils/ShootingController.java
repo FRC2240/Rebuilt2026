@@ -164,17 +164,11 @@ public class ShootingController extends SubsystemBase {
                                 drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
                         () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
 
-                shooter.feeder.setEnabledCommand(this::hubShootRequirementsMet),
-                spindexer.setEnabledCommand(this::hubShootRequirementsMet),
-
-                // Raise intake while feeding to shuffle balls forward
-                /*
                 new DynamicEither(
-                    intake.pivot.rampCommand(), 
+                    feed(), 
                     Commands.none(),
                     this::hubShootRequirementsMet
                 ),
-                 */
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
