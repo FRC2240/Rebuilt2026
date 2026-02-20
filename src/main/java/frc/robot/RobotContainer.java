@@ -47,6 +47,7 @@ public class RobotContainer {
         configureDefaults();
         configureBindings();
         
+        SmartDashboard.putNumber("Shooter Wanted RPS", 0);
         SmartDashboard.putNumber("Intake Wanted RPS", 0);
         SmartDashboard.putNumber("Desired Spindexer Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
     }
@@ -84,12 +85,16 @@ public class RobotContainer {
         // Reverse intake
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
 
-        joystick.b().whileTrue(shootingController.feed());
+        joystick.y().whileTrue(shootingController.feed());
+
+        joystick.a().onTrue(intake.pivot.extendCommand());
+        joystick.x().onTrue(intake.pivot.contractCommand());
+        joystick.b().onTrue(intake.pivot.rampCommand());
     }
 
     private void configureDefaults() {
 
-        RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.pivot.extendCommand());
+        //RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.pivot.extendCommand());
 
         // Spindexer Disable
         spindexer.setDefaultCommand(spindexer.disableCommand());
@@ -106,10 +111,13 @@ public class RobotContainer {
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
-        //shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
+        intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
+        shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
         //spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
         intake.setDefaultCommand(intake.setIntakeVelocity(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Intake Wanted RPS", 0))));
         //shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));
+
+
     }
 
     public Command getAutonomousCommand() {

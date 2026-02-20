@@ -168,11 +168,13 @@ public class ShootingController extends SubsystemBase {
                 spindexer.setEnabledCommand(this::hubShootRequirementsMet),
 
                 // Raise intake while feeding to shuffle balls forward
+                /*
                 new DynamicEither(
                     intake.pivot.rampCommand(), 
                     Commands.none(),
                     this::hubShootRequirementsMet
                 ),
+                 */
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
@@ -200,7 +202,9 @@ public class ShootingController extends SubsystemBase {
     public Command feed() {
         return Commands.parallel(
                 shooter.feeder.enableCommand(),
-                spindexer.enableCommand());
+                spindexer.enableCommand(),
+                intake.pivot.rampCommand(),
+                intake.enableIntakeCommand());
     }
 
     /**
