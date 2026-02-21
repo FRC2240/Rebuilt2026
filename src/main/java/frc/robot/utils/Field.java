@@ -105,6 +105,10 @@ public class Field {
         return getTranslationOfPassPoint().minus(RobotPosition.getTranslation());
     }
 
+    public static Distance getDistanceToPassPoint() {
+        return Meters.of(Field.getTranslationToPassPoint().getNorm());
+    }
+
     /**
      * Boolean method for if the robot is in the alliance zone corresponding to
      * their alliance. If no alliance has been set, defaults to red.

@@ -94,6 +94,9 @@ public class RobotContainer {
         joystick.a().onTrue(intake.pivot.extendCommand());
         joystick.x().onTrue(intake.pivot.contractCommand());
         joystick.b().onTrue(intake.pivot.rampCommand());
+
+        joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
+        joystick.leftBumper().onTrue(intake.enableIntakeSlowCommand());
     }
 
     private void configureDefaults() {
@@ -116,7 +119,7 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
-        shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
+        //shooter.setDefaultCommand(shooter.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Shooter Wanted RPS", 0))));
         //spindexer.setDefaultCommand(spindexer.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Wanted RPS", 0))));
         intake.setDefaultCommand(intake.setIntakeVelocity(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Intake Wanted RPS", 0))));
         //shooter.feeder.setDefaultCommand(shooter.feeder.setVelocityCommand(() -> RotationsPerSecond.of(SmartDashboard.getNumber("Feeder Wanter RPS", 0))));

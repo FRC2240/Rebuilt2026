@@ -24,7 +24,7 @@ public class Intake extends SubsystemBase {
     
          TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 5;
+        conf.Slot0.kP = 8;
 
         conf.CurrentLimits.SupplyCurrentLimit = 50;
         conf.CurrentLimits.StatorCurrentLimit = 100;
@@ -53,6 +53,11 @@ public class Intake extends SubsystemBase {
         // Runs after setting control to prevent the default (enable) commmand from
         // being called until desired
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
+        }));
+    }
+
+    public Command enableIntakeSlowCommand() {
+        return setIntakeVelocity(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
         }));
     }
 
