@@ -187,7 +187,7 @@ public class ShootingController extends SubsystemBase {
 
                 feed().onlyWhile(this::passRequirementsMet),
 
-                Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
+                Commands.run(() -> isCurrentlyShooting = passRequirementsMet())).andThen(intake.pivot.extendCommand());
     }
 
     /**

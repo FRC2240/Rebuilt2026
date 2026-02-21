@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
+
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.SpindexerConstants;
@@ -56,6 +56,10 @@ public class RobotContainer {
 
         // Shoot
         NamedCommands.registerCommand("shoot", shootingController.shoot());
+        //intake
+        NamedCommands.registerCommand("intake", intake.enableIntakeCommand());
+        //pivot
+        NamedCommands.registerCommand("intake_deploy", intake.pivot.extendCommand());
     }
 
     private void configureAutoChooser() {
@@ -71,7 +75,7 @@ public class RobotContainer {
         //joystick.povUp().toggleOnTrue(climber.extendCommand());
 
         // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
+        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
 
         // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
