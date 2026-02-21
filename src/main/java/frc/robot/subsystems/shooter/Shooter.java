@@ -40,8 +40,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Right Velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/right flywheel velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {

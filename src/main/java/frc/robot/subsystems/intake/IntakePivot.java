@@ -40,9 +40,7 @@ public class IntakePivot extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("pivotMotor Velocity", pivotMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("intakeMotor Velocity", pivotMotor.getVelocity().getValueAsDouble());
-
+        SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
     }
 
     public Command setPositionCommand(Angle position) {
