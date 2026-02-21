@@ -71,7 +71,7 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command extendCommand() {
-        return run(this::extendMotionMagic);
+        return runOnce(this::extendMotionMagic);
     }
 
     public Command contractCommand() {
@@ -81,11 +81,10 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command rampCommand() {
-        return Commands.waitSeconds(1.5).andThen(
-                Commands.repeatingSequence(
+        return    Commands.repeatingSequence(
                         runOnce(this::ramp),
-                        Commands.waitSeconds(0.5),
+                        Commands.waitSeconds(0.25),
                         runOnce(this::extend),
-                        Commands.waitSeconds(0.5)));
+                        Commands.waitSeconds(0.25));
     }
 }
