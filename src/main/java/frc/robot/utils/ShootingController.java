@@ -26,7 +26,6 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 import frc.robot.subsystems.spindexer.Spindexer;
-import frc.robot.subsystems.shooter.ShooterConstants;
 
 public class ShootingController extends SubsystemBase {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1.5);
@@ -208,7 +207,7 @@ public class ShootingController extends SubsystemBase {
                     feed().until(() -> !this.passRequirementsMet())
                 ),
 
-                Commands.run(() -> isCurrentlyShooting = passRequirementsMet())).andThen(intake.pivot.extendCommand());
+                Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
     }
 
     /**
@@ -232,6 +231,7 @@ public class ShootingController extends SubsystemBase {
                 shootIntoHub(),
                 shootIntoAllianceZone(),
                 Field::inAllianceZone)
+                .andThen(intake.enableIntakeCommand())
                 .finallyDo(() -> isCurrentlyShooting = false);
     }
 
