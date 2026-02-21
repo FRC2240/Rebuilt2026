@@ -71,7 +71,7 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command extendCommand() {
-        return run(this::extendMotionMagic);
+        return runOnce(this::extendMotionMagic);
     }
 
     public Command contractCommand() {

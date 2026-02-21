@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intake_deploy"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Right Path"
