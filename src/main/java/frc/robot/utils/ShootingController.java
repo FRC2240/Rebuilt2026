@@ -176,17 +176,13 @@ public class ShootingController extends SubsystemBase {
                 // drivebase
                 shooter.setVelocityCommand(this::getShooterVelocityForPosition),
 
-                new DynamicEither(
+                BetterCommands.repeatedlyChoose(
                         drivetrain.commands.brake(),
                         drivetrain.commands.drive(this::driveToValidDistanceFromHub,
-
                                 drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
                         () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
 
-                Commands.repeatingSequence(
-                    Commands.waitUntil(this::hubShootRequirementsMet),
-                    feed().until(() -> !this.hubShootRequirementsMet())
-                ),
+                BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
@@ -203,10 +199,7 @@ public class ShootingController extends SubsystemBase {
                 drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(),
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
-                Commands.repeatingSequence(
-                    Commands.waitUntil(this::passRequirementsMet),
-                    feed().until(() -> !this.passRequirementsMet())
-                ),
+                BetterCommands.runWhen(feed(), this::passRequirementsMet),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet())).andThen(intake.pivot.extendCommand());
     }
@@ -220,7 +213,7 @@ public class ShootingController extends SubsystemBase {
                 spindexer.enableCommand(),
                 intake.pivot.rampCommand(),
                 intake.enableIntakeSlowCommand()
-                );
+        );
     }
 
     /**
