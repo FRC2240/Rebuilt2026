@@ -114,7 +114,7 @@ public class RobotContainer {
 
         //Feeder Disable
         shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
-
+        shooter.setDefaultCommand(shooter.coastCommand());
         // Drive with Joysticks
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
