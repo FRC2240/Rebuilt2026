@@ -30,13 +30,11 @@ public class Feeder extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         motor.getConfigurator().apply(conf);
-        SmartDashboard.putNumber("Desired Feeder Velocity", ShooterConstants.FEED_VELOCITY.in(RotationsPerSecond));
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Feeder Velocity", motor.getVelocity().getValueAsDouble());
-        ShooterConstants.FEED_VELOCITY = RotationsPerSecond.of(SmartDashboard.getNumber("Desired Feeder Velocity", 0));
+        SmartDashboard.putNumber("Shooter/feeder velocity", motor.getVelocity().getValueAsDouble());
     }
  
     public void setVelocity(AngularVelocity velocity) {
@@ -46,17 +44,6 @@ public class Feeder extends SubsystemBase {
 
     public Command setVelocityCommand(Supplier<AngularVelocity> velocity) {
         return run(() -> setVelocity(velocity.get()));
-    }
-
-    public Command setEnabledCommand(Supplier<Boolean> enabledSupplier) {
-        return run(() -> {
-            boolean enabled = enabledSupplier.get();
-            if (enabled) {
-                setVelocity(ShooterConstants.FEED_VELOCITY);
-            } else {
-                setVelocity(RotationsPerSecond.of(0));
-            }
-        });
     }
 
     /**

@@ -5,6 +5,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 
@@ -39,8 +40,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Left Velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Right Velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/right flywheel velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {
@@ -54,6 +55,13 @@ public class Shooter extends SubsystemBase {
 
     public Command setVelocityCommand(Supplier<AngularVelocity> velocitySupplier) {
         return run(() -> setVelocity(velocitySupplier.get()));
+    }
+
+    public Command coastCommand() {
+        return runOnce(() -> {
+            leftFlywheelMotor.setControl(new CoastOut());
+            rightFlywheelMotor.setControl(new CoastOut());
+        });
     }
 
     /**

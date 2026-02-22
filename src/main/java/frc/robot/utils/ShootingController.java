@@ -71,16 +71,16 @@ public class ShootingController extends SubsystemBase {
         hubDistanceToVelocityMap.put(184., 59.5);
         hubDistanceToVelocityMap.put(196., 61.5);
 
-        passDistanceToVelocityMap.put(60., 30.);
-        passDistanceToVelocityMap.put(82., 35.);
-        passDistanceToVelocityMap.put(108., 40.);
-        passDistanceToVelocityMap.put(130., 45.);
-        passDistanceToVelocityMap.put(165., 50.);
-        passDistanceToVelocityMap.put(182., 55.);
-        passDistanceToVelocityMap.put(216., 60.);
-        passDistanceToVelocityMap.put(250., 65.);
-        passDistanceToVelocityMap.put(291., 70.);
-        passDistanceToVelocityMap.put(316., 75.);
+        passDistanceToVelocityMap.put(74., 30.);
+        passDistanceToVelocityMap.put(96., 35.);
+        passDistanceToVelocityMap.put(122., 40.);
+        passDistanceToVelocityMap.put(144., 45.);
+        passDistanceToVelocityMap.put(179., 50.);
+        passDistanceToVelocityMap.put(196., 55.);
+        passDistanceToVelocityMap.put(230., 60.);
+        passDistanceToVelocityMap.put(264., 65.);
+        passDistanceToVelocityMap.put(305., 70.);
+        passDistanceToVelocityMap.put(330., 75.);
 
     }
 
@@ -88,7 +88,7 @@ public class ShootingController extends SubsystemBase {
         return isCurrentlyShooting;
     }
 
-    private AngularVelocity getShooterVelocityForPosition() {
+    private AngularVelocity getShooterHubVelocityForPosition() {
         // This is abstracted to it's own method to avoid problems if switching units in
         // the tree map
         return RotationsPerSecond.of(hubDistanceToVelocityMap.get(Field.getDistanceToHub().in(Inches)));
@@ -134,7 +134,7 @@ public class ShootingController extends SubsystemBase {
     public boolean hubShootRequirementsMet() {
         return isDrivetrainAimedAtHub() &&
                 isValidDistanceFromHub() &&
-                isShooterAtVelocity(getShooterVelocityForPosition()) &&
+                isShooterAtVelocity(getShooterHubVelocityForPosition()) &&
                 // Field.isHubActive() &&
                 Field.inAllianceZone();
     }
@@ -173,7 +173,7 @@ public class ShootingController extends SubsystemBase {
         return Commands.parallel(
                 // Constantly sets the correct velocity for the shooter and heading for the
                 // drivebase
-                shooter.setVelocityCommand(this::getShooterVelocityForPosition),
+                shooter.setVelocityCommand(this::getShooterHubVelocityForPosition),
 
                 BetterCommands.repeatedlyChoose(
                         drivetrain.commands.brake(),
@@ -194,7 +194,7 @@ public class ShootingController extends SubsystemBase {
      */
     private Command shootIntoAllianceZone() {
         return Commands.parallel(
-                shooter.setVelocityCommand(getShooterPassVelocityForPosition()),
+                shooter.setVelocityCommand(this::getShooterPassVelocityForPosition),
                 drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(),
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
@@ -249,14 +249,18 @@ public class ShootingController extends SubsystemBase {
     @Override
     public void periodic() {
         publishTargetLine();
-        SmartDashboard.putBoolean("shooting/hubShootRequirementsMet", hubShootRequirementsMet());
-        SmartDashboard.putBoolean("shooting/isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
-        SmartDashboard.putBoolean("shooting/isDesiredShooterVelocity", isShooterAtVelocity(getShooterVelocityForPosition()));
-        SmartDashboard.putNumber("shooting/desired velocity", getShooterVelocityForPosition().in(RotationsPerSecond));
-        SmartDashboard.putBoolean("shooting/isDesiredPassVelocity", isShooterAtVelocity(getShooterPassVelocityForPosition()));
-        SmartDashboard.putNumber("shooting/desired pass velocity", getShooterPassVelocityForPosition().in(RotationsPerSecond));
-        SmartDashboard.putBoolean("shooting/isValidDistanceFromHub", isValidDistanceFromHub());
-        SmartDashboard.putBoolean("shooting/isStill", isRobotStill());
-        SmartDashboard.putNumber("shooting/degreesToHub", Math.abs(Field.getTranslationToHub().getAngle().minus(drivetrain.getHeading()).getDegrees()));
+        SmartDashboard.putBoolean("ShootingConditions/isInAllianceZone", Field.inAllianceZone());
+
+        SmartDashboard.putBoolean("ShootingConditions/Hub/hubShootRequirementsMet", hubShootRequirementsMet());
+        SmartDashboard.putBoolean("ShootingConditions/Hub/isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
+        SmartDashboard.putBoolean("ShootingConditions/Hub/isValidDistanceFromHub", isValidDistanceFromHub());
+        SmartDashboard.putBoolean("ShootingConditions/Hub/isShooterAtVelocity", isShooterAtVelocity(getShooterHubVelocityForPosition()));
+        SmartDashboard.putNumber("ShootingConditions/Hub/desired flywheel velocity", getShooterHubVelocityForPosition().in(RotationsPerSecond));
+        SmartDashboard.putBoolean("ShootingConditions/Hub/isStill", isRobotStill());
+
+        SmartDashboard.putBoolean("ShootingConditions/Pass/isDrivetrainAimedAtPassPoint", isDrivetrainAimedAtPassPoint());
+        SmartDashboard.putBoolean("ShootingConditions/Pass/inPassingDeadzone", Field.isInPassingDeadzone());
+        SmartDashboard.putBoolean("ShootingConditions/Pass/isShooterAtVelocity", isShooterAtVelocity(getShooterPassVelocityForPosition()));
+        SmartDashboard.putNumber("ShootingConditions/Pass/desired flywheel velocity", getShooterPassVelocityForPosition().in(RotationsPerSecond));
     }
 }

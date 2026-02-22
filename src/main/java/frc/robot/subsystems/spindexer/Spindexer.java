@@ -34,8 +34,7 @@ public class Spindexer extends SubsystemBase {
   
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("spindexer Velocity", motor.getVelocity().getValueAsDouble());
-        SpindexerConstants.ENABLED_VELOCITY = RotationsPerSecond.of(SmartDashboard.getNumber("Desired Spindexer Velocity", 0));
+        SmartDashboard.putNumber("Spindexer/velocity", motor.getVelocity().getValueAsDouble());
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {

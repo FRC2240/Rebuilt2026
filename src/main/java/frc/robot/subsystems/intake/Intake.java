@@ -38,7 +38,7 @@ public class Intake extends SubsystemBase {
       
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Intake Position", intakeMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
     }
 
     public Command setIntakeVelocity(AngularVelocity velocity) {
