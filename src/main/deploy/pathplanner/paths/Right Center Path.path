@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 7.630559429746844,
-        "y": 0.4605712037146158
+        "y": 0.4605712037146157
       },
       "nextControl": {
         "x": 8.759208795290004,
@@ -67,7 +67,7 @@
     },
     {
       "waypointRelativePos": 2.0202702702702706,
-      "rotationDegrees": -90.0
+      "rotationDegrees": -45.0
     },
     {
       "waypointRelativePos": 2.21,
@@ -87,14 +87,27 @@
         "nominalVoltage": 12.0,
         "unlimited": false
       }
+    },
+    {
+      "name": "Fast Start",
+      "minWaypointRelativePos": 0,
+      "maxWaypointRelativePos": 0.96,
+      "constraints": {
+        "maxVelocity": 4.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
     }
   ],
   "pointTowardsZones": [],
   "eventMarkers": [
     {
       "name": "intake",
-      "waypointRelativePos": 0.7388414055080716,
-      "endWaypointRelativePos": 4.0,
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": 2.0939597315436225,
       "command": {
         "type": "named",
         "data": {

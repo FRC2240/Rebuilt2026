@@ -66,8 +66,8 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 1.8933901918976552,
-      "rotationDegrees": 90.0
+      "waypointRelativePos": 2.02,
+      "rotationDegrees": 45.0
     },
     {
       "waypointRelativePos": 2.213219616204686,
@@ -76,7 +76,7 @@
   ],
   "constraintZones": [
     {
-      "name": "Constraints Zone",
+      "name": "Fast Start",
       "minWaypointRelativePos": 0.0,
       "maxWaypointRelativePos": 0.97,
       "constraints": {
@@ -89,7 +89,7 @@
       }
     },
     {
-      "name": "Constraints Zone",
+      "name": "Slow Intake",
       "minWaypointRelativePos": 0.9658273381294964,
       "maxWaypointRelativePos": 2.001798561151079,
       "constraints": {
@@ -107,7 +107,7 @@
     {
       "name": "intake",
       "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 3.0,
+      "endWaypointRelativePos": 2.0234899328859046,
       "command": {
         "type": "named",
         "data": {

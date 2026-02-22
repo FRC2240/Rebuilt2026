@@ -55,7 +55,7 @@ public class RobotContainer {
     private void addNamedCommands() {
 
         // Shoot
-        NamedCommands.registerCommand("shoot", shootingController.shoot());
+        NamedCommands.registerCommand("shoot", shootingController.shoot().withTimeout(5));
         //intake
         NamedCommands.registerCommand("intake", intake.enableIntakeCommand());
         //pivot
