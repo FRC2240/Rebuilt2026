@@ -13,7 +13,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Right Center Path"
+            "pathName": "Left Center Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Cycle Path"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left End Path"
           }
         },
         {
