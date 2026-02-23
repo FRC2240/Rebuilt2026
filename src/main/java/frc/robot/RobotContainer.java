@@ -9,11 +9,13 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-
+import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.SpindexerConstants;
@@ -64,7 +66,7 @@ public class RobotContainer {
         //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
         // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
@@ -89,9 +91,6 @@ public class RobotContainer {
     }
 
     private void configureDefaults() {
-
-        //RobotModeTriggers.autonomous().or(RobotModeTriggers.teleop()).onTrue(intake.pivot.extendCommand());
-
         // Spindexer Disable
         spindexer.setDefaultCommand(spindexer.disableCommand());
 
@@ -99,7 +98,7 @@ public class RobotContainer {
         // climber.setDefaultCommand(climber.coastCommand());
 
         // Intake Enabled
-        //intake.setDefaultCommand(intake.enableIntakeCommand());
+        intake.setDefaultCommand(intake.enableIntakeCommand());
 
         //Feeder Disable
         shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
@@ -111,6 +110,11 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        if (autoChooser.getSelected() == null) return null;
+        return Commands.parallel(
+            intake.pivot.extendCommand(),
+            intake.enableIntakeCommand(),
+            autoChooser.getSelected().asProxy()
+        );
     }
 }

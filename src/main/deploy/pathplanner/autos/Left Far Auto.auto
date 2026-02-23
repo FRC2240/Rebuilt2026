@@ -40,18 +40,6 @@
           "data": {
             "pathName": "Left Cycle Path"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left End Path"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
-          }
         }
       ]
     }

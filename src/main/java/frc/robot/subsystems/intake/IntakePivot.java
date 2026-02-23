@@ -20,7 +20,7 @@ public class IntakePivot extends SubsystemBase {
 
     public IntakePivot() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
-        conf.MotionMagic.MotionMagicCruiseVelocity = 6;
+        conf.MotionMagic.MotionMagicCruiseVelocity = 10;
         conf.MotionMagic.MotionMagicAcceleration = 16;
 
         conf.Slot0.kP = 17;
@@ -50,13 +50,13 @@ public class IntakePivot extends SubsystemBase {
 
     public void extendMotionMagic() {
         pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
-        /* 
-        double velocityRPS = pivotMotor.getVelocity().getValueAsDouble();
-        double position = pivotMotor.getPosition().getValueAsDouble();
-        if (Math.abs(velocityRPS) < 0.1 && position < -8) {
-            pivotMotor.setPosition(-10);
-        }
-        */
+        /*
+         * double velocityRPS = pivotMotor.getVelocity().getValueAsDouble();
+         * double position = pivotMotor.getPosition().getValueAsDouble();
+         * if (Math.abs(velocityRPS) < 0.1 && position < -8) {
+         * pivotMotor.setPosition(-10);
+         * }
+         */
     }
 
     public void extend() {
@@ -73,7 +73,7 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command extendCommand() {
-        return runOnce(this::extendMotionMagic);
+        return runOnce(this::extend);
     }
 
     public Command contractCommand() {
@@ -84,19 +84,18 @@ public class IntakePivot extends SubsystemBase {
 
     public Command rezeroCommand() {
         return Commands.sequence(
-        runOnce(() -> pivotMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-10)))),
-        Commands.waitSeconds(0.3),
-        Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
-        runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
-        extendCommand()
-        );
+                runOnce(() -> pivotMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-10)))),
+                Commands.waitSeconds(0.3),
+                Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
+                runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
+                extendCommand());
     }
 
     public Command rampCommand() {
-        return    Commands.repeatingSequence(
-                        runOnce(this::ramp),
-                        Commands.waitSeconds(0.25),
-                        runOnce(this::extend),
-                        Commands.waitSeconds(0.25));
+        return Commands.repeatingSequence(
+                runOnce(this::ramp),
+                Commands.waitSeconds(0.25),
+                runOnce(this::extend),
+                Commands.waitSeconds(0.25));
     }
 }
