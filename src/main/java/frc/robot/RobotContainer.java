@@ -63,8 +63,8 @@ public class RobotContainer {
         // Climber Coast on Disable
         //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
-        // Enable Intake
-        joystick.leftTrigger().toggleOnTrue(intake.enableIntakeCommand());
+        // Disable Intake
+        joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
@@ -99,7 +99,7 @@ public class RobotContainer {
         // climber.setDefaultCommand(climber.coastCommand());
 
         // Intake Enabled
-        //intake.setDefaultCommand(intake.enableIntakeCommand());
+        intake.setDefaultCommand(intake.enableIntakeCommand());
 
         //Feeder Disable
         shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
