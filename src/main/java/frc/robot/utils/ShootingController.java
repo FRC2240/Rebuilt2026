@@ -34,7 +34,7 @@ public class ShootingController extends SubsystemBase {
     private static final LinearVelocity DRIVETRAIN_STILL_LINEAR_TOLERANCE = InchesPerSecond.of(5);
     private static final AngularVelocity DRIVETRAIN_STILL_ANGULAR_TOLERANCE = DegreesPerSecond.of(10);
 
-    private static final Distance MIN_DISTANCE_FROM_HUB = Inches.of(76);
+    private static final Distance MIN_DISTANCE_FROM_HUB = Inches.of(82);
     private static final Distance NORM_DISTANCE_FROM_HUB = Inches.of(90);
     private static final Distance MAX_DISTANCE_FROM_HUB = Inches.of(196);
 
