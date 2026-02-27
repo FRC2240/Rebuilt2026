@@ -65,7 +65,7 @@ public class RobotContainer {
         // Climber Coast on Disable
         //RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
 
-        // Enable Intake
+        // Disable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
         // Toggle Slow Mode
