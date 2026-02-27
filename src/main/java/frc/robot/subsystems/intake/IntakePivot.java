@@ -20,7 +20,7 @@ public class IntakePivot extends SubsystemBase {
 
     public IntakePivot() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
-        conf.MotionMagic.MotionMagicCruiseVelocity = 6;
+        conf.MotionMagic.MotionMagicCruiseVelocity = 10;
         conf.MotionMagic.MotionMagicAcceleration = 16;
 
         conf.Slot0.kP = 17;
@@ -61,7 +61,7 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command extendCommand() {
-        return runOnce(this::extendMotionMagic);
+        return runOnce(this::extend);
     }
 
     public Command contractCommand() {
@@ -84,6 +84,7 @@ public class IntakePivot extends SubsystemBase {
                 runOnce(this::ramp),
                 Commands.waitSeconds(0.25),
                 runOnce(this::extend),
-                Commands.waitSeconds(0.25)).finallyDo(this::extend);
+                Commands.waitSeconds(0.25))
+        .finallyDo(this::extend);
     }
 }

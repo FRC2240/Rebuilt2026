@@ -26,7 +26,7 @@ public class Intake extends SubsystemBase {
 
         conf.Slot0.kP = 8;
 
-        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.SupplyCurrentLimit = 100;
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         intakeMotor.getConfigurator().apply(conf);
@@ -39,6 +39,7 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putString("Intake/Current Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
     }
 
     public Command setIntakeVelocity(AngularVelocity velocity) {
@@ -53,21 +54,21 @@ public class Intake extends SubsystemBase {
         // Runs after setting control to prevent the default (enable) commmand from
         // being called until desired
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
-        }));
+        })).withName("Enable");
     }
 
     public Command enableIntakeSlowCommand() {
         return setIntakeVelocity(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
-        }));
+        })).withName("Enable Slow");
     }
 
     public Command disableIntakeCommand() {
         return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {
-        }));
+        })).withName("Disable");
     }
 
     public Command reverseIntakeCommand() {
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
-        }));
+        })).withName("Reverse");
     }
 }
