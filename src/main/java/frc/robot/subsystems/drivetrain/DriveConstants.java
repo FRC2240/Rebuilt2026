@@ -15,15 +15,15 @@ import frc.robot.generated.TunerConstants;
 
 public class DriveConstants {
     // Maximum robot speed
-    public static final LinearVelocity MAX_SPEED = TunerConstants.kSpeedAt12Volts;
+    public static final LinearVelocity MAX_SPEED = TunerConstants.kSpeedAt12Volts.times(0.9);
     public static final AngularVelocity MAX_ANGULAR_RATE = RotationsPerSecond.of(1);
 
     // Maximum robot speed when in slow mode
     public static final LinearVelocity MAX_SLOW_SPEED = MAX_SPEED.div(4);
     public static final AngularVelocity MAX_SLOW_ANGULAR_RATE = MAX_ANGULAR_RATE.div(3);
 
-    public static final LinearAcceleration MAX_WHEEL_ACCELERATION = MetersPerSecondPerSecond.of(8);
-    public static final LinearAcceleration MAX_WHEEL_DECELERATION = MetersPerSecondPerSecond.of(9);
+    public static final LinearAcceleration MAX_WHEEL_ACCELERATION = MetersPerSecondPerSecond.of(4.5);
+    public static final LinearAcceleration MAX_WHEEL_DECELERATION = MetersPerSecondPerSecond.of(4.5);
 
     // PID controllers for autonomous driving
     public static final PIDController TRANSLATION_PID_CONTROLLER = new PIDController(5, 0, 1);

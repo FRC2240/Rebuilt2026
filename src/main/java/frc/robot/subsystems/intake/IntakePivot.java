@@ -41,6 +41,7 @@ public class IntakePivot extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
+        SmartDashboard.putString("Intake/Pivot Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
     }
 
     public Command setPositionCommand(Angle position) {
@@ -50,13 +51,6 @@ public class IntakePivot extends SubsystemBase {
 
     public void extendMotionMagic() {
         pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
-        /*
-         * double velocityRPS = pivotMotor.getVelocity().getValueAsDouble();
-         * double position = pivotMotor.getPosition().getValueAsDouble();
-         * if (Math.abs(velocityRPS) < 0.1 && position < -8) {
-         * pivotMotor.setPosition(-10);
-         * }
-         */
     }
 
     public void extend() {
@@ -68,13 +62,13 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command extendCommand() {
-        return runOnce(this::extend);
+        return runOnce(this::extend).withName("Extend");
     }
 
     public Command contractCommand() {
         return runOnce(() -> pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(Rotations.of(0))))
                 .andThen(run(() -> {
-                }));
+                })).withName("Contract");
     }
 
     public Command rezeroCommand() {
@@ -83,7 +77,8 @@ public class IntakePivot extends SubsystemBase {
                 Commands.waitSeconds(0.3),
                 Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
                 runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
-                extendCommand());
+                extendCommand())
+                .withName("Rezero");
     }
 
     public Command rampCommand() {
@@ -92,6 +87,7 @@ public class IntakePivot extends SubsystemBase {
                 Commands.waitSeconds(0.25),
                 runOnce(this::extend),
                 Commands.waitSeconds(0.25))
-        .finallyDo(this::extend);
+                .finallyDo(this::extend)
+                .withName("Ramp");
     }
 }
