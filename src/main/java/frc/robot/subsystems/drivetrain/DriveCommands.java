@@ -88,6 +88,13 @@ public class DriveCommands extends SubsystemBase {
         return 0;
     }
 
+    /**
+     * Puts the value to the power of exponent. Preserves the sign of the input
+     */
+    private double delinearize(double value, double exponent) {
+        return Math.pow(Math.abs(value), exponent) * (value < 0 ? -1 : 1);
+    }
+
     public Command brake() {
         return drivetrain.applyRequest(() -> brake);
     }
@@ -212,9 +219,9 @@ public class DriveCommands extends SubsystemBase {
                     || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
 
             velocity.x = getMaxDriveSpeed()
-                    .times(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.9) * allianceMultiplier);
             velocity.y = getMaxDriveSpeed()
-                    .times(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND), 1.9) * allianceMultiplier);
             return velocity;
         };
     }

@@ -69,14 +69,10 @@ public class RobotContainer {
         // Reverse intake
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
 
-        //joystick.y().whileTrue(shootingController.feed());
-
-        //joystick.a().onTrue(intake.pivot.extendCommand());
-        //joystick.x().onTrue(intake.pivot.contractCommand());
-        //joystick.b().onTrue(intake.pivot.rampCommand());
-
+        // Pivot rezeroing
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
-        //joystick.leftBumper().onTrue(intake.enableIntakeSlowCommand());
+
+        //joystick.y().whileTrue(shootingController.feed());
     }
 
     private void configureDefaults() {

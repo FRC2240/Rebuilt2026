@@ -29,8 +29,11 @@ public class IntakePivot extends SubsystemBase {
         conf.Slot0.kI = 2;
 
         conf.Slot1.kP = 20;
-        conf.Slot0.kD = 4;
+        conf.Slot1.kD = 4;
         conf.Slot1.kI = 10;
+
+        // Slot 2 has a small PID for rezeroing
+        conf.Slot2.kP = 5;
 
         conf.CurrentLimits.SupplyCurrentLimit = 100;
         conf.CurrentLimits.StatorCurrentLimit = 100;
@@ -80,7 +83,7 @@ public class IntakePivot extends SubsystemBase {
 
     public Command rezeroCommand() {
         return Commands.sequence(
-                runOnce(() -> pivotMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-10)))),
+                runOnce(() -> pivotMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-2)).withSlot(2))),
                 Commands.waitSeconds(0.3),
                 Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
                 runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
