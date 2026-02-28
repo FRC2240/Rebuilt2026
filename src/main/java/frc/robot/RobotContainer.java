@@ -51,9 +51,10 @@ public class RobotContainer {
     }
 
     private void addNamedCommands() {
-        NamedCommands.registerCommand("shoot", shootingController.shoot());
-        NamedCommands.registerCommand("intake", intake.enableIntakeCommand());
-        NamedCommands.registerCommand("intake_deploy", intake.pivot.extendCommand());
+        // The shoot command is called as proxy to ensure that the default commands on the subsystems are called
+        NamedCommands.registerCommand("shoot", shootingController.shoot().asProxy());
+        // NamedCommands.registerCommand("intake", intake.enableIntakeCommand());
+        // NamedCommands.registerCommand("intake_deploy", intake.pivot.extendCommand());
     }
 
     private void configureAutoChooser() {
@@ -111,10 +112,7 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         if (autoChooser.getSelected() == null) return null;
-        return Commands.parallel(
-            intake.pivot.extendCommand(),
-            intake.enableIntakeCommand(),
-            autoChooser.getSelected().asProxy()
-        );
+
+        return autoChooser.getSelected();
     }
 }

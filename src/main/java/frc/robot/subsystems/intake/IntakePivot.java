@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IntakePivot extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
+    private String currentState = "None";
 
     public IntakePivot() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -41,7 +42,8 @@ public class IntakePivot extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
-        SmartDashboard.putString("Intake/Pivot Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
+        SmartDashboard.putString("Intake/Pivot State", currentState);
+        SmartDashboard.putString("Intake/Current Pivot Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
     }
 
     public Command setPositionCommand(Angle position) {
@@ -54,10 +56,12 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public void extend() {
+        currentState = "Extend";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
     }
 
     public void ramp() {
+        currentState = "Ramp";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
     }
 
@@ -66,7 +70,10 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command contractCommand() {
-        return runOnce(() -> pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(Rotations.of(0))))
+        return runOnce(() -> {
+            pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(Rotations.of(0)));
+            currentState = "Contract";
+        })
                 .andThen(run(() -> {
                 })).withName("Contract");
     }
