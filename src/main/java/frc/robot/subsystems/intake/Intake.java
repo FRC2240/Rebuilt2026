@@ -19,6 +19,7 @@ public class Intake extends SubsystemBase {
     public final IntakePivot pivot = new IntakePivot();
 
     private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
+    private String state = "None";
 
     public Intake() {
     
@@ -40,6 +41,7 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putString("Intake/Current Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
+        SmartDashboard.putString("Intake/Roller state", state);
     }
 
     public Command setIntakeVelocity(AngularVelocity velocity) {
@@ -54,21 +56,25 @@ public class Intake extends SubsystemBase {
         // Runs after setting control to prevent the default (enable) commmand from
         // being called until desired
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
+            state = "Enable";
         })).withName("Enable");
     }
 
     public Command enableIntakeSlowCommand() {
         return setIntakeVelocity(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
+            state = "Enable Slow";
         })).withName("Enable Slow");
     }
 
     public Command disableIntakeCommand() {
         return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {
+            state = "Disable";
         })).withName("Disable");
     }
 
     public Command reverseIntakeCommand() {
         return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
+            state = "Reverse";
         })).withName("Reverse");
     }
 }
