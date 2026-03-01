@@ -26,7 +26,7 @@ public class Feeder extends SubsystemBase {
         conf.Slot0.kD = 0;
         // -80 30
 
-        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.SupplyCurrentLimit = 80;
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         motor.getConfigurator().apply(conf);
@@ -34,7 +34,9 @@ public class Feeder extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Shooter/feeder velocity", motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Feeder/feeder velocity", motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Feeder/feeder stator current", motor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Feeder/feeder supply current", motor.getSupplyCurrent().getValueAsDouble());
     }
  
     public void setVelocity(AngularVelocity velocity) {

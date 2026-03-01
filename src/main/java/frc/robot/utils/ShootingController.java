@@ -17,6 +17,7 @@ import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -134,7 +135,7 @@ public class ShootingController extends SubsystemBase {
     public boolean hubShootRequirementsMet() {
         return isDrivetrainAimedAtHub() &&
                 isValidDistanceFromHub() &&
-                isShooterAtVelocity(getShooterHubVelocityForPosition()) &&
+                (isShooterAtVelocity(getShooterHubVelocityForPosition()) || RobotBase.isSimulation()) &&
                 // Field.isHubActive() &&
                 Field.inAllianceZone();
     }
@@ -211,7 +212,7 @@ public class ShootingController extends SubsystemBase {
                 shooter.feeder.enableCommand(),
                 spindexer.enableCommand(),
                 intake.pivot.rampCommand(),
-                intake.enableIntakeSlowCommand()
+                intake.enableIntakeCommand()
         );
     }
 

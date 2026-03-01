@@ -20,9 +20,9 @@ public class Spindexer extends SubsystemBase {
     public Spindexer() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 2;
+        conf.Slot0.kP = 4;
 
-        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.SupplyCurrentLimit = 100;
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         motor.getConfigurator().apply(conf);
@@ -35,6 +35,8 @@ public class Spindexer extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Spindexer/velocity", motor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Spindexer/Stator current", motor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Spindexer/Supply current", motor.getSupplyCurrent().getValueAsDouble());
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
