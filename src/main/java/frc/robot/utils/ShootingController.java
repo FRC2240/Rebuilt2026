@@ -212,7 +212,7 @@ public class ShootingController extends SubsystemBase {
                 shooter.feeder.enableCommand(),
                 spindexer.enableCommand(),
                 intake.pivot.rampCommand(),
-                intake.enableIntakeSlowCommand()
+                intake.enableIntakeCommand()
         );
     }
 

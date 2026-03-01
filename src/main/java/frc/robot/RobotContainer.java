@@ -45,7 +45,7 @@ public class RobotContainer {
         // The shoot command is called as proxy to ensure that the default commands on the subsystems are called
         NamedCommands.registerCommand("shoot", shootingController.shoot().asProxy());
         // NamedCommands.registerCommand("intake", intake.enableIntakeCommand());
-        // NamedCommands.registerCommand("intake_deploy", intake.pivot.extendCommand());
+        //NamedCommands.registerCommand("intake_deploy", intake.firstExtension().asProxy());
     }
 
     private void configureAutoChooser() {
@@ -72,7 +72,8 @@ public class RobotContainer {
         // Pivot rezeroing
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
-        //joystick.y().whileTrue(shootingController.feed());
+        joystick.y().whileTrue(intake.pivot.tstRampCommand());
+
     }
 
     private void configureDefaults() {
@@ -95,7 +96,9 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        if (autoChooser.getSelected() == null) return null;
+        // Defaults to firstextension to ensure it happens
+        if (autoChooser.getSelected() == null) 
+            return null;
 
         return autoChooser.getSelected();
     }

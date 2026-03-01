@@ -219,9 +219,9 @@ public class DriveCommands extends SubsystemBase {
                     || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
 
             velocity.x = getMaxDriveSpeed()
-                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.9) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
             velocity.y = getMaxDriveSpeed()
-                    .times(delinearize(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND), 1.9) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
             return velocity;
         };
     }

@@ -24,13 +24,15 @@ public class IntakePivot extends SubsystemBase {
         conf.MotionMagic.MotionMagicCruiseVelocity = 10;
         conf.MotionMagic.MotionMagicAcceleration = 16;
 
-        conf.Slot0.kP = 17;
-        conf.Slot0.kD = 2;
+        // For extension
+        conf.Slot0.kP = 15;
+        conf.Slot0.kD = 9;
         conf.Slot0.kI = 2;
 
-        conf.Slot1.kP = 20;
-        conf.Slot1.kD = 4;
-        conf.Slot1.kI = 10;
+        // Slot 1 is for contracting in the ramp command
+        conf.Slot1.kP = 25;
+        conf.Slot1.kD = 6;
+        conf.Slot1.kI = 4;
 
         // Slot 2 has a small PID for rezeroing
         conf.Slot2.kP = 5;
@@ -46,7 +48,8 @@ public class IntakePivot extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Intake/Pivot State", currentState);
-        SmartDashboard.putString("Intake/Current Pivot Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
+        SmartDashboard.putNumber("Intake/Pivot Stator Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
     }
 
     public Command setPositionCommand(Angle position) {
@@ -72,6 +75,13 @@ public class IntakePivot extends SubsystemBase {
         return runOnce(this::extend).withName("Extend");
     }
 
+    public Command extendRunCommand() {
+        return extendCommand()
+                .andThen(run(() -> {
+                }).until(() -> Math.abs(pivotMotor.getPosition().getValueAsDouble()
+                        - IntakeConstants.PIVOT_EXTENDED_POSITION.in(Rotations)) < 1));
+    }
+
     public Command contractCommand() {
         return runOnce(() -> {
             pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(Rotations.of(0)));
@@ -83,7 +93,8 @@ public class IntakePivot extends SubsystemBase {
 
     public Command rezeroCommand() {
         return Commands.sequence(
-                runOnce(() -> pivotMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-2)).withSlot(2))),
+                runOnce(() -> pivotMotor
+                        .setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-2)).withSlot(2))),
                 Commands.waitSeconds(0.3),
                 Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
                 runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
@@ -94,10 +105,15 @@ public class IntakePivot extends SubsystemBase {
     public Command rampCommand() {
         return Commands.repeatingSequence(
                 runOnce(this::ramp),
-                Commands.waitSeconds(0.25),
+                Commands.waitSeconds(1),
                 runOnce(this::extend),
-                Commands.waitSeconds(0.25))
+                Commands.waitSeconds(1))
                 .finallyDo(this::extend)
                 .withName("Ramp");
+    }
+
+
+    public Command tstRampCommand() {
+        return run(this::ramp);
     }
 }

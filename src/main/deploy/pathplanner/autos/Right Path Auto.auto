@@ -5,9 +5,16 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "Right Path"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Right Path"
+                }
+              }
+            ]
           }
         },
         {
