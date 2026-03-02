@@ -5,22 +5,34 @@
     "data": {
       "commands": [
         {
-          "type": "deadline",
+          "type": "path",
+          "data": {
+            "pathName": "Right Path"
+          }
+        },
+        {
+          "type": "race",
           "data": {
             "commands": [
               {
-                "type": "path",
+                "type": "named",
                 "data": {
-                  "pathName": "Right Path"
+                  "name": "shoot"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
                 }
               }
             ]
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "shoot"
+            "pathName": "Right Cycle Path"
           }
         }
       ]

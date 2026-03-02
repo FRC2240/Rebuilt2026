@@ -190,6 +190,28 @@ public class ShootingController extends SubsystemBase {
     }
 
     /**
+     * Shoot command to be used in autonomous because it proxies most of the
+     * subsystems. I cannot just run `shoot` as a proxy because proxy commands do
+     * not stop in a race group from pathplanner
+     */
+    public Command shootIntoHubAutonomous() {
+        return Commands.parallel(
+                shooter.setVelocityCommand(this::getShooterHubVelocityForPosition),
+
+                BetterCommands.repeatedlyChoose(
+                        drivetrain.commands.brake(),
+                        drivetrain.commands.drive(this::driveToValidDistanceFromHub,
+                                drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
+                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
+
+                // Proxies feed because feed includes intake and intake pivot
+                BetterCommands.runWhen(feed().asProxy(), this::hubShootRequirementsMet),
+
+                // Set the `isCurrentlyShooting` variable
+                Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
+    }
+
+    /**
      * Command to shoot into the alliance zone, ensuring that the balls do not fall
      * into the hub (foul) or go outside of the field (foul)
      */
@@ -212,8 +234,7 @@ public class ShootingController extends SubsystemBase {
                 shooter.feeder.enableCommand(),
                 spindexer.enableCommand(),
                 intake.pivot.rampCommand(),
-                intake.enableIntakeCommand()
-        );
+                intake.enableIntakeCommand());
     }
 
     /**
@@ -255,13 +276,18 @@ public class ShootingController extends SubsystemBase {
         SmartDashboard.putBoolean("ShootingConditions/Hub/hubShootRequirementsMet", hubShootRequirementsMet());
         SmartDashboard.putBoolean("ShootingConditions/Hub/isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());
         SmartDashboard.putBoolean("ShootingConditions/Hub/isValidDistanceFromHub", isValidDistanceFromHub());
-        SmartDashboard.putBoolean("ShootingConditions/Hub/isShooterAtVelocity", isShooterAtVelocity(getShooterHubVelocityForPosition()));
-        SmartDashboard.putNumber("ShootingConditions/Hub/desired flywheel velocity", getShooterHubVelocityForPosition().in(RotationsPerSecond));
+        SmartDashboard.putBoolean("ShootingConditions/Hub/isShooterAtVelocity",
+                isShooterAtVelocity(getShooterHubVelocityForPosition()));
+        SmartDashboard.putNumber("ShootingConditions/Hub/desired flywheel velocity",
+                getShooterHubVelocityForPosition().in(RotationsPerSecond));
         SmartDashboard.putBoolean("ShootingConditions/Hub/isStill", isRobotStill());
 
-        SmartDashboard.putBoolean("ShootingConditions/Pass/isDrivetrainAimedAtPassPoint", isDrivetrainAimedAtPassPoint());
+        SmartDashboard.putBoolean("ShootingConditions/Pass/isDrivetrainAimedAtPassPoint",
+                isDrivetrainAimedAtPassPoint());
         SmartDashboard.putBoolean("ShootingConditions/Pass/inPassingDeadzone", Field.isInPassingDeadzone());
-        SmartDashboard.putBoolean("ShootingConditions/Pass/isShooterAtVelocity", isShooterAtVelocity(getShooterPassVelocityForPosition()));
-        SmartDashboard.putNumber("ShootingConditions/Pass/desired flywheel velocity", getShooterPassVelocityForPosition().in(RotationsPerSecond));
+        SmartDashboard.putBoolean("ShootingConditions/Pass/isShooterAtVelocity",
+                isShooterAtVelocity(getShooterPassVelocityForPosition()));
+        SmartDashboard.putNumber("ShootingConditions/Pass/desired flywheel velocity",
+                getShooterPassVelocityForPosition().in(RotationsPerSecond));
     }
 }
