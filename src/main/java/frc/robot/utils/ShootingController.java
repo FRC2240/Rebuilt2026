@@ -30,7 +30,7 @@ import frc.robot.subsystems.spindexer.Spindexer;
 
 public class ShootingController extends SubsystemBase {
     private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1.5);
-    private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(3);
+    private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(4);
 
     private static final LinearVelocity DRIVETRAIN_STILL_LINEAR_TOLERANCE = InchesPerSecond.of(5);
     private static final AngularVelocity DRIVETRAIN_STILL_ANGULAR_TOLERANCE = DegreesPerSecond.of(10);
@@ -183,6 +183,8 @@ public class ShootingController extends SubsystemBase {
                         () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
 
                 BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
+                
+                intake.pivot.rampCommand(),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
@@ -207,6 +209,8 @@ public class ShootingController extends SubsystemBase {
                 // Proxies feed because feed includes intake and intake pivot
                 BetterCommands.runWhen(feed().asProxy(), this::hubShootRequirementsMet),
 
+                intake.pivot.rampCommand().asProxy(),
+
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
     }
@@ -222,6 +226,7 @@ public class ShootingController extends SubsystemBase {
                         drivetrain.commands.rotateToFacePoint(Field::getTranslationOfPassPoint)),
 
                 BetterCommands.runWhen(feed(), this::passRequirementsMet),
+                intake.pivot.rampCommand(),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
     }
@@ -233,7 +238,7 @@ public class ShootingController extends SubsystemBase {
         return Commands.parallel(
                 shooter.feeder.enableCommand(),
                 spindexer.enableCommand(),
-                intake.pivot.rampCommand(),
+                //intake.pivot.rampCommand(),
                 intake.enableIntakeCommand());
     }
 

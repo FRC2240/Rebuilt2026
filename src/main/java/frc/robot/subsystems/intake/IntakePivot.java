@@ -25,14 +25,14 @@ public class IntakePivot extends SubsystemBase {
         conf.MotionMagic.MotionMagicAcceleration = 16;
 
         // For extension
-        conf.Slot0.kP = 15;
+        conf.Slot0.kP = 20;
         conf.Slot0.kD = 9;
         conf.Slot0.kI = 2;
 
         // Slot 1 is for contracting in the ramp command
         conf.Slot1.kP = 25;
-        conf.Slot1.kD = 6;
-        conf.Slot1.kI = 4;
+        conf.Slot1.kD = 2;
+        conf.Slot1.kI = 3;
 
         // Slot 2 has a small PID for rezeroing
         conf.Slot2.kP = 5;
@@ -105,9 +105,9 @@ public class IntakePivot extends SubsystemBase {
     public Command rampCommand() {
         return Commands.repeatingSequence(
                 runOnce(this::ramp),
-                Commands.waitSeconds(1),
+                Commands.waitSeconds(0.4),
                 runOnce(this::extend),
-                Commands.waitSeconds(1))
+                Commands.waitSeconds(0.4))
                 .finallyDo(this::extend)
                 .withName("Ramp");
     }
