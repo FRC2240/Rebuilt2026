@@ -48,8 +48,8 @@ public class IntakePivot extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Intake/Pivot State", currentState);
-        SmartDashboard.putNumber("Intake/Pivot Stator Current", pivotMotor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Intake/Pivot Stator Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
     }
 
     public Command setPositionCommand(Angle position) {

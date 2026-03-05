@@ -15,7 +15,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.candle.Candle;
+//import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -30,7 +30,7 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
-    public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
+    //public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
     // public final FieldSimulation sim = new FieldSimulation();
 

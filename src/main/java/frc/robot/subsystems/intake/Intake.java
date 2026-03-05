@@ -40,7 +40,6 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putString("Intake/Current Command", getCurrentCommand() == null ? "None" : getCurrentCommand().getName());
         SmartDashboard.putString("Intake/Roller state", state);
     }
 

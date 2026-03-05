@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -40,6 +41,8 @@ public class Shooter extends SubsystemBase {
 
     @Override
     public void periodic() {
+        StatusSignal.refreshAll(leftFlywheelVelocitySignal, rightFlywheelVelocitySignal);
+
         SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putNumber("Shooter/right flywheel velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
     }
@@ -67,9 +70,11 @@ public class Shooter extends SubsystemBase {
     /**
      * Gets the highest velocity of the two motors, as to not fail if a motor fails
      */
+    private StatusSignal<AngularVelocity> leftFlywheelVelocitySignal = leftFlywheelMotor.getVelocity();
+    private StatusSignal<AngularVelocity> rightFlywheelVelocitySignal = rightFlywheelMotor.getVelocity();
     public AngularVelocity getVelocity() {
-        double leftVelocity = leftFlywheelMotor.getVelocity().getValueAsDouble();
-        double rightVelocity = -rightFlywheelMotor.getVelocity().getValueAsDouble();
+        double leftVelocity = leftFlywheelVelocitySignal.getValueAsDouble();
+        double rightVelocity = -rightFlywheelVelocitySignal.getValueAsDouble();
 
         return RotationsPerSecond.of(Math.max(leftVelocity, rightVelocity));
     }

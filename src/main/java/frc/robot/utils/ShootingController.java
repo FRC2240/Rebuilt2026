@@ -176,11 +176,7 @@ public class ShootingController extends SubsystemBase {
                 // drivebase
                 shooter.setVelocityCommand(this::getShooterHubVelocityForPosition),
 
-                BetterCommands.repeatedlyChoose(
-                        drivetrain.commands.brake(),
-                        drivetrain.commands.drive(this::driveToValidDistanceFromHub,
-                                drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
-                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
+                drivetrain.commands.drive(this::driveToValidDistanceFromHub,drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
 
                 BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
                 
@@ -277,6 +273,7 @@ public class ShootingController extends SubsystemBase {
     public void periodic() {
         publishTargetLine();
         SmartDashboard.putBoolean("ShootingConditions/isInAllianceZone", Field.inAllianceZone());
+        SmartDashboard.putNumber("ShootingConditions/Inches from Hub", Field.getDistanceToHub().in(Inches));
 
         SmartDashboard.putBoolean("ShootingConditions/Hub/hubShootRequirementsMet", hubShootRequirementsMet());
         SmartDashboard.putBoolean("ShootingConditions/Hub/isDrivetrainAimedAtHub", isDrivetrainAimedAtHub());

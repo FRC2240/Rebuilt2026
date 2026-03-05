@@ -17,6 +17,7 @@ public class Feeder extends SubsystemBase {
     private TalonFX motor = new TalonFX(ShooterConstants.FEEDER_MOTOR_ID);
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
+    private String state = "None";
 
     public Feeder() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -35,8 +36,9 @@ public class Feeder extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Feeder/feeder velocity", motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Feeder/feeder stator current", motor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Feeder/feeder supply current", motor.getSupplyCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Feeder/feeder stator current", motor.getStatorCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Feeder/feeder supply current", motor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putString("Feeder/state", state);
     }
  
     public void setVelocity(AngularVelocity velocity) {
@@ -53,6 +55,7 @@ public class Feeder extends SubsystemBase {
      */
     public Command enableCommand() {
         return runOnce(() -> setVelocity(ShooterConstants.FEED_VELOCITY)).andThen(run(() -> {
+            state = "Enable";
         }));
     }
 
@@ -61,6 +64,7 @@ public class Feeder extends SubsystemBase {
      */
     public Command disableCommand() {
         return runOnce(() -> setVelocity(RotationsPerSecond.of(0))).andThen(run(() -> {
+            state = "Disable";
         }));
     }
 }

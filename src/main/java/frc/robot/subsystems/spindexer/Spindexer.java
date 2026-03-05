@@ -16,6 +16,7 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public class Spindexer extends SubsystemBase {
     private TalonFX motor = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
+    private String state = "None";
 
     public Spindexer() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -35,8 +36,9 @@ public class Spindexer extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Spindexer/velocity", motor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Spindexer/Stator current", motor.getStatorCurrent().getValueAsDouble());
-        SmartDashboard.putNumber("Spindexer/Supply current", motor.getSupplyCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Spindexer/Stator current", motor.getStatorCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Spindexer/Supply current", motor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putString("Spindexer/state", state);
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
@@ -51,6 +53,7 @@ public class Spindexer extends SubsystemBase {
         // Runs after setting control to prevent the default (disable) commmand from
         // being called until desired
         return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY).andThen(run(() -> {
+            state = "Enabled";
         }));
     }
 
@@ -66,11 +69,12 @@ public class Spindexer extends SubsystemBase {
     }
 
     public Command disableCommand() {
-        return setVelocityCommand(RotationsPerSecond.of(0));
+        return setVelocityCommand(RotationsPerSecond.of(0)).andThen(() -> state = "Disable");
     }
 
     public Command reverseCommand() {
         return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {
+            state = "Reverse";
         }));
     }
 
