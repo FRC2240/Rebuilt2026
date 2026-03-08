@@ -19,6 +19,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.Timer;
 
 //import java.util.function.Supplier;
 //import edu.wpi.first.math.geometry.Rotation2d;
@@ -71,17 +72,20 @@ public class LimelightCamera implements CameraInterface {
         metatag2Subscriber = table.getDoubleArrayTopic("botpose_orb_wpiblue").subscribe(new double[] {});
     }
 
+    private boolean been_enabled = false;
     // overrides default method
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
-        /* 
+
+        double matchTime = Timer.getMatchTime();
+        
         if (DriverStation.isEnabled()) {
             been_enabled = true;
         }
-        */
+        
 
         //rwnd
-        if (DriverStation.isDisabled() && !captured) {
+        if (DriverStation.isDisabled() && !captured && matchTime < 2 && been_enabled) {
             captured = true;
             double[] currentArray = rewind_entry.getDoubleArray(new double[] {});
             double counter = (currentArray.length > 0) ? currentArray[0] : 0;

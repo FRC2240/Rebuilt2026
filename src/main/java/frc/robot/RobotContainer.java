@@ -70,7 +70,7 @@ public class RobotContainer {
         // Pivot rezeroing
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
-        joystick.y().whileTrue(intake.pivot.tstRampCommand());
+        joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
     }
 
@@ -101,3 +101,4 @@ public class RobotContainer {
         return autoChooser.getSelected();
     }
 }
+
