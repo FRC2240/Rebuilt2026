@@ -5,12 +5,6 @@
     "data": {
       "commands": [
         {
-          "type": "named",
-          "data": {
-            "name": "intake_deploy"
-          }
-        },
-        {
           "type": "path",
           "data": {
             "pathName": "Right Center Path"
@@ -25,20 +19,8 @@
                 "data": {
                   "name": "shoot"
                 }
-              },
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 5.0
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right Cycle Path"
           }
         }
       ]
