@@ -67,12 +67,10 @@ public class ShootingController extends SubsystemBase {
         hubDistanceToVelocityMap.put(124., 49.5);
         hubDistanceToVelocityMap.put(136., 51.5);
         hubDistanceToVelocityMap.put(148., 53.5);
-        // To tune
-
-        hubDistanceToVelocityMap.put(160., 54.75);
-        hubDistanceToVelocityMap.put(172., 56.5);
-        hubDistanceToVelocityMap.put(184., 58.);
-        hubDistanceToVelocityMap.put(196., 60.);
+        hubDistanceToVelocityMap.put(160., 55.75);
+        hubDistanceToVelocityMap.put(172., 58.);
+        hubDistanceToVelocityMap.put(184., 59.5);
+        hubDistanceToVelocityMap.put(196., 61.5);
 
         passDistanceToVelocityMap.put(74., 30.);
         passDistanceToVelocityMap.put(96., 35.);
