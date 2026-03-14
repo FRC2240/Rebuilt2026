@@ -48,12 +48,12 @@
     },
     {
       "anchor": {
-        "x": 2.2952424768518522,
-        "y": 2.219556568287037
+        "x": 3.198045649072753,
+        "y": 2.2559343794579183
       },
       "prevControl": {
-        "x": 3.4309415121255338,
-        "y": 2.320627674750357
+        "x": 4.333744684346435,
+        "y": 2.3570054859212384
       },
       "nextControl": null,
       "isLocked": false,
@@ -80,7 +80,7 @@
       "minWaypointRelativePos": 0.9597122302158272,
       "maxWaypointRelativePos": 1.96115107913669,
       "constraints": {
-        "maxVelocity": 2.0,
+        "maxVelocity": 1.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -89,11 +89,11 @@
       }
     },
     {
-      "name": "Fast Start",
-      "minWaypointRelativePos": 0,
-      "maxWaypointRelativePos": 0.96,
+      "name": "Please dont fly",
+      "minWaypointRelativePos": 2.0,
+      "maxWaypointRelativePos": 3.0,
       "constraints": {
-        "maxVelocity": 4.0,
+        "maxVelocity": 2.0,
         "maxAcceleration": 3.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -103,19 +103,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "intake",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": 2.0939597315436225,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "intake"
-        }
-      }
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,
@@ -126,7 +114,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 37.62484958234924
+    "rotation": 52.2113484475737
   },
   "reversed": false,
   "folder": null,

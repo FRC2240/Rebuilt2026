@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.986,
-        "y": 3.306
+        "x": 7.416048502139798,
+        "y": 3.045192582025678
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.666329308503106,
-        "y": 2.144175723700913
+        "x": 7.096377810642904,
+        "y": 1.883368305726591
       },
       "isLocked": false,
       "linkedName": "Right Cycle"
@@ -29,7 +29,21 @@
     }
   ],
   "rotationTargets": [],
-  "constraintZones": [],
+  "constraintZones": [
+    {
+      "name": "I beg dont fly",
+      "minWaypointRelativePos": 0.0,
+      "maxWaypointRelativePos": 1.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -48,7 +62,7 @@
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -59.99999999999999
+    "rotation": 52.29419630854084
   },
   "useDefaultConstraints": true
 }
