@@ -7,8 +7,10 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -17,11 +19,11 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
 
-    private TalonFX leftUpperMotor = new TalonFX(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID);
-    private TalonFX leftLowerMotor = new TalonFX(ShooterConstants.LEFT_LOWER_FLYWHEEL_MOTOR_ID);
+    private TalonFX leftFlywheelMotor = new TalonFX(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID);
+    private TalonFX leftFlywheelFollower = new TalonFX(ShooterConstants.LEFT_LOWER_FLYWHEEL_MOTOR_ID);
 
-    private TalonFX rightUpperMotor = new TalonFX(ShooterConstants.RIGHT_UPPER_FLYWHEEL_MOTOR_ID);
-    private TalonFX rightLowerMotor = new TalonFX(ShooterConstants.RIGHT_LOWER_FLYWHEEL_MOTOR_ID);
+    private TalonFX rightFlywheelMotor = new TalonFX(ShooterConstants.RIGHT_UPPER_FLYWHEEL_MOTOR_ID);
+    private TalonFX rightFlywheelFollower = new TalonFX(ShooterConstants.RIGHT_LOWER_FLYWHEEL_MOTOR_ID);
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
@@ -38,27 +40,29 @@ public class Shooter extends SubsystemBase {
         conf.CurrentLimits.SupplyCurrentLimit = 50;
         conf.CurrentLimits.StatorCurrentLimit = 140;
 
-        leftUpperMotor.getConfigurator().apply(conf);
-        leftLowerMotor.getConfigurator().apply(conf);
+        leftFlywheelMotor.getConfigurator().apply(conf);
+        leftFlywheelFollower.getConfigurator().apply(conf);
 
-        rightUpperMotor.getConfigurator().apply(conf);
-        rightLowerMotor.getConfigurator().apply(conf);
+        rightFlywheelMotor.getConfigurator().apply(conf);
+        rightFlywheelFollower.getConfigurator().apply(conf);
     }
 
     @Override
     public void periodic() {
         StatusSignal.refreshAll(leftFlywheelVelocitySignal, rightFlywheelVelocitySignal);
 
-        SmartDashboard.putNumber("Shooter/left flywheel velocity", leftUpperMotor.getVelocity().getValueAsDouble());
-        SmartDashboard.putNumber("Shooter/right flywheel velocity", -rightUpperMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/right flywheel velocity", -rightFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {
-        leftUpperMotor.setControl(req.withVelocity(velocity));
-        leftLowerMotor.setControl(req.withVelocity(velocity));
+        leftFlywheelMotor.setControl(req.withVelocity(velocity));
+        leftFlywheelFollower.setControl(
+                new Follower(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Aligned));
 
-        rightUpperMotor.setControl(req.withVelocity(velocity.unaryMinus()));
-        rightLowerMotor.setControl(req.withVelocity(velocity.unaryMinus()));
+        rightFlywheelMotor.setControl(req.withVelocity(velocity.unaryMinus()));
+        rightFlywheelFollower.setControl(
+                new Follower(ShooterConstants.RIGHT_UPPER_FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Aligned));
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
@@ -71,16 +75,17 @@ public class Shooter extends SubsystemBase {
 
     public Command coastCommand() {
         return runOnce(() -> {
-            leftUpperMotor.setControl(new CoastOut());
-            rightUpperMotor.setControl(new CoastOut());
+            leftFlywheelMotor.setControl(new CoastOut());
+            rightFlywheelMotor.setControl(new CoastOut());
         });
     }
 
     /**
      * Gets the highest velocity of the two motors, as to not fail if a motor fails
      */
-    private StatusSignal<AngularVelocity> leftFlywheelVelocitySignal = leftUpperMotor.getVelocity();
-    private StatusSignal<AngularVelocity> rightFlywheelVelocitySignal = rightUpperMotor.getVelocity();
+    private StatusSignal<AngularVelocity> leftFlywheelVelocitySignal = leftFlywheelMotor.getVelocity();
+    private StatusSignal<AngularVelocity> rightFlywheelVelocitySignal = rightFlywheelMotor.getVelocity();
+
     public AngularVelocity getVelocity() {
         double leftVelocity = leftFlywheelVelocitySignal.getValueAsDouble();
         double rightVelocity = -rightFlywheelVelocitySignal.getValueAsDouble();
