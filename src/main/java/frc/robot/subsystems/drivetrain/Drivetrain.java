@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
@@ -38,6 +39,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.ApplyRobotSpeeds ppDrive = new SwerveRequest.ApplyRobotSpeeds();
 
     public final DriveCommands commands;
+    public Object DriveCommands;
 
     public Drivetrain(CommandXboxController controller) {
         super(TunerConstants.DrivetrainConstants,
@@ -177,7 +179,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     public Command rezeroGyro() {
         return runOnce(() -> resetRotation(Rotation2d.kZero)).ignoringDisable(true);
     }
-
+    
     public Pose2d getPose() {
         return getState().Pose;
     }
