@@ -10,6 +10,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
@@ -17,6 +18,7 @@ import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
 //import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakePivot;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
@@ -46,7 +48,9 @@ public class RobotContainer {
         //NamedCommands.registerCommand("shoot", shootingController.shootIntoHubAutonomous());
 
         //potential auto shooting fix
-        NamedCommands.registerCommand("shoot", shootingController.shootIntoHub().asProxy());
+        NamedCommands.registerCommand("shoot", shootingController.shootIntoHub());
+        NamedCommands.registerCommand("default", Commands.parallel(intake.enableIntakeCommand(),
+                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
     }
 
     private void configureAutoChooser() {

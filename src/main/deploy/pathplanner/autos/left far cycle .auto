@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Right Center Path"
+                  "pathName": "Left Center Path"
                 }
               },
               {
@@ -40,31 +40,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Right Cycle Path"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "default"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "shoot"
           }
         }
       ]

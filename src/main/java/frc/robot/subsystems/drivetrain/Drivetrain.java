@@ -73,8 +73,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     () -> this.getState().Speeds,
                     (speeds, feedforwards) -> setControl(ppDrive.withSpeeds(speeds)),
                     new PPHolonomicDriveController(
-                            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                            new PIDConstants(2.0, 0.0, 0.10), // Translation PID constants
+                            new PIDConstants(2.0, 0.0, 0.10) // Rotation PID constants
                     ),
                     config,
                     () -> {
