@@ -43,10 +43,10 @@ public class RobotContainer {
 
     private void addNamedCommands() {
         // The shoot command is called as proxy to ensure that the default commands on the subsystems are called
-        NamedCommands.registerCommand("shoot", shootingController.shootIntoHubAutonomous());
+        //NamedCommands.registerCommand("shoot", shootingController.shootIntoHubAutonomous());
 
         //potential auto shooting fix
-        //NamedCommands.registerCommand("shoot", shootingController.shootIntoHub().asProxy());
+        NamedCommands.registerCommand("shoot", shootingController.shootIntoHub().asProxy());
     }
 
     private void configureAutoChooser() {

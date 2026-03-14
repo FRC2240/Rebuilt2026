@@ -170,7 +170,7 @@ public class ShootingController extends SubsystemBase {
      * Only shoots when the robot has the correct heading, the shooter has the
      * correct velocity, the robot is in the alliance zone, and the hub is active
      */
-    private Command shootIntoHub() {
+    public Command shootIntoHub() {
         return Commands.parallel(
                 // Constantly sets the correct velocity for the shooter and heading for the
                 // drivebase
@@ -185,30 +185,6 @@ public class ShootingController extends SubsystemBase {
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
                 .until(() -> !Field.inAllianceZone());
-    }
-
-    /**
-     * Shoot command to be used in autonomous because it proxies most of the
-     * subsystems. I cannot just run `shoot` as a proxy because proxy commands do
-     * not stop in a race group from pathplanner
-     */
-    public Command shootIntoHubAutonomous() {
-        return Commands.parallel(
-                shooter.setVelocityCommand(this::getShooterHubVelocityForPosition),
-
-                BetterCommands.repeatedlyChoose(
-                        drivetrain.commands.brake(),
-                        drivetrain.commands.drive(this::driveToValidDistanceFromHub,
-                                drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
-                        () -> isValidDistanceFromHub() && isDrivetrainAimedAtHub() && isRobotStill()),
-
-                // Proxies feed because feed includes intake and intake pivot
-                BetterCommands.runWhen(feed().asProxy(), this::hubShootRequirementsMet),
-
-                intake.pivot.rampCommand().asProxy(),
-
-                // Set the `isCurrentlyShooting` variable
-                Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()));
     }
 
     /**
