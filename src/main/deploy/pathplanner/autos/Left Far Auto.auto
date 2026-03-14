@@ -5,9 +5,22 @@
     "data": {
       "commands": [
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Left Center Path"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Center Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "default"
+                }
+              }
+            ]
           }
         },
         {
@@ -19,8 +32,39 @@
                 "data": {
                   "name": "shoot"
                 }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 5.0
+                }
               }
             ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Cycle Path"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "default"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]

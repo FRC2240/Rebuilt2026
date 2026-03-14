@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Outpost Path"
+                  "pathName": "Station path begin"
                 }
               },
               {
@@ -24,16 +24,34 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 3.0
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
               {
+                "type": "path",
+                "data": {
+                  "pathName": "Station path end"
+                }
+              },
+              {
                 "type": "named",
                 "data": {
-                  "name": "shoot"
+                  "name": "default"
                 }
               }
             ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "shoot"
           }
         }
       ]
