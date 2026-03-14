@@ -32,6 +32,7 @@ public class RobotContainer {
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
+    public final ElasticDashboard elasticDashboard = new ElasticDashboard();
     //public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
     // public final FieldSimulation sim = new FieldSimulation();

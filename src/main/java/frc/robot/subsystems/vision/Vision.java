@@ -102,7 +102,8 @@ public class Vision extends SubsystemBase {
             IO_base[i].update_inputs(input[i]);
 
             //sends alert if condition met
-            overHeat[i].set(input[i].temp > 85); //temp in celcius
+            //overHeat[i].set(input[i].temp > 85); //temp in celcius
+            SmartDashboard.putNumber("ElasticDashboard/limelight-" + i + " temp", input[i].temp);
             disconnect[i].set(!input[i].cam_connected);
             fps[i].set(input[i].fps < 30); //needs to be determined
 
