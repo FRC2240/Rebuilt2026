@@ -23,7 +23,7 @@ public class Intake extends SubsystemBase {
 
     private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
     private String state = "None";
-
+    
     public Intake() {
     
          TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -34,12 +34,13 @@ public class Intake extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         intakeMotor.getConfigurator().apply(conf);
+
+        intakeFollower.setControl(new Follower(IntakeConstants.INTAKE_MOTOR_ID, MotorAlignmentValue.Opposed));
     }
 
 
     public void setVelocity(AngularVelocity velocity) {
-        intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity));
-        intakeFollower.setControl(new Follower(IntakeConstants.INTAKE_MOTOR_ID, MotorAlignmentValue.Opposed));
+        intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity));  
     }
       
     @Override
