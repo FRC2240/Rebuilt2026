@@ -4,6 +4,9 @@
 
 package frc.robot;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -21,7 +24,15 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
-    private SendableChooser<Command> autoChooser;
+    //private SendableChooser<Command> autoChooser;
+    private SendableChooser<String> pathChooserA = new SendableChooser<>();
+    private SendableChooser<String> pathChooserB = new SendableChooser<>();
+    private SendableChooser<String> pathChooserC = new SendableChooser<>();
+    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(pathChooserA, pathChooserB, pathChooserC);
+
+
+
+
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -56,8 +67,11 @@ public class RobotContainer {
     }
 
     private void configureAutoChooser() {
-        autoChooser = AutoBuilder.buildAutoChooser();
-        SmartDashboard.putData("Auto Chooser", autoChooser);
+        betterAutoChooser.publishPathChoosers();
+
+        //autoChooser = AutoBuilder.buildAutoChooser();
+        //SmartDashboard.putData("Auto Chooser 1", autoChooser);
+
     }
 
     private void configureBindings() {
@@ -115,10 +129,20 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        Supplier<Command> shootFactory = () -> shootingController.shootIntoHub();
+        return betterAutoChooser.buildAuto(shootFactory, drivetrain, 5);
+
+
+
+
+
         // Defaults to firstextension to ensure it happens
+
+        /*
         if (autoChooser.getSelected() == null) 
             return null;
 
         return autoChooser.getSelected();
+        */
     }
 }
