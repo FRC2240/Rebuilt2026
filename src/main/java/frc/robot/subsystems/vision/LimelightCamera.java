@@ -19,7 +19,6 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotController;
-import edu.wpi.first.wpilibj.Timer;
 
 //import java.util.function.Supplier;
 //import edu.wpi.first.math.geometry.Rotation2d;
@@ -27,7 +26,7 @@ import edu.wpi.first.wpilibj.Timer;
 public class LimelightCamera implements CameraInterface {
 
     // tracks if rewind capture taken
-    private boolean captured = false;
+    private int captured = 0;
     // private boolean been_enabled = false; for an on disable situation
 
     // supliers store functions so they are more like variables
@@ -53,7 +52,7 @@ public class LimelightCamera implements CameraInterface {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
 
         // enables rewind to play back footage
-        table.getEntry("rewind_enable_set").setDouble(0);
+        table.getEntry("rewind_enable_set").setDouble(1);
 
         this.rotation_supplier = rotation_supplier;
         //https://docs.limelightvision.io/docs/docs-limelight/apis/complete-networktables-api
@@ -76,17 +75,13 @@ public class LimelightCamera implements CameraInterface {
     // overrides default method
     @Override
     public void update_inputs(BaseVisionIOInput inputs) {
-
-        double matchTime = Timer.getMatchTime();
-        
         if (DriverStation.isEnabled()) {
             been_enabled = true;
         }
-        
 
         //rwnd
-        if (DriverStation.isDisabled() && !captured && matchTime < 2 && been_enabled) {
-            captured = true;
+        if (DriverStation.isDisabled() && captured <= 1 && been_enabled) {
+            captured++;
             double[] currentArray = rewind_entry.getDoubleArray(new double[] {});
             double counter = (currentArray.length > 0) ? currentArray[0] : 0;
 
