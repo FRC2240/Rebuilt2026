@@ -4,7 +4,6 @@ Control scheme
 
 Joystick - drive
 
-POV up - (toggle?) climb
 POV down - reverse intake
 
 Right Trigger - shoot
@@ -12,6 +11,9 @@ Left Trigger - toggle intake
 
 Hamburger - rezero
 dual screen - slow mode
+
+Y - trench align
+X - intake up
 
 ## IDs
 ### Swerve
@@ -28,7 +30,7 @@ Right Lower Flywheel: 61
 Feeder: 52
 
 ### Intake
-Intake: 54 & 62
+Intake: 54 & 64
 Pivot: 55
 
 ### Climber

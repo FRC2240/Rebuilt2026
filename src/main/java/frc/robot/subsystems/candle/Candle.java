@@ -76,5 +76,4 @@ public class Candle extends SubsystemBase {
 
         candle.setControl(color);
     }
-
 }
