@@ -1,6 +1,5 @@
 package frc.robot.subsystems.drivetrain;
 
-import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -226,8 +225,6 @@ public Command snapToRotationPosition(double targetAngleDegrees) {
     return Rotation2d.fromDegrees(0);
  });
  }
-    
-
 
     /**
      * Transforms joystick input into translational velocity

@@ -21,7 +21,6 @@ public class Intake extends SubsystemBase {
 
     public final IntakePivot pivot = new IntakePivot();
 
-    private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
     private String state = "None";
     
     public Intake() {

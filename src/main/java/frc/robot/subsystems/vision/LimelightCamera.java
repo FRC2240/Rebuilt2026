@@ -32,7 +32,6 @@ public class LimelightCamera implements CameraInterface {
     // supliers store functions so they are more like variables
     private final Supplier<Rotation2d> rotation_supplier;
 
-
     // publisher sends data in/on a topic which works like a channel subscriber on
     // same topic receives it
     private final DoubleArrayPublisher orientation_publisher;
