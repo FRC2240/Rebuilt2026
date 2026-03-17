@@ -1,14 +1,11 @@
-package frc.robot.utils;
+package frc.robot.utils.BetterAutos;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -33,6 +30,8 @@ public class BetterAutoChooser {
         for (int i = 0; i < numChoosers; i++) {
             chooserList.add(new SendableChooser<>());
         }
+
+        registerCommand(none, null);
     }
 
     public void registerCommand(String name, Supplier<Command> command) {
@@ -103,8 +102,13 @@ public class BetterAutoChooser {
             }
             else {
                 for (NamedCommand command : commandList) {
-                    if(command.GetName().equals(chooserList.get(i-1).getSelected())) {
-                        pathCommands[i] = new ParallelRaceGroup(command.GetCommand().get()).raceWith(new WaitCommand(time));
+                    try {
+                        if(command.GetName().equals(chooserList.get(i-1).getSelected())) {
+                            pathCommands[i] = new ParallelRaceGroup(command.GetCommand().get()).raceWith(new WaitCommand(time));
+                        }
+                    }
+                    catch (Exception e) {
+                        pathCommands[i] = Commands.none();
                     }
                 }
             }

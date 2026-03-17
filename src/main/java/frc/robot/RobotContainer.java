@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
+import frc.robot.utils.BetterAutos.BetterAutoChooser;
 import frc.robot.subsystems.vision.*;
 //import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.intake.Intake;
@@ -25,6 +26,7 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     //private SendableChooser<Command> autoChooser;
+    public SendableChooser<Command> autoChooser;
     private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(5);
 
 
@@ -68,8 +70,8 @@ public class RobotContainer {
         betterAutoChooser.registerCommand("shoot", shootFactory);
         betterAutoChooser.publishChoosers();
 
-        //autoChooser = AutoBuilder.buildAutoChooser();
-        //SmartDashboard.putData("Auto Chooser 1", autoChooser);
+        autoChooser = AutoBuilder.buildAutoChooser();
+        SmartDashboard.putData("Auto Chooser", autoChooser);
 
     }
 
@@ -128,19 +130,13 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return betterAutoChooser.buildAuto(drivetrain, 5);
-
-
-
-
 
         // Defaults to firstextension to ensure it happens
 
-        /*
-        if (autoChooser.getSelected() == null) 
-            return null;
+        if (autoChooser.getSelected() == null || autoChooser.getSelected().getName().equals("InstantCommand")) {
+            return betterAutoChooser.buildAuto(drivetrain, 5);
+        }
 
         return autoChooser.getSelected();
-        */
     }
 }
