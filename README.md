@@ -30,7 +30,7 @@ Right Lower Flywheel: 61
 Feeder: 52
 
 ### Intake
-Intake: 54 & 62
+Intake: 54 & 64
 Pivot: 55
 
 ### Climber
