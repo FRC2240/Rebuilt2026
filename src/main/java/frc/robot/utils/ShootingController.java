@@ -26,6 +26,7 @@ import frc.robot.subsystems.drivetrain.DriveCommands;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.spindexer.Spindexer;
 
 public class ShootingController extends SubsystemBase {
@@ -60,28 +61,28 @@ public class ShootingController extends SubsystemBase {
         this.intake = intake;
 
         // Set values for the tree map
-        hubDistanceToVelocityMap.put(76., 44.);
-        hubDistanceToVelocityMap.put(88., 45.);
-        hubDistanceToVelocityMap.put(100., 46.5);
-        hubDistanceToVelocityMap.put(112., 48.);
-        hubDistanceToVelocityMap.put(124., 49.5);
-        hubDistanceToVelocityMap.put(136., 51.5);
-        hubDistanceToVelocityMap.put(148., 53.5);
-        hubDistanceToVelocityMap.put(160., 55.75);
-        hubDistanceToVelocityMap.put(172., 58.);
-        hubDistanceToVelocityMap.put(184., 59.5);
-        hubDistanceToVelocityMap.put(196., 61.5);
+        hubDistanceToVelocityMap.put(76., 44. * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(88., 45. * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(100., 46.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(112., 48. * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(124., 49.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(136., 51.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(148., 53.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(160., 55.75 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(172., 58. * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(184., 59.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(196., 61.5 * ShooterConstants.GEAR_RATIO);
 
-        passDistanceToVelocityMap.put(74., 30.);
-        passDistanceToVelocityMap.put(96., 35.);
-        passDistanceToVelocityMap.put(122., 40.);
-        passDistanceToVelocityMap.put(144., 45.);
-        passDistanceToVelocityMap.put(179., 50.);
-        passDistanceToVelocityMap.put(196., 55.);
-        passDistanceToVelocityMap.put(230., 60.);
-        passDistanceToVelocityMap.put(264., 65.);
-        passDistanceToVelocityMap.put(305., 70.);
-        passDistanceToVelocityMap.put(330., 75.);
+        passDistanceToVelocityMap.put(74., 30. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(96., 35. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(122., 40. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(144., 45. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(179., 50. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(196., 55. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(230., 60. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(264., 65. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(305., 70. * ShooterConstants.GEAR_RATIO);
+        passDistanceToVelocityMap.put(330., 75. * ShooterConstants.GEAR_RATIO);
 
     }
 

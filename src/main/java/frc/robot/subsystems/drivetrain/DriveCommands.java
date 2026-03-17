@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drivetrain;
 
+import static edu.wpi.first.units.Units.Degrees;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -207,6 +209,25 @@ public class DriveCommands extends SubsystemBase {
                     return translationFinished && rotationFinished;
                 });
     }
+
+public Command snapToRotationPosition(double targetAngleDegrees) { 
+    return new InstantCommand(() -> { 
+    rotateToRotation(() -> Rotation2d.fromDegrees(targetAngleDegrees)); 
+    });
+ }
+
+ public Supplier<AngularVelocity> trenchAlign() {
+    return rotateToRotation(() -> {
+    double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
+
+    if (currentRotation >= 90) {
+        return Rotation2d.fromDegrees(180);
+    }
+    return Rotation2d.fromDegrees(0);
+ });
+ }
+    
+
 
     /**
      * Transforms joystick input into translational velocity

@@ -5,8 +5,10 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,12 +17,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
     private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
+    private TalonFX intakeFollower = new TalonFX(IntakeConstants.INTAKE_MOTOR_FOLLOWER_ID);
 
     public final IntakePivot pivot = new IntakePivot();
 
     private VelocityTorqueCurrentFOC request = new VelocityTorqueCurrentFOC(0);
     private String state = "None";
-
+    
     public Intake() {
     
          TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -31,10 +34,13 @@ public class Intake extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         intakeMotor.getConfigurator().apply(conf);
+
+        intakeFollower.setControl(new Follower(IntakeConstants.INTAKE_MOTOR_ID, MotorAlignmentValue.Opposed));
     }
 
+
     public void setVelocity(AngularVelocity velocity) {
-        intakeMotor.setControl(request.withVelocity(velocity));
+        intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity));  
     }
       
     @Override
@@ -43,36 +49,36 @@ public class Intake extends SubsystemBase {
         SmartDashboard.putString("Intake/Roller state", state);
     }
 
-    public Command setIntakeVelocity(AngularVelocity velocity) {
-        return runOnce(() -> intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity)));
+    public Command setIntakeVelocityCommand(AngularVelocity velocity) {
+        return runOnce(() -> setVelocity(velocity));
     }
 
-    public Command setIntakeVelocity(Supplier<AngularVelocity> velocity) {
+    public Command setIntakeVelocityCommand(Supplier<AngularVelocity> velocity) {
         return runOnce(() -> setVelocity(velocity.get()));
     }
 
     public Command enableIntakeCommand() {
         // Runs after setting control to prevent the default (enable) commmand from
         // being called until desired
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
+        return setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
             state = "Enable";
         })).withName("Enable");
     }
 
     public Command enableIntakeSlowCommand() {
-        return setIntakeVelocity(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
+        return setIntakeVelocityCommand(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
             state = "Enable Slow";
         })).withName("Enable Slow");
     }
 
     public Command disableIntakeCommand() {
-        return setIntakeVelocity(RotationsPerSecond.of(0)).andThen(run(() -> {
+        return setIntakeVelocityCommand(RotationsPerSecond.of(0)).andThen(run(() -> {
             state = "Disable";
         })).withName("Disable");
     }
 
     public Command reverseIntakeCommand() {
-        return setIntakeVelocity(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
+        return setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
             state = "Reverse";
         })).withName("Reverse");
     }
