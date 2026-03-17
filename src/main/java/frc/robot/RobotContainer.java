@@ -4,7 +4,6 @@
 
 package frc.robot;
 
-import java.util.List;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -25,8 +24,7 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
-    //private SendableChooser<Command> autoChooser;
-    public SendableChooser<Command> autoChooser;
+    private SendableChooser<Command> autoChooser;
     private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(5);
 
 
