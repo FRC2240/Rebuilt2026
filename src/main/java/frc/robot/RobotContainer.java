@@ -25,10 +25,7 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     //private SendableChooser<Command> autoChooser;
-    private SendableChooser<String> pathChooserA = new SendableChooser<>();
-    private SendableChooser<String> pathChooserB = new SendableChooser<>();
-    private SendableChooser<String> pathChooserC = new SendableChooser<>();
-    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(pathChooserA, pathChooserB, pathChooserC);
+    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(5);
 
 
 
@@ -67,7 +64,9 @@ public class RobotContainer {
     }
 
     private void configureAutoChooser() {
-        betterAutoChooser.publishPathChoosers();
+        Supplier<Command> shootFactory = () -> shootingController.shootIntoHub();
+        betterAutoChooser.registerCommand("shoot", shootFactory);
+        betterAutoChooser.publishChoosers();
 
         //autoChooser = AutoBuilder.buildAutoChooser();
         //SmartDashboard.putData("Auto Chooser 1", autoChooser);
@@ -129,8 +128,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        Supplier<Command> shootFactory = () -> shootingController.shootIntoHub();
-        return betterAutoChooser.buildAuto(shootFactory, drivetrain, 5);
+        return betterAutoChooser.buildAuto(drivetrain, 5);
 
 
 

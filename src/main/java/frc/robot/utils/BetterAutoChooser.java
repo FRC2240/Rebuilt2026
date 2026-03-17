@@ -2,7 +2,9 @@ package frc.robot.utils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -22,18 +24,22 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class BetterAutoChooser {
-    
-    private SendableChooser<String> chooserA = new SendableChooser<>();
-    private SendableChooser<String> chooserB = new SendableChooser<>();
-    private SendableChooser<String> chooserC = new SendableChooser<>();
+    private final String none = "none";
 
-    public BetterAutoChooser(SendableChooser<String> A, SendableChooser<String> B, SendableChooser<String> C) {
-        //this.chooserA = A;
-        //this.chooserB = B;
-        //this.chooserC = C;
+    private List<SendableChooser<String>> chooserList = new ArrayList<>();
+    private List<NamedCommand> commandList = new ArrayList<>();
+
+    public BetterAutoChooser(int numChoosers) {
+        for (int i = 0; i < numChoosers; i++) {
+            chooserList.add(new SendableChooser<>());
+        }
     }
 
-    private static List<String> getAllPathNames() {
+    public void registerCommand(String name, Supplier<Command> command) {
+        commandList.add(new NamedCommand(name, command));
+    }
+
+    private List<String> getAllPathNames() {
         List<String> pathNames = new ArrayList<>();
 
         File pathDir = new File(Filesystem.getDeployDirectory(), "pathplanner/paths");
@@ -50,58 +56,66 @@ public class BetterAutoChooser {
         return pathNames;
     }
 
-    public void publishPathChoosers() {
+    public void publishChoosers() {
         List<String> pathNames = getAllPathNames();
 
-        for (String name : pathNames) {
-            this.chooserA.addOption(name, name);
-            this.chooserB.addOption(name, name);
-            this.chooserC.addOption(name, name);
+        for (int i = 0; i < chooserList.size(); i++) {
+            if(i % 2 == 0) {
+                for (String name : pathNames) {
+                    chooserList.get(i).addOption(name, name);
+                }
+            }
+            else if (commandList.size() != 0) {
+                for (NamedCommand command : commandList) {
+                    chooserList.get(i).addOption(command.GetName(), command.GetName());
+                }
+            }
+
+            chooserList.get(i).addOption(none, none);
+            SmartDashboard.putData("OTF/Selector " + (i + 1), chooserList.get(i));
         }
-
-        this.chooserA.addOption("none", "none");
-            this.chooserB.addOption("none", "none");
-            this.chooserC.addOption("none", "none");
-
-        SmartDashboard.putData("Path Selector A", this.chooserA);
-        SmartDashboard.putData("Path Selector B", this.chooserB);
-        SmartDashboard.putData("Path Selector C", this.chooserC);
     }
 
-    public Command buildAuto(Supplier<Command> shootCommand, Drivetrain drive, int waitTime) {
-        PathPlannerPath pathA;
-        PathPlannerPath pathB;
-        PathPlannerPath pathC;
-
-        try{
-            pathA = PathPlannerPath.fromPathFile(this.chooserA.getSelected());
-            pathB = PathPlannerPath.fromPathFile(this.chooserB.getSelected());
-            pathC = PathPlannerPath.fromPathFile(this.chooserC.getSelected());
-
+    public Command[] initializePaths(Drivetrain drive, double time) {
+        Command[] pathCommands = new Command[chooserList.size() + 1];
+        
+        try {
+            PathPlannerPath startPath = PathPlannerPath.fromPathFile(chooserList.get(0).getSelected());
+            pathCommands[0] = new InstantCommand(() -> {
+                var start = startPath.getStartingHolonomicPose();
+                drive.resetPose(start.get());
+            });
         } catch (Exception e) {
-            DriverStation.reportWarning("Path could not be initialized for building:\n" + e.getMessage(), e.getStackTrace());
-            return Commands.none();
+            DriverStation.reportError("Fatal Path Init Error:\n" + e.getMessage(), e.getStackTrace());
         }
+        // index 0 should be set to reset command
 
-        return new SequentialCommandGroup(
-            new InstantCommand(() -> {
-                var startPose = pathA.getStartingHolonomicPose();
-                drive.resetPose(startPose.get());
-            }),  // End of 1st action
+        for (int i = 1; i < chooserList.size() + 1; i++) {
+            if (i % 2 == 1) {
+                try{
+                    PathPlannerPath path = PathPlannerPath.fromPathFile(chooserList.get(i-1).getSelected());
+                    pathCommands[i] = AutoBuilder.followPath(path);
 
-            AutoBuilder.followPath(pathA), // End of 2nd action
+                } catch (Exception e) {
+                    DriverStation.reportWarning("Path could not be initialized:\n" + e.getMessage(), e.getStackTrace());
+                    pathCommands[i] = Commands.none();
+                }
+            }
+            else {
+                for (NamedCommand command : commandList) {
+                    if(command.GetName().equals(chooserList.get(i-1).getSelected())) {
+                        pathCommands[i] = new ParallelRaceGroup(command.GetCommand().get()).raceWith(new WaitCommand(time));
+                    }
+                }
+            }
+        }
+        return pathCommands;
+    }
 
-            new ParallelRaceGroup(shootCommand.get(), new WaitCommand(waitTime)).andThen(Commands.print("hello")), // End of 3rd action
+    public Command buildAuto(Drivetrain drive, double waitTime) {
+        Command[] pathCommands = initializePaths(drive, waitTime);
 
-            AutoBuilder.followPath(pathB),
-
-            new ParallelRaceGroup(shootCommand.get()).raceWith(new WaitCommand(waitTime)),
-
-            AutoBuilder.followPath(pathC),
-
-            shootCommand.get()
-
-            );
+        return new SequentialCommandGroup(pathCommands);
     }
     
 }
