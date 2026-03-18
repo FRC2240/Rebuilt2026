@@ -324,32 +324,6 @@
             }
           },
           {
-            "title": "left flywheel velocity",
-            "x": 960.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/left flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "right flywheel velocity",
-            "x": 1216.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/right flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
             "title": "limelight-left",
             "x": 64.0,
             "y": 192.0,
@@ -373,6 +347,48 @@
               "topic": "/CameraPublisher/limelight-right",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "real flywheel velocity",
+            "x": 960.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/real flywheel velocity",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "desired flywheel velocity",
+            "x": 1216.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/desired flywheel velocity",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "real flywheel velocity",
+            "x": 1216.0,
+            "y": 704.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/real flywheel velocity",
+              "period": 0.033,
+              "data_type": "double"
             }
           }
         ]

@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
@@ -86,6 +87,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                         return false;
                     },
                     this);
+            FollowPathCommand.warmupCommand().schedule();
         } catch (Exception e) {
             // Handle exception as needed
             e.printStackTrace();

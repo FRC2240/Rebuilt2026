@@ -30,8 +30,6 @@ public class BetterAutoChooser {
         for (int i = 0; i < numChoosers; i++) {
             chooserList.add(new SendableChooser<>());
         }
-
-        registerCommand(none, null);
     }
 
     public void registerCommand(String name, Supplier<Command> command) {
@@ -57,6 +55,7 @@ public class BetterAutoChooser {
 
     public void publishChoosers() {
         List<String> pathNames = getAllPathNames();
+        registerCommand(none, () -> Commands.none());
 
         for (int i = 0; i < chooserList.size(); i++) {
             if(i % 2 == 0) {
@@ -85,15 +84,17 @@ public class BetterAutoChooser {
                 drive.resetPose(start.get());
             });
         } catch (Exception e) {
-            DriverStation.reportError("Fatal Path Init Error:\n" + e.getMessage(), e.getStackTrace());
+            if(!e.getMessage().contains(none)) {
+                DriverStation.reportError("Fatal Path Init Error:\n" + e.getMessage(), e.getStackTrace());
+            }
         }
-        // index 0 should be set to reset command
 
         for (int i = 1; i < chooserList.size() + 1; i++) {
             if (i % 2 == 1) {
                 try{
                     PathPlannerPath path = PathPlannerPath.fromPathFile(chooserList.get(i-1).getSelected());
-                    pathCommands[i] = AutoBuilder.followPath(path);
+                    pathCommands[i] = new ParallelRaceGroup(AutoBuilder.followPath(path))
+                        .raceWith(commandList.get(0).GetCommand().get());
 
                 } catch (Exception e) {
                     DriverStation.reportWarning("Path could not be initialized:\n" + e.getMessage(), e.getStackTrace());
@@ -118,7 +119,6 @@ public class BetterAutoChooser {
 
     public Command buildAuto(Drivetrain drive, double waitTime) {
         Command[] pathCommands = initializePaths(drive, waitTime);
-
         return new SequentialCommandGroup(pathCommands);
     }
     

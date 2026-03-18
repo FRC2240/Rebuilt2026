@@ -64,7 +64,12 @@ public class RobotContainer {
     }
 
     private void configureAutoChooser() {
+        Supplier<Command> defaultFactory = () -> Commands.parallel(intake.enableIntakeCommand(),
+                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand());
         Supplier<Command> shootFactory = () -> shootingController.shootIntoHub();
+
+        // Default is declared frist so that it is at index 0, which has code to separate it in choosers
+        betterAutoChooser.registerCommand("default", defaultFactory);
         betterAutoChooser.registerCommand("shoot", shootFactory);
         betterAutoChooser.publishChoosers();
 
