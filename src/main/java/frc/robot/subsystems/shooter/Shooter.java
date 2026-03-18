@@ -50,11 +50,16 @@ public class Shooter extends SubsystemBase {
         
         rightFlywheelFollowerLower.setControl(
             new Follower(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Opposed));
+
+        SmartDashboard.putNumber("ShooterV", leftFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     @Override
     public void periodic() {
         StatusSignal.refreshAll(leftFlywheelVelocitySignal);
+
+        double rps = SmartDashboard.getNumber("ShooterV", 0);
+        setVelocityCommand(AngularVelocity.ofBaseUnits(rps, RotationsPerSecond));
 
         SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
     }

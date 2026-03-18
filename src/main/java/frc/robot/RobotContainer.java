@@ -86,13 +86,13 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // Spindexer is disabled by default
-        spindexer.setDefaultCommand(spindexer.disableCommand());
+        spindexer.setDefaultCommand(spindexer.enableCommand());
 
         // Intake is enabled by default
         intake.setDefaultCommand(intake.enableIntakeCommand());
 
         // Feeder is disabled by default
-        shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
+        shooter.feeder.setDefaultCommand(shooter.feeder.enableCommand());
 
         // Shooter coasts when not used (power saving)
         shooter.setDefaultCommand(shooter.coastCommand());
