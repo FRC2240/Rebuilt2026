@@ -21,6 +21,6 @@ public class ShooterConstants {
     // These only apply when shooting. Setting to zero still works bc we are turning it off(aka not shooting)
     public static final AngularVelocity MAX_MOTOR_OUTPUT = AngularVelocity.ofBaseUnits(0.89, RotationsPerSecond);
     public static final AngularVelocity MIN_MOTOR_OUTPUT = AngularVelocity.ofBaseUnits(0.15, RotationsPerSecond);
-    public static AngularVelocity FEED_VELOCITY = RotationsPerSecond.of(-60);
+    public static AngularVelocity FEED_VELOCITY = RotationsPerSecond.of(90);
     public static final AngularVelocity PASSING_OUTPUT = AngularVelocity.ofBaseUnits(30, RotationsPerSecond);
 }

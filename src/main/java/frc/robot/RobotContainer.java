@@ -41,6 +41,8 @@ public class RobotContainer {
         configureAutoChooser();
         configureDefaults();
         configureBindings();
+
+        SmartDashboard.putNumber("Desired shooter velocity", 0);
     }
 
     private void addNamedCommands() {
@@ -75,11 +77,13 @@ public class RobotContainer {
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
 
         // Pivot rezeroing
-        // joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
+        joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
         joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
         joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
+
+        joystick.b().whileTrue(shootingController.feed());
 
     }
     private void configureDefaults() {
@@ -97,8 +101,17 @@ public class RobotContainer {
         // Shooter coasts when not used (power saving)
         shooter.setDefaultCommand(shooter.coastCommand());
         
+        /*
+        shooter.setDefaultCommand(
+            shooter.setVelocityCommand(
+                () -> RotationsPerSecond.of(SmartDashboard.getNumber("Desired shooter velocity", 0)))
+        );
+         */
+
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
+
+
     }
 
     public Command getAutonomousCommand() {

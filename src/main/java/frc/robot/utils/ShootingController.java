@@ -30,8 +30,8 @@ import frc.robot.subsystems.shooter.ShooterConstants;
 import frc.robot.subsystems.spindexer.Spindexer;
 
 public class ShootingController extends SubsystemBase {
-    private static final AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(1.5);
-    private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(4);
+    private static AngularVelocity SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(4);
+    private static final Angle DRIVETRAIN_HEADING_THRESHOLD = Degrees.of(3);
 
     private static final LinearVelocity DRIVETRAIN_STILL_LINEAR_TOLERANCE = InchesPerSecond.of(5);
     private static final AngularVelocity DRIVETRAIN_STILL_ANGULAR_TOLERANCE = DegreesPerSecond.of(10);
@@ -61,17 +61,16 @@ public class ShootingController extends SubsystemBase {
         this.intake = intake;
 
         // Set values for the tree map
-        hubDistanceToVelocityMap.put(76., 44. * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(88., 45. * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(100., 46.5 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(112., 48. * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(124., 49.5 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(136., 51.5 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(148., 53.5 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(160., 55.75 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(172., 58. * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(184., 59.5 * ShooterConstants.GEAR_RATIO);
-        hubDistanceToVelocityMap.put(196., 61.5 * ShooterConstants.GEAR_RATIO);
+        hubDistanceToVelocityMap.put(76., 51.25);
+        hubDistanceToVelocityMap.put(92., 51.5);
+        hubDistanceToVelocityMap.put(105.7, 54.);
+        hubDistanceToVelocityMap.put(118.1, 56.);
+        hubDistanceToVelocityMap.put(125.5, 57.);
+        hubDistanceToVelocityMap.put(132., 59.);
+        hubDistanceToVelocityMap.put(150.2, 63.);
+        hubDistanceToVelocityMap.put(163.1, 65.);
+        hubDistanceToVelocityMap.put(175., 68.);
+        hubDistanceToVelocityMap.put(194.7, 69.);
 
         passDistanceToVelocityMap.put(74., 30. * ShooterConstants.GEAR_RATIO);
         passDistanceToVelocityMap.put(96., 35. * ShooterConstants.GEAR_RATIO);
@@ -84,6 +83,7 @@ public class ShootingController extends SubsystemBase {
         passDistanceToVelocityMap.put(305., 70. * ShooterConstants.GEAR_RATIO);
         passDistanceToVelocityMap.put(330., 75. * ShooterConstants.GEAR_RATIO);
 
+        SmartDashboard.putNumber("Shooter velocity threshold", SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond));
     }
 
     public boolean isShooting() {
@@ -175,9 +175,9 @@ public class ShootingController extends SubsystemBase {
         return Commands.parallel(
                 // Constantly sets the correct velocity for the shooter and heading for the
                 // drivebase
-                shooter.setVelocityCommand(this::getShooterHubVelocityForPosition),
+                Commands.waitUntil(this::isDrivetrainAimedAtHub).andThen(shooter.setVelocityCommand(this::getShooterHubVelocityForPosition)),
 
-                drivetrain.commands.drive(this::driveToValidDistanceFromHub,drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
+                drivetrain.commands.drive(this::driveToValidDistanceFromHub, drivetrain.commands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get)),
 
                 BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
                 
@@ -270,5 +270,7 @@ public class ShootingController extends SubsystemBase {
                 isShooterAtVelocity(getShooterPassVelocityForPosition()));
         SmartDashboard.putNumber("ShootingConditions/Pass/desired flywheel velocity",
                 getShooterPassVelocityForPosition().in(RotationsPerSecond));
+
+        SHOOTER_VELOCITY_THRESHOLD = RotationsPerSecond.of(SmartDashboard.getNumber("Shooter velocity threshold", SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond)));
     }
 }
