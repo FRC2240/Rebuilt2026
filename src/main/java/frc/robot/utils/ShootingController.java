@@ -72,16 +72,17 @@ public class ShootingController extends SubsystemBase {
         hubDistanceToVelocityMap.put(175., 68.);
         hubDistanceToVelocityMap.put(194.7, 69.);
 
-        passDistanceToVelocityMap.put(74., 30. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(96., 35. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(122., 40. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(144., 45. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(179., 50. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(196., 55. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(230., 60. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(264., 65. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(305., 70. * ShooterConstants.GEAR_RATIO);
-        passDistanceToVelocityMap.put(330., 75. * ShooterConstants.GEAR_RATIO);
+        
+        passDistanceToVelocityMap.put(65., 30.);
+        passDistanceToVelocityMap.put(83., 35.);
+        passDistanceToVelocityMap.put(119., 45.);
+        passDistanceToVelocityMap.put(136.,50.);
+        passDistanceToVelocityMap.put(149.,55.);
+        passDistanceToVelocityMap.put(173.,60.);
+        passDistanceToVelocityMap.put(209.,65.);
+        passDistanceToVelocityMap.put(243.,70.);
+        passDistanceToVelocityMap.put(281.,75.);
+        passDistanceToVelocityMap.put(314.,80.);
 
         SmartDashboard.putNumber("Shooter velocity threshold", SHOOTER_VELOCITY_THRESHOLD.in(RotationsPerSecond));
     }
