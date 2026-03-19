@@ -3,11 +3,14 @@ package frc.robot.utils.BetterAutos;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -17,31 +20,33 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
-public class BetterAutoChooser {
-    private final String none = "none";
+public class BetterAutoChooser extends SubsystemBase{
 
-    private List<SendableChooser<String>> chooserList = new ArrayList<>();
-    private List<NamedCommand> commandList = new ArrayList<>();
+    private SendableChooser<Translation2d> startChooser = new SendableChooser<>();
+    private SendableChooser<PathPlannerPath> collectionOneChooser = new SendableChooser<>();
+    private SendableChooser<PathPlannerPath> collectionTwoChooser = new SendableChooser<>();
 
-    public BetterAutoChooser(int numChoosers) {
-        for (int i = 0; i < numChoosers; i++) {
-            chooserList.add(new SendableChooser<>());
-        }
+    private List<PathPlannerPath> pathList = new ArrayList<>();
+    private List<NamedCommandSupplier> commandList = new ArrayList<>();
+
+    public BetterAutoChooser() {
     }
 
     public void registerCommand(String name, Supplier<Command> command) {
-        commandList.add(new NamedCommand(name, command));
+        commandList.add(new NamedCommandSupplier(name, command));
     }
 
-    private List<String> getAllPathNames() {
+
+    private void getAllPaths() {
         List<String> pathNames = new ArrayList<>();
 
         File pathDir = new File(Filesystem.getDeployDirectory(), "pathplanner/paths");
 
-        File[] files = pathDir.listFiles((dir, name) -> name.endsWith(".path"));
+        File[] files = pathDir.listFiles((dir, name) -> name.endsWith("OTF.path"));
 
         if (files != null) {
             for (File file : files) {
@@ -50,76 +55,124 @@ public class BetterAutoChooser {
             }
         }
 
-        return pathNames;
+        // this should make it so all paths on the pathList are valid, and thus all selected values will be valid
+        try {
+            if (pathNames.size() == 0) {return;}
+
+            for (String path : pathNames) {
+                pathList.add(PathPlannerPath.fromPathFile(path));
+                System.out.println(path);
+            }
+        } catch (Exception e) {
+            DriverStation.reportWarning("Failed to load all paths from file:\n" + e.getMessage(), e.getStackTrace());
+        }
     }
+
+    private void initializeChoosers () {
+        getAllPaths();
+
+        startChooser.setDefaultOption("None", null);
+        collectionOneChooser.setDefaultOption("None", null);
+        collectionTwoChooser.setDefaultOption("None", null);
+
+        startChooser.addOption("Hub", AutoConstants.HUB.get());
+        startChooser.addOption("Left Bump", AutoConstants.LEFT_BUMP.get());
+        startChooser.addOption("Left Trench", AutoConstants.LEFT_TRENCH.get());
+        startChooser.addOption("Right Bump", AutoConstants.RIGHT_BUMP.get());
+        startChooser.addOption("Left Trench", AutoConstants.RIGHT_TRENCH.get());
+
+        for (PathPlannerPath path : pathList) {
+            collectionOneChooser.addOption(path.name, path);
+            collectionTwoChooser.addOption(path.name, path);
+        }
+    }
+
+    /* deffered for after the rest works
+    @Override
+    public void periodic() {
+        collectionOneChooser.onChange((newValue) -> {
+            // feed it into tree function to get a new list of valid paths2 and publish that to collection chooser 2
+            updateChoosers(newValue);
+        });
+    }
+
+    private void updateChoosers(PathPlannerPath selected) {
+        if (selected == null) {return;}
+        boolean changed = false;
+        for (PathPlannerPath path : pathList) {
+
+            if (selected.name.contains("Left") && !path.name.contains("Right") && !path.name.contains("Outpost")) {
+                changed = true;
+
+                collectionTwoChooser = new SendableChooser<>();
+                collectionTwoChooser.addOption(path.name, path);
+            }
+            else if (selected.name.contains("Right") && !path.name.contains("Left") && !path.name.contains("Depot")) {
+                changed = true;
+
+                collectionTwoChooser = new SendableChooser<>();
+                collectionTwoChooser.addOption(path.name, path);
+            }
+
+        }
+
+        if (changed) {
+            publishChoosers();
+        }
+    }
+    */
 
     public void publishChoosers() {
-        List<String> pathNames = getAllPathNames();
-        registerCommand(none, () -> Commands.none());
+        initializeChoosers();
 
-        for (int i = 0; i < chooserList.size(); i++) {
-            if(i % 2 == 0) {
-                for (String name : pathNames) {
-                    chooserList.get(i).addOption(name, name);
-                }
-            }
-            else if (commandList.size() != 0) {
-                for (NamedCommand command : commandList) {
-                    chooserList.get(i).addOption(command.GetName(), command.GetName());
-                }
-            }
+        SmartDashboard.putData("BetterChooser/Start Selector", startChooser);
+        SmartDashboard.putData("BetterChooser/Collection 1 Selector", collectionOneChooser);
+        SmartDashboard.putData("BetterChooser/Collection 2 Selector", collectionTwoChooser);
 
-            chooserList.get(i).addOption(none, none);
-            SmartDashboard.putData("OTF/Selector " + (i + 1), chooserList.get(i));
-        }
     }
 
-    public Command[] initializePaths(Drivetrain drive, double time) {
-        Command[] pathCommands = new Command[chooserList.size() + 1];
-        
-        try {
-            PathPlannerPath startPath = PathPlannerPath.fromPathFile(chooserList.get(0).getSelected());
-            pathCommands[0] = new InstantCommand(() -> {
-                var start = startPath.getStartingHolonomicPose();
-                drive.resetPose(start.get());
+    public Command[] initilizeAuto(Drivetrain drivetrain) {
+        Command[] autoCommands = new Command[5];
+
+        Supplier<Command> defaultCommand = commandList.get(0).GetCommand();
+        Supplier<Command> shootCommand = commandList.get(1).GetCommand();
+
+        Translation2d startTrans2d = startChooser.getSelected();
+        PathPlannerPath pathA = collectionOneChooser.getSelected();
+        PathPlannerPath pathB = collectionTwoChooser.getSelected();
+
+        // This gets your initial position and 
+        autoCommands[0] = new InstantCommand(() -> {    // this is not meant to use drivetrain, but the rotation at the paths start
+                var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading()));
+                drivetrain.resetPose(start.get());
             });
-        } catch (Exception e) {
-            if(!e.getMessage().contains(none)) {
-                DriverStation.reportError("Fatal Path Init Error:\n" + e.getMessage(), e.getStackTrace());
-            }
+        
+        if (pathA == null) {
+            autoCommands[1] = Commands.none();
+        }
+        else {
+            autoCommands[1] = new ParallelRaceGroup(AutoBuilder.followPath(pathA))
+                        .raceWith(defaultCommand.get());
         }
 
-        for (int i = 1; i < chooserList.size() + 1; i++) {
-            if (i % 2 == 1) {
-                try{
-                    PathPlannerPath path = PathPlannerPath.fromPathFile(chooserList.get(i-1).getSelected());
-                    pathCommands[i] = new ParallelRaceGroup(AutoBuilder.followPath(path))
-                        .raceWith(commandList.get(0).GetCommand().get());
+        autoCommands[2] = new ParallelRaceGroup(shootCommand.get()).raceWith(new WaitCommand(AutoConstants.WAITTIME));
 
-                } catch (Exception e) {
-                    DriverStation.reportWarning("Path could not be initialized:\n" + e.getMessage(), e.getStackTrace());
-                    pathCommands[i] = Commands.none();
-                }
-            }
-            else {
-                for (NamedCommand command : commandList) {
-                    try {
-                        if(command.GetName().equals(chooserList.get(i-1).getSelected())) {
-                            pathCommands[i] = new ParallelRaceGroup(command.GetCommand().get()).raceWith(new WaitCommand(time));
-                        }
-                    }
-                    catch (Exception e) {
-                        pathCommands[i] = Commands.none();
-                    }
-                }
-            }
+        if (pathA == null) {
+            autoCommands[3] = Commands.none();
         }
-        return pathCommands;
+        else {
+            System.out.println("|" + pathB.name + "|");
+            autoCommands[3] = new ParallelRaceGroup(AutoBuilder.followPath(pathB))
+                        .raceWith(defaultCommand.get());
+        }
+
+        autoCommands[4] = shootCommand.get();
+
+        return autoCommands;
     }
 
-    public Command buildAuto(Drivetrain drive, double waitTime) {
-        Command[] pathCommands = initializePaths(drive, waitTime);
-        return new SequentialCommandGroup(pathCommands);
+    public Command buildAuto(Drivetrain drivetrain) {
+        Command[] auto = initilizeAuto(drivetrain);
+        return new SequentialCommandGroup(auto);
     }
-    
 }

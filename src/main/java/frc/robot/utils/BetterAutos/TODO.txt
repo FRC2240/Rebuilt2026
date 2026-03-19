@@ -1,0 +1,73 @@
+
+General Flow:
+
+1Add starting Poses
+    - Left/Right Trench
+    - Left/Right Bump
+    - Hub
+
+2Collection #1
+    - Neutral Zone(Center/Our side)
+    - Outpost
+    - Depot
+    - None
+
+    - Get To Or Return From Collection
+        - For:
+            - Neutral: Same side Bump/Trench (these would just be premade paths in pathplanner[path w/ bump], [path w/ trench])
+            - Alliance: Outpost/Deopot
+
+Shoot
+    - Input Time for different waits when running
+
+3Collection #2
+    - Neutral Zone(Center/Our side)
+    - Outpost
+    - Depot
+    - None
+
+    - Get To Or Return From Collection
+        - For:
+            - Neutral: Same side Bump/Trench (see prev)
+            - Alliance: Outpost/Deopot 
+
+Shoot
+    - Input Time for different waits when running
+
+
+
+
+Other Additions
+    - Pathplanner Path Naming: Side_GT_Type_GB_End  _OTF.path (this last section is constant for filtering purposes) or add folder for OTF
+        - Side: Left/Right
+        - Get There: Bump/Trench
+        - Type: Center/Cycle
+        - Get Back: Bump/Trench
+        - End: bump/Trench (Allianc side to Shoot)
+    
+    - Choosing One Option Locks Others (if possible, might not due to sendable choosers and when we get them) use tree like data type
+        - If you choose Left, all right options would become unavailable and vice versa
+        - EX: Choosing Left Trench makes Outpost unavailable in all collections
+
+    - 
+
+
+Requirements
+    done - register commands 
+    done - Read all paths from location
+    done/defered - Publish Sendable Choosers For Choosing Option, it would re-publish on update, start effects c1 and c2, c1 affects c2
+    test stuff above
+    - Initialize Paths
+    - Build auto
+
+Exclusions
+    - Anything on Left, dont do Outpost
+    - No switching sides
+    - Anything on right don't do depot
+    - No more paths after going Tower
+
+
+Remember that SendableChooser.getSelected() returns the object and not the String name
+
+
+may want to change start position from translation2d to pose2d

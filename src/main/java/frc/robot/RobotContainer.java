@@ -25,7 +25,7 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
-    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser(5);
+    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser();
 
 
 
@@ -137,7 +137,7 @@ public class RobotContainer {
         // Defaults to firstextension to ensure it happens
 
         if (autoChooser.getSelected() == null || autoChooser.getSelected().getName().equals("InstantCommand")) {
-            return betterAutoChooser.buildAuto(drivetrain, 5);
+            return betterAutoChooser.buildAuto(drivetrain);
         }
 
         return autoChooser.getSelected();
