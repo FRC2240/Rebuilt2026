@@ -3,14 +3,11 @@ package frc.robot.utils.BetterAutos;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -26,7 +23,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class BetterAutoChooser extends SubsystemBase{
 
-    private SendableChooser<Translation2d> startChooser = new SendableChooser<>();
+    //private SendableChooser<Translation2d> startChooser = new SendableChooser<>();
     private SendableChooser<PathPlannerPath> collectionOneChooser = new SendableChooser<>();
     private SendableChooser<PathPlannerPath> collectionTwoChooser = new SendableChooser<>();
 
@@ -61,7 +58,6 @@ public class BetterAutoChooser extends SubsystemBase{
 
             for (String path : pathNames) {
                 pathList.add(PathPlannerPath.fromPathFile(path));
-                System.out.println(path);
             }
         } catch (Exception e) {
             DriverStation.reportWarning("Failed to load all paths from file:\n" + e.getMessage(), e.getStackTrace());
@@ -71,15 +67,15 @@ public class BetterAutoChooser extends SubsystemBase{
     private void initializeChoosers () {
         getAllPaths();
 
-        startChooser.setDefaultOption("None", null);
+        //startChooser.setDefaultOption("None", null);
         collectionOneChooser.setDefaultOption("None", null);
         collectionTwoChooser.setDefaultOption("None", null);
 
-        startChooser.addOption("Hub", AutoConstants.HUB.get());
-        startChooser.addOption("Left Bump", AutoConstants.LEFT_BUMP.get());
-        startChooser.addOption("Left Trench", AutoConstants.LEFT_TRENCH.get());
-        startChooser.addOption("Right Bump", AutoConstants.RIGHT_BUMP.get());
-        startChooser.addOption("Left Trench", AutoConstants.RIGHT_TRENCH.get());
+        //startChooser.addOption("Hub", AutoConstants.HUB.get());
+        //startChooser.addOption("Left Bump", AutoConstants.LEFT_BUMP.get());
+        //startChooser.addOption("Left Trench", AutoConstants.LEFT_TRENCH.get());
+        //startChooser.addOption("Right Bump", AutoConstants.RIGHT_BUMP.get());
+        //startChooser.addOption("Left Trench", AutoConstants.RIGHT_TRENCH.get());
 
         for (PathPlannerPath path : pathList) {
             collectionOneChooser.addOption(path.name, path);
@@ -125,7 +121,7 @@ public class BetterAutoChooser extends SubsystemBase{
     public void publishChoosers() {
         initializeChoosers();
 
-        SmartDashboard.putData("BetterChooser/Start Selector", startChooser);
+        //SmartDashboard.putData("BetterChooser/Start Selector", startChooser);
         SmartDashboard.putData("BetterChooser/Collection 1 Selector", collectionOneChooser);
         SmartDashboard.putData("BetterChooser/Collection 2 Selector", collectionTwoChooser);
 
@@ -137,31 +133,34 @@ public class BetterAutoChooser extends SubsystemBase{
         Supplier<Command> defaultCommand = commandList.get(0).GetCommand();
         Supplier<Command> shootCommand = commandList.get(1).GetCommand();
 
-        Translation2d startTrans2d = startChooser.getSelected();
+        //Translation2d startTrans2d = startChooser.getSelected();
         PathPlannerPath pathA = collectionOneChooser.getSelected();
         PathPlannerPath pathB = collectionTwoChooser.getSelected();
 
-        // This gets your initial position and 
-        autoCommands[0] = new InstantCommand(() -> {    // this is not meant to use drivetrain, but the rotation at the paths start
-                var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading()));
+        PathPlannerPath startPath = (pathA != null) ? pathA : ((pathB != null) ? pathB : null);
+        if (startPath == null) {return new Command[] {Commands.none()};}
+
+        autoCommands[0] = new InstantCommand(() -> {
+                //var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading())); // start.get() breaks cause null :?
+                var start = startPath.getStartingHolonomicPose();
                 drivetrain.resetPose(start.get());
-            });
-        
+            }); 
+
         if (pathA == null) {
             autoCommands[1] = Commands.none();
+            autoCommands[2] = Commands.none();
         }
         else {
             autoCommands[1] = new ParallelRaceGroup(AutoBuilder.followPath(pathA))
                         .raceWith(defaultCommand.get());
+            
+            autoCommands[2] = new ParallelRaceGroup(shootCommand.get()).raceWith(new WaitCommand(AutoConstants.WAITTIME));
         }
 
-        autoCommands[2] = new ParallelRaceGroup(shootCommand.get()).raceWith(new WaitCommand(AutoConstants.WAITTIME));
-
-        if (pathA == null) {
+        if (pathB == null) {
             autoCommands[3] = Commands.none();
         }
         else {
-            System.out.println("|" + pathB.name + "|");
             autoCommands[3] = new ParallelRaceGroup(AutoBuilder.followPath(pathB))
                         .raceWith(defaultCommand.get());
         }

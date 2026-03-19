@@ -1,11 +1,6 @@
 
 General Flow:
 
-1Add starting Poses
-    - Left/Right Trench
-    - Left/Right Bump
-    - Hub
-
 2Collection #1
     - Neutral Zone(Center/Our side)
     - Outpost
@@ -52,15 +47,15 @@ Other Additions
     - 
 
 
-Requirements
+Requirements DONE
     done - register commands 
     done - Read all paths from location
     done/defered - Publish Sendable Choosers For Choosing Option, it would re-publish on update, start effects c1 and c2, c1 affects c2
     test stuff above
-    - Initialize Paths
-    - Build auto
+    done - Initialize Paths
+    done - Build auto
 
-Exclusions
+Exclusions 
     - Anything on Left, dont do Outpost
     - No switching sides
     - Anything on right don't do depot
@@ -70,4 +65,4 @@ Exclusions
 Remember that SendableChooser.getSelected() returns the object and not the String name
 
 
-may want to change start position from translation2d to pose2d
+May want to change start position from translation2d to pose2d
