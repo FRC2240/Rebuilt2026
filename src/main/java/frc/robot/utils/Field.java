@@ -26,6 +26,10 @@ public class Field {
     public static final Distance FIELD_WIDTH = Inches.of(317.69); // Y
     public static final Translation2d FIELD_CENTER = new Translation2d(FIELD_LENGTH.div(2), FIELD_WIDTH.div(2));
 
+    public static final double BUMP_MIDPOINT = Inches.of(62.35 + 73/2).in(Meters);
+    public static final double TRENCH_MIDPOINT = Inches.of(50.35).in(Meters);
+
+
     public static final AllianceRelativeRectangle2d ALLIANCE_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(new Rectangle2d(Translation2d.kZero, new Translation2d(Inches.of(170), FIELD_WIDTH)));
 

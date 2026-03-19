@@ -36,8 +36,4 @@ public class DriveConstants {
     public static final double CONTROLLER_OVERRIDE_THRESHOLD = 0.2;
     public static final double CONTROLLER_OVERRIDE_TIMEOUT = 0.3;
     public static final double CONTROLLER_DEADBAND = 0.05;
-
-    //Bump and trench vals
-    public static final double BUMP_MIDPOINT = 4;
-    public static final double TRENCH_MIDPOINT = 4;
 }

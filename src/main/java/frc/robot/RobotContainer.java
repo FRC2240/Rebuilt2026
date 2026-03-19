@@ -7,9 +7,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -89,7 +86,7 @@ public class RobotContainer {
         //joystick.a().whileTrue(drivetrain.commands.driveInLineCommand());
     }
     private void configureDefaults() {
-        drivetrain.setDefaultCommand(drivetrain.commands.driveInLineCommand(4));
+        drivetrain.setDefaultCommand(drivetrain.commands.driveInLineCommand());
         //drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // Spindexer is disabled by default

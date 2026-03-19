@@ -218,14 +218,12 @@ public class DriveCommands extends SubsystemBase {
 }
 
 public Command driveInLineCommand() {
-    return Commands.run(() -> {
-        if (Field.inTrenchZone()) {
-            drive(driveInLine(DriveConstants.TRENCH_MIDPOINT), rotateWithJoystick());
-        } else if (Field.inBumpZone()) {
-            drive(driveInLine(DriveConstants.BUMP_MIDPOINT), rotateWithJoystick());
-        } else {
-            Commands.none();
-        }}, drivetrain);
+    if (Field.inTrenchZone()) {
+        return drive(driveInLine(Field.TRENCH_MIDPOINT), rotateWithJoystick());
+    } else if (Field.inBumpZone()) {
+        return drive(driveInLine(Field.BUMP_MIDPOINT), rotateWithJoystick());
+    } 
+    return drive(driveWithJoystick(), rotateWithJoystick());
 }
 
 public Command driveInLineCommand(double targetY) {
