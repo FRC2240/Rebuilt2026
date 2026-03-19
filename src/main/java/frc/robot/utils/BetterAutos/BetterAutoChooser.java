@@ -17,11 +17,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
-public class BetterAutoChooser extends SubsystemBase{
+public class BetterAutoChooser{
 
     //private SendableChooser<Translation2d> startChooser = new SendableChooser<>();
     private SendableChooser<PathPlannerPath> collectionOneChooser = new SendableChooser<>();
