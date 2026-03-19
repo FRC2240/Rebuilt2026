@@ -163,7 +163,7 @@ public class DriveCommands extends SubsystemBase {
      */
     public Command withJoystickOverride(Command cancelableCommand) {
         Timer timer = new Timer();
-        return Commands.run(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
+        return Commands.runOnce(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
             if (!timer.hasElapsed(DriveConstants.CONTROLLER_OVERRIDE_TIMEOUT))
                 return false;
             return Math.abs(joystick.getLeftX()) > DriveConstants.CONTROLLER_OVERRIDE_THRESHOLD ||
