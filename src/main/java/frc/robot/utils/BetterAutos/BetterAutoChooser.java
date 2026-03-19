@@ -10,6 +10,7 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -141,6 +142,7 @@ public class BetterAutoChooser{
 
         autoCommands[0] = new InstantCommand(() -> {
                 //var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading())); // start.get() breaks cause null :?
+                //if (DriverStation.getAlliance().get() == Alliance.Red) {startPath.flipPath();}
                 var start = startPath.getStartingHolonomicPose();
                 drivetrain.resetPose(start.get());
             }); 
