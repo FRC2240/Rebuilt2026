@@ -1,0 +1,126 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 4.25,
+        "y": 0.6515406562054205
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.249938040832112,
+        "y": 0.6357979489219534
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 8.192,
+        "y": 1.133
+      },
+      "prevControl": {
+        "x": 7.630559429746844,
+        "y": 0.4605712037146157
+      },
+      "nextControl": {
+        "x": 8.759208795290004,
+        "y": 1.8123373113157135
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 7.043,
+        "y": 3.234
+      },
+      "prevControl": {
+        "x": 8.116725793387984,
+        "y": 3.7983420244969848
+      },
+      "nextControl": {
+        "x": 4.763623395149786,
+        "y": 2.035977175463623
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.198045649072753,
+        "y": 2.2559343794579183
+      },
+      "prevControl": {
+        "x": 4.333744684346435,
+        "y": 2.3570054859212384
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "Right End"
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1.05,
+      "rotationDegrees": -90.0
+    },
+    {
+      "waypointRelativePos": 2.0202702702702706,
+      "rotationDegrees": -45.0
+    },
+    {
+      "waypointRelativePos": 2.21,
+      "rotationDegrees": 0.0
+    }
+  ],
+  "constraintZones": [
+    {
+      "name": "Slow For School Pickup Zone",
+      "minWaypointRelativePos": 0.9597122302158272,
+      "maxWaypointRelativePos": 1.96115107913669,
+      "constraints": {
+        "maxVelocity": 1.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    },
+    {
+      "name": "Please dont fly",
+      "minWaypointRelativePos": 2.0,
+      "maxWaypointRelativePos": 3.0,
+      "constraints": {
+        "maxVelocity": 2.0,
+        "maxAcceleration": 3.0,
+        "maxAngularVelocity": 540.0,
+        "maxAngularAcceleration": 720.0,
+        "nominalVoltage": 12.0,
+        "unlimited": false
+      }
+    }
+  ],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

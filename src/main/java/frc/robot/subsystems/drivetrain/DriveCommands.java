@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
@@ -14,21 +15,23 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.utils.Field;
 
 public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
     private CommandXboxController joystick;
 
     private final SwerveRequest.ApplyFieldSpeeds driveChassisSpeeds = new SwerveRequest.ApplyFieldSpeeds();
+    SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveLimiter limiter;
 
     private boolean slowModeEnabled = false;
@@ -87,6 +90,17 @@ public class DriveCommands extends SubsystemBase {
     }
 
     /**
+     * Puts the value to the power of exponent. Preserves the sign of the input
+     */
+    private double delinearize(double value, double exponent) {
+        return Math.pow(Math.abs(value), exponent) * (value < 0 ? -1 : 1);
+    }
+
+    public Command brake() {
+        return drivetrain.applyRequest(() -> brake);
+    }
+
+    /**
      * Drives the robot with the specified translation and rotation suppliers.
      * Note that the parameters can be null for no control.
      */
@@ -106,11 +120,50 @@ public class DriveCommands extends SubsystemBase {
     }
 
     /**
+     * Drives the robot with the specified translation and rotation suppliers.
+     * Note that the parameters can be null for no control or no limit.
+     */
+    public Command drive(Supplier<TranslationalVelocity> translationSupplier,
+            Supplier<AngularVelocity> rotationSupplier, LinearVelocity maxLinearVelocity,
+            AngularVelocity maxAngularVelocity) {
+        TranslationalVelocity noTranslation = TranslationalVelocity.none();
+        AngularVelocity noRotation = RadiansPerSecond.of(0);
+
+        return drive(() -> {
+            if (translationSupplier == null)
+                return noTranslation;
+            if (maxLinearVelocity == null)
+                return translationSupplier.get();
+
+            TranslationalVelocity translation = translationSupplier.get();
+            double requestedVelocity = Math.sqrt(
+                    Math.pow(translation.x.in(MetersPerSecond), 2) + Math.pow(translation.y.in(MetersPerSecond), 2));
+            if (requestedVelocity > maxLinearVelocity.in(MetersPerSecond)) {
+                double scaleFactor =  maxLinearVelocity.in(MetersPerSecond) / requestedVelocity;
+                translation.x = translation.x.times(scaleFactor);
+                translation.y = translation.y.times(scaleFactor);
+            }
+
+            return translation;
+        }, () -> {
+            if (rotationSupplier == null)
+                return noRotation;
+            if (maxAngularVelocity == null)
+                return rotationSupplier.get();
+
+            double rps = rotationSupplier.get().in(RotationsPerSecond);
+            return RotationsPerSecond.of(
+                    Math.min(Math.max(rps, -maxAngularVelocity.in(RotationsPerSecond)),
+                            maxAngularVelocity.in(RotationsPerSecond)));
+        });
+    }
+
+    /**
      * Wraps a Command to stop it on joystick input after a timeout
      */
     public Command withJoystickOverride(Command cancelableCommand) {
         Timer timer = new Timer();
-        return Commands.run(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
+        return Commands.runOnce(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
             if (!timer.hasElapsed(DriveConstants.CONTROLLER_OVERRIDE_TIMEOUT))
                 return false;
             return Math.abs(joystick.getLeftX()) > DriveConstants.CONTROLLER_OVERRIDE_THRESHOLD ||
@@ -156,6 +209,23 @@ public class DriveCommands extends SubsystemBase {
                 });
     }
 
+public Command snapToRotationPosition(double targetAngleDegrees) { 
+    return new InstantCommand(() -> { 
+    rotateToRotation(() -> Rotation2d.fromDegrees(targetAngleDegrees)); 
+    });
+ }
+
+ public Supplier<AngularVelocity> trenchAlign() {
+    return rotateToRotation(() -> {
+    double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
+
+    if (currentRotation >= 90) {
+        return Rotation2d.fromDegrees(180);
+    }
+    return Rotation2d.fromDegrees(0);
+ });
+ }
+
     /**
      * Transforms joystick input into translational velocity
      */
@@ -167,9 +237,9 @@ public class DriveCommands extends SubsystemBase {
                     || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
 
             velocity.x = getMaxDriveSpeed()
-                    .times(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
             velocity.y = getMaxDriveSpeed()
-                    .times(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND) * allianceMultiplier);
+                    .times(delinearize(applyDeadband(joystick.getLeftX(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
             return velocity;
         };
     }
@@ -209,6 +279,22 @@ public class DriveCommands extends SubsystemBase {
     }
 
     /**
+     * Drives the robot to the nearest point at a distance from a point
+     */
+    public Supplier<TranslationalVelocity> driveToDistanceFromPoint(Supplier<Translation2d> pointSupplier,
+            Supplier<Distance> distanceSupplier) {
+        return driveToPoint(() -> {
+            Translation2d point = pointSupplier.get();
+            Distance distance = distanceSupplier.get();
+
+            Translation2d currentTranslation = drivetrain.getTranslation();
+            Rotation2d angle = currentTranslation.minus(point).getAngle();
+
+            return new Translation2d(distance.in(Meters), angle).plus(point);
+        });
+    }
+
+    /**
      * Calculates angular velocity to rotate to the rotation specified by the
      * supplier
      */
@@ -240,48 +326,37 @@ public class DriveCommands extends SubsystemBase {
         });
     }
 
-    public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity> shooterExitGroundSpeedSupplier) {
-        return rotateToRotation(() -> {
-            Translation2d robotTranslation = drivetrain.getTranslation();
-            Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-
-            ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-                    drivetrain.getState().Speeds,
-                    drivetrain.getHeading());
-
-            Translation2d robotVelocities = new Translation2d(
-                    fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
-                    fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
-
-            Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-            double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
-
-            double timeOfFlight = translationToHub.getNorm() / exitSpeed;
-            Translation2d virtualTarget = translationToHub;
-
-            for (int i = 0; i < 3; i++) {
-                virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
-
-                // Re-calculate time of flight based on the new distance to the virtual target
-                timeOfFlight = virtualTarget.getNorm() / exitSpeed;
-            }
-
-            return virtualTarget.getAngle();
-        });
-    }
-
-    public Supplier<AngularVelocity> rotateToAimAtHub() {
-        return rotateToRotation(() -> {
-            Translation2d translationToHub = Field.getTranslationToHub();
-            return translationToHub.getAngle();
-        });
-    }
-    
-    // Returns angle to nearest passing point 
-    public Supplier<AngularVelocity> rotateToPass() {
-        return rotateToRotation(() -> {
-            Translation2d translationToPassingPoint = Field.getTranslationToPassPoint();
-            return translationToPassingPoint.getAngle(); 
-        });
-    }
+    /*
+     * public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity>
+     * shooterExitGroundSpeedSupplier) {
+     * return rotateToRotation(() -> {
+     * Translation2d robotTranslation = drivetrain.getTranslation();
+     * Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
+     * 
+     * ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
+     * drivetrain.getState().Speeds,
+     * drivetrain.getHeading());
+     * 
+     * Translation2d robotVelocities = new Translation2d(
+     * fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
+     * fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
+     * 
+     * Translation2d translationToHub = hubTranslation.minus(robotTranslation);
+     * double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
+     * 
+     * double timeOfFlight = translationToHub.getNorm() / exitSpeed;
+     * Translation2d virtualTarget = translationToHub;
+     * 
+     * for (int i = 0; i < 3; i++) {
+     * virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
+     * 
+     * // Re-calculate time of flight based on the new distance to the virtual
+     * target
+     * timeOfFlight = virtualTarget.getNorm() / exitSpeed;
+     * }
+     * 
+     * return virtualTarget.getAngle();
+     * });
+     * }
+     */
 }

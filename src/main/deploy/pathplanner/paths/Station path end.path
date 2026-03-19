@@ -3,41 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.765264856825397,
-        "y": 4.557592816140893
+        "x": 0.42917261056116407,
+        "y": 0.6515406562117789
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.714147569444444,
-        "y": 3.371415075231481
+        "x": 0.8821982881645878,
+        "y": 0.612265335241737
       },
       "isLocked": false,
-      "linkedName": "Endre"
+      "linkedName": "station"
     },
     {
       "anchor": {
-        "x": 6.766403428819444,
-        "y": 1.0859377893518525
+        "x": 1.2313694721825963,
+        "y": 1.69957203994294
       },
       "prevControl": {
-        "x": 7.393246455439814,
-        "y": 1.773929832175926
-      },
-      "nextControl": {
-        "x": 5.897534482111901,
-        "y": 0.13231001300945178
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 1.747985026041667,
-        "y": 1.0859377893518525
-      },
-      "prevControl": {
-        "x": 3.4774762381169753,
-        "y": 1.3107406150564482
+        "x": 1.4513266761768902,
+        "y": 1.065577746077033
       },
       "nextControl": null,
       "isLocked": false,
@@ -58,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 34.077195280130724
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -88.86395336251411
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

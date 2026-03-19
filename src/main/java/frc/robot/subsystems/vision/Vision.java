@@ -1,8 +1,8 @@
 package frc.robot.subsystems.vision;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.subsystems.vision.BaseVisionIO.BaseVisionIOInput;
-import frc.robot.subsystems.vision.BaseVisionIO.vision_configuration_type;
+import frc.robot.subsystems.vision.CameraInterface.BaseVisionIOInput;
+import frc.robot.subsystems.vision.CameraInterface.vision_configuration_type;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.utils.Field;
 
@@ -31,19 +31,19 @@ public class Vision extends SubsystemBase {
     public static Vision createVision(Drivetrain drivetrain) {
         if (RobotBase.isReal()) {
             return new Vision(drivetrain::addVisionMeasurement,
-                    new PhotonVisionIO("photoncam-left", CAMERA_0_POS),
-                    new PhotonVisionIO("photoncam-right", CAMERA_1_POS));
+                    new LimelightCamera("limelight-left", drivetrain::getHeading),
+                    new LimelightCamera("limelight-right", drivetrain::getHeading));
         } else {
             return new Vision(drivetrain::addVisionMeasurement,
-                    new SimPhotonVisionIO("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
-                    new SimPhotonVisionIO("camera_1", drivetrain::getPose, VisionConstants.CAMERA_1_POS));
+                    new SimPhotonCamera("camera_0", drivetrain::getPose, VisionConstants.CAMERA_0_POS),
+                    new SimPhotonCamera("camera_1", drivetrain::getPose, VisionConstants.CAMERA_1_POS));
         }
     }
 
     // empty but can hold an object that implements vision consumer
     private final vision_consumer consumer;
     // empty array that can accept any object implementing the interface
-    private final BaseVisionIO[] IO_base;
+    private final CameraInterface[] IO_base;
     // AutoLogged auto generated class
     private final BaseVisionIOInput[] input;
 
@@ -56,7 +56,7 @@ public class Vision extends SubsystemBase {
 
     // elipces means multiple objects of vision_IO_Base class can be passed in so
     // multiple cameras
-    public Vision(vision_consumer consumer, BaseVisionIO... IO_base) {
+    public Vision(vision_consumer consumer, CameraInterface... IO_base) {
         // this passes the private final consumer in
         // so running the method uses parameters to define private final variables which
         // then can't be changed
@@ -87,7 +87,7 @@ public class Vision extends SubsystemBase {
         for (int i = 0; i < IO_base.length; i++) {
             fps[i] = new Alert(
                 "camera " + Integer.toString(i) + " has low fps", AlertType.kWarning);
-        }
+        }      
     }
 
     // returns X angle to nearest tag, method
@@ -98,13 +98,12 @@ public class Vision extends SubsystemBase {
     // updates input and logs for each camera
     @Override
     public void periodic() {
-        
-
         for (int i = 0; i < IO_base.length; i++) {
             IO_base[i].update_inputs(input[i]);
 
             //sends alert if condition met
-            overHeat[i].set(input[i].temp > 70); //temp in celcius
+            //overHeat[i].set(input[i].temp > 85); //temp in celcius
+            SmartDashboard.putNumber("ElasticDashboard/limelight-" + i + " temp", input[i].temp);
             disconnect[i].set(!input[i].cam_connected);
             fps[i].set(input[i].fps < 30); //needs to be determined
 

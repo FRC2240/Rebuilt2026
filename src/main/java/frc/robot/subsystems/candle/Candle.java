@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Candle extends SubsystemBase {
 
-    private final CANdle candle = new CANdle(CandleConstants.CANDLE_ID);
+    private final CANdle candle = new CANdle(CandleConstants.CANDLE_ID, "swervecan");
     private int count = 0;
 
     private boolean colorOn = true;
@@ -28,7 +28,7 @@ public class Candle extends SubsystemBase {
     public Candle(Supplier<Boolean> shooting, Supplier<Boolean> canHit) { 
         this.shooting = shooting;
         this.canHit = canHit;
-        
+
         LEDConfigs conf = new LEDConfigs();
         conf.StripType = StripTypeValue.RGBW;
         conf.BrightnessScalar = CandleConstants.BRIGTHNESS;
@@ -76,5 +76,4 @@ public class Candle extends SubsystemBase {
 
         candle.setControl(color);
     }
-
 }

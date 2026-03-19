@@ -7,13 +7,14 @@ package frc.robot;
 import static edu.wpi.first.units.Units.Inches;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import com.ctre.phoenix6.SignalLogger;
+
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.utils.Field;
-import frc.robot.utils.logging.LogDataMethods;
-import frc.robot.utils.logging.VisualLogger;
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
 
     public Robot() {
         DataLogManager.start();
+        SignalLogger.enableAutoLogging(false);
         m_robotContainer = new RobotContainer();
     }
 
@@ -34,6 +36,7 @@ public class Robot extends TimedRobot {
         VisualLogger.publishLine("Lines/Right", new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), Field.PASSING_TARGET_RIGHT_TRANSLATION.getBlueTranslation());
 
 
+        WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
     }
 
     @Override

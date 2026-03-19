@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.generated.TunerConstants;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
+import frc.robot.utils.RobotPosition;
 
 public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private static final double kSimLoopPeriod = 0.004; // 4 ms
@@ -37,6 +38,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     private final SwerveRequest.ApplyRobotSpeeds ppDrive = new SwerveRequest.ApplyRobotSpeeds();
 
     public final DriveCommands commands;
+    public Object DriveCommands;
 
     public Drivetrain(CommandXboxController controller) {
         super(TunerConstants.DrivetrainConstants,
@@ -45,6 +47,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                 TunerConstants.BackLeft,
                 TunerConstants.BackRight);
 
+        RobotPosition.init(this); // Initializes singleton RobotPosition class
         this.commands = new DriveCommands(this, controller);
 
         // Idle the swerve modules when disabled, ensuring the configured
@@ -71,8 +74,8 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
                     () -> this.getState().Speeds,
                     (speeds, feedforwards) -> setControl(ppDrive.withSpeeds(speeds)),
                     new PPHolonomicDriveController(
-                            new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                            new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                            new PIDConstants(2.0, 0.0, 0.10), // Translation PID constants
+                            new PIDConstants(2.0, 0.0, 0.10) // Rotation PID constants
                     ),
                     config,
                     () -> {
@@ -175,7 +178,7 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
     public Command rezeroGyro() {
         return runOnce(() -> resetRotation(Rotation2d.kZero)).ignoringDisable(true);
     }
-
+    
     public Pose2d getPose() {
         return getState().Pose;
     }

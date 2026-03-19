@@ -3,50 +3,34 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.32574504902612,
-        "y": 7.448847222222222
+        "x": 3.6250213980028523,
+        "y": 2.2119999999999997
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.3257450490261204,
-        "y": 7.448847222222222
+        "x": 1.6712838801711838,
+        "y": 2.501768901569187
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.7442194460156255,
-        "y": 6.194015836821669
+        "x": 0.42917261056116407,
+        "y": 0.6515406562117789
       },
       "prevControl": {
-        "x": 7.743151600485529,
-        "y": 7.777467570487183
-      },
-      "nextControl": {
-        "x": 7.744853298611112,
-        "y": 5.2541093026620365
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.765264856825397,
-        "y": 4.557592816140893
-      },
-      "prevControl": {
-        "x": 7.7112809282991,
-        "y": 5.256018476680213
+        "x": 0.15746077033291844,
+        "y": 1.5443081312474431
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "Endre"
+      "linkedName": "station"
     }
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.9704142011834328,
+      "waypointRelativePos": 0.98,
       "rotationDegrees": -90.0
     }
   ],
@@ -63,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -88.86395336251411
+    "rotation": -90.0
   },
   "reversed": false,
   "folder": null,

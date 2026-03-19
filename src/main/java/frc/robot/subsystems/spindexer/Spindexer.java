@@ -1,42 +1,85 @@
 package frc.robot.subsystems.spindexer;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
+import java.util.function.Supplier;
+
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
+
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 
 public class Spindexer extends SubsystemBase {
-
-    private TalonFX spindexer = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
+    private TalonFX motor = new TalonFX(SpindexerConstants.SPINDEXER_MOTOR_ID);
+    private String state = "None";
 
     public Spindexer() {
-        TalonFXConfiguration config = new TalonFXConfiguration();
-        config.Slot0.kP = 0;
-        spindexer.getConfigurator().apply(config);
-        setDefaultCommand(disableCommand());
+        TalonFXConfiguration conf = new TalonFXConfiguration();
+
+        conf.Slot0.kP = 4;
+
+        conf.CurrentLimits.SupplyCurrentLimit = 100;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
+
+        motor.getConfigurator().apply(conf);
+
+        SmartDashboard.putNumber("Spindexer Spin Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
+    }
+
+    public void setVelocity(AngularVelocity velocity) {
+        motor.setControl(new VelocityTorqueCurrentFOC(velocity));
+    }
+  
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Spindexer/velocity", motor.getVelocity().getValueAsDouble());
+        //SmartDashboard.putNumber("Spindexer/Stator current", motor.getStatorCurrent().getValueAsDouble());
+        //SmartDashboard.putNumber("Spindexer/Supply current", motor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putString("Spindexer/state", state);
+        SpindexerConstants.ENABLED_VELOCITY = RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Spin Velocity", 0));
 
     }
 
-    public void enable() {
-        spindexer.setControl(new VelocityTorqueCurrentFOC(SpindexerConstants.ENABLED));
+    public Command setVelocityCommand(AngularVelocity velocity) {
+        return runOnce(() -> motor.setControl(new VelocityTorqueCurrentFOC(velocity)));
     }
 
-    public void disable() {
-        spindexer.stopMotor();
+    public Command setVelocityCommand(Supplier<AngularVelocity> velocity) {
+        return run(() -> setVelocity(velocity.get()));
     }
 
     public Command enableCommand() {
-        return this.runOnce(() -> enable()).andThen(run(() -> {}));
+        // Runs after setting control to prevent the default (disable) commmand from
+        // being called until desired
+        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY).andThen(run(() -> {
+            state = "Enabled";
+        }));
+    }
+
+    public Command setEnabledCommand(Supplier<Boolean> enabledSupplier) {
+        return run(() -> {
+            boolean enabled = enabledSupplier.get();
+            if (enabled) {
+                setVelocity(SpindexerConstants.ENABLED_VELOCITY);
+            } else {
+                setVelocity(RotationsPerSecond.of(0));
+            }
+        });
     }
 
     public Command disableCommand() {
-        return this.runOnce(() -> disable());
+        return setVelocityCommand(RotationsPerSecond.of(0)).andThen(() -> state = "Disable");
     }
 
     public Command reverseCommand() {
-        return this
-                .runOnce(() -> spindexer.setControl(new VelocityTorqueCurrentFOC(SpindexerConstants.ENABLED.unaryMinus())));
+        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {
+            state = "Reverse";
+        }));
     }
 
 }

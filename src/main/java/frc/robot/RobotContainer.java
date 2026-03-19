@@ -5,45 +5,54 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
-import frc.robot.utils.logging.Register;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.candle.Candle;
-import frc.robot.subsystems.climber.Climber;
+//import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
-    private static final CommandXboxController joystick = new CommandXboxController(0);
 
-    // Drivetrain (and joystick) is static to make the pose getting methods global.
-    // This will be fixed later with a singelton utility class.
-    public static final Drivetrain drivetrain = new Drivetrain(joystick);
+    private final CommandXboxController joystick = new CommandXboxController(0);
+
+    public final Drivetrain drivetrain = new Drivetrain(joystick);
     public final Vision vision = Vision.createVision(drivetrain);
-    public final Climber climber = new Climber();
     public final Intake intake = new Intake();
     public final Shooter shooter = new Shooter();
     public final Spindexer spindexer = new Spindexer();
-    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer);
-    public final Candle candle = new Candle( shootingController::isShooting, shootingController::hubShootRequirementsMet);
+    public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
+    public final ElasticDashboard elasticDashboard = new ElasticDashboard();
+    //public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
-
-    public final FieldSimulation sim = new FieldSimulation();
+    // public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
+        addNamedCommands();
         configureAutoChooser();
+        configureDefaults();
         configureBindings();
-        configurePublishers();
+
+        SmartDashboard.putNumber("Desired shooter velocity", 0);
+    }
+
+    private void addNamedCommands() {
+        // The shoot command is called as proxy to ensure that the default commands on the subsystems are called
+        //NamedCommands.registerCommand("shoot", shootingController.shootIntoHubAutonomous());
+
+        //potential auto shooting fix
+        NamedCommands.registerCommand("shoot", shootingController.shootIntoHub());
+        NamedCommands.registerCommand("default", Commands.parallel(intake.enableIntakeCommand(),
+                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
     }
 
     private void configureAutoChooser() {
@@ -52,46 +61,56 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Testing suff. Please do not remove
-        // sim.setDefaultCommand(Commands.run(() -> sim.shootWithRobotVelocity(drivetrain, Rotation2d.fromDegrees(50), MetersPerSecond.of(10)), sim));
-        // drivetrain.setDefaultCommand(driveCommands.drive(driveCommands.driveWithJoystick(), driveCommands.rotateToAimAtHub(shooter::getBallVelocity)));
-
-
-        // Enable spindexer
-        spindexer.setDefaultCommand(spindexer.enableCommand());
-
-        // Drive with joysticks
-        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
-
-        // climber coast by default
-        climber.setDefaultCommand(climber.coastCommand());
-
-        // intake enabled by default
-        intake.setDefaultCommand(intake.enableIntakeCommand());
-
-        // climber coast on disable
-        RobotModeTriggers.disabled().onTrue(climber.coastCommand().ignoringDisable(true));
-
-        // Extend Climber
-        joystick.povUp().toggleOnTrue(climber.extendCommand());
-
-        // Deploy Intake
-        joystick.povDown().toggleOnTrue(intake.extendIntakeCommand());
-
-        // disable Intake
+        // Disable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
-        // Toggle slow mode
+        // Toggle Slow Mode
         joystick.back().onTrue(drivetrain.commands.toggleSlowModeCommand());
 
-        // Zero the gyro
+        // Zero the Gyro
         joystick.start().onTrue(drivetrain.rezeroGyro());
 
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
 
+        // Reverse intake
+        joystick.povDown().whileTrue(intake.reverseIntakeCommand());
+
+        // Pivot rezeroing
+        joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
+
+        joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
+
+        joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
+
+        joystick.b().whileTrue(shootingController.feed());
 
     }
+    private void configureDefaults() {
+        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+
+        // Spindexer is disabled by default
+        spindexer.setDefaultCommand(spindexer.disableCommand());
+
+        // Intake is enabled by default
+        intake.setDefaultCommand(intake.enableIntakeCommand());
+
+        // Feeder is disabled by default
+        shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
+
+        // Shooter coasts when not used (power saving)
+        shooter.setDefaultCommand(shooter.coastCommand());
+        
+        /*
+        shooter.setDefaultCommand(
+            shooter.setVelocityCommand(
+                () -> RotationsPerSecond.of(SmartDashboard.getNumber("Desired shooter velocity", 0)))
+        );
+         */
+
+        // Pivot is extended by default
+        intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
+
 
     private void configurePublishers() {
         Register.registerT2d("PassingTargets/Right");
@@ -104,6 +123,10 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        // Defaults to firstextension to ensure it happens
+        if (autoChooser.getSelected() == null) 
+            return null;
+
         return autoChooser.getSelected();
     }
 }

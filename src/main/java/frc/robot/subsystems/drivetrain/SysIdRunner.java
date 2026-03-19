@@ -28,7 +28,7 @@ public class SysIdRunner {
      * SysId routine for characterizing translation. This is used to find PID gains
      * for the drive motors.
      */
-    private final SysIdRoutine sysIdRoutineTranslation = new SysIdRoutine(
+    public final SysIdRoutine sysIdRoutineTranslation = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
                     Volts.of(4), // Reduce dynamic step voltage to 4 V to prevent brownout
@@ -54,7 +54,7 @@ public class SysIdRunner {
      * SysId routine for characterizing steer. This is used to find PID gains for
      * the steer motors.
      */
-    private final SysIdRoutine sysIdRoutineSteer = new SysIdRoutine(
+    public final SysIdRoutine sysIdRoutineSteer = new SysIdRoutine(
             new SysIdRoutine.Config(
                     null, // Use default ramp rate (1 V/s)
                     Volts.of(7), // Use dynamic voltage of 7 V
@@ -83,7 +83,7 @@ public class SysIdRunner {
      * the FieldCentricFacingAngle HeadingController. See the documentation of
      * SwerveRequest.SysIdSwerveRotation for info on importing the log to SysId.
      */
-    private final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
+    public final SysIdRoutine m_sysIdRoutineRotation = new SysIdRoutine(
             new SysIdRoutine.Config(
                     /* This is in radians per second², but SysId only supports "volts per second" */
                     Volts.of(Math.PI / 6).per(Second),
