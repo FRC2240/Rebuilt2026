@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class DriveCommands extends SubsystemBase {
     private Drivetrain drivetrain;
     private CommandXboxController joystick;
@@ -229,6 +231,12 @@ public Command driveInLineCommand() {
 public Command driveInLineCommand(double targetY) {
     return drive(driveInLine(targetY), rotateWithJoystick());
 }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putBoolean("Feild/Trench Zone", Field.inTrenchZone());
+        SmartDashboard.putBoolean("Feild/Bump Zone", Field.inBumpZone());
+    }
 
 public Supplier<AngularVelocity> trenchAlign() {
     return rotateToRotation(() -> {

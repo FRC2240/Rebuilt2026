@@ -83,11 +83,12 @@ public class RobotContainer {
         // Align with Trench
         joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
 
-        //joystick.a().whileTrue(drivetrain.commands.driveInLineCommand());
+        // Drive in Line
+        joystick.a().whileTrue(drivetrain.commands.driveInLineCommand());
     }
     private void configureDefaults() {
-        drivetrain.setDefaultCommand(drivetrain.commands.driveInLineCommand());
-        //drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+        //Drive with Stick
+        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // Spindexer is disabled by default
         spindexer.setDefaultCommand(spindexer.disableCommand());
