@@ -51,7 +51,7 @@ public class LimelightCamera implements CameraInterface {
         NetworkTable table = NetworkTableInstance.getDefault().getTable(name);
 
         // enables rewind to play back footage
-        table.getEntry("rewind_enable_set").setDouble(1);
+        table.getEntry("rewind_enable_set").setDouble(0);
 
         this.rotation_supplier = rotation_supplier;
         //https://docs.limelightvision.io/docs/docs-limelight/apis/complete-networktables-api

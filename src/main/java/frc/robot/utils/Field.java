@@ -56,6 +56,26 @@ public class Field {
                                 Inches.of(200), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(50)))));
 
+    public static final AllianceRelativeRectangle2d TRENCH_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Inches.of(0)), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5)))));
+    public static final AllianceRelativeRectangle2d BUMP_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5))), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(23.5)))));
+
+
     public static boolean isHubActive() {
         // Game specific message does not exist if the FMS is not attached
         //if (!DriverStation.isFMSAttached()) return true;
@@ -133,6 +153,28 @@ public class Field {
         Rectangle2d deadzone = PASSING_DEADZONE.get();
 
         return deadzone.contains(translation);
+    }
+
+    public static boolean inBumpZone() {
+        Translation2d translation = RobotPosition.getTranslation();
+        Translation2d absoluteTranslation = new Translation2d(translation.getX(), 
+                Field.FIELD_WIDTH.in(Meters)/2 < translation.getY() ? 
+                Field.FIELD_WIDTH.in(Meters) - translation.getY() : translation.getY());
+
+        Rectangle2d allianceZone = BUMP_ZONE.get();
+
+        return allianceZone.contains(absoluteTranslation);
+    }
+
+    public static boolean inTrenchZone() {
+        Translation2d translation = RobotPosition.getTranslation();
+        Translation2d absoluteTranslation = new Translation2d(translation.getX(), 
+                Field.FIELD_WIDTH.in(Meters)/2 < translation.getY() ? 
+                Field.FIELD_WIDTH.in(Meters) - translation.getY() : translation.getY());
+
+        Rectangle2d allianceZone = TRENCH_ZONE.get();
+
+        return allianceZone.contains(absoluteTranslation);
     }
 
     /**

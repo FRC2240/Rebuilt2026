@@ -7,6 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -71,19 +74,23 @@ public class RobotContainer {
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
 
-        // Reverse intake
+        // Reverse Intake
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
 
         // Pivot rezeroing
-        // joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
+        joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
+        // Contract Intake
         joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
+        // Align with Trench
         joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
 
+        //joystick.a().whileTrue(drivetrain.commands.driveInLineCommand());
     }
     private void configureDefaults() {
-        drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
+        drivetrain.setDefaultCommand(drivetrain.commands.driveInLineCommand(4));
+        //drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // Spindexer is disabled by default
         spindexer.setDefaultCommand(spindexer.disableCommand());

@@ -6,6 +6,8 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import frc.robot.utils.Field;
+
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -163,7 +165,7 @@ public class DriveCommands extends SubsystemBase {
      */
     public Command withJoystickOverride(Command cancelableCommand) {
         Timer timer = new Timer();
-        return Commands.run(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
+        return Commands.runOnce(() -> timer.start(), drivetrain).andThen(cancelableCommand.until(() -> {
             if (!timer.hasElapsed(DriveConstants.CONTROLLER_OVERRIDE_TIMEOUT))
                 return false;
             return Math.abs(joystick.getLeftX()) > DriveConstants.CONTROLLER_OVERRIDE_THRESHOLD ||
@@ -209,22 +211,36 @@ public class DriveCommands extends SubsystemBase {
                 });
     }
 
-public Command snapToRotationPosition(double targetAngleDegrees) { 
+ public Command snapToRotationPosition(double targetAngleDegrees) { 
     return new InstantCommand(() -> { 
     rotateToRotation(() -> Rotation2d.fromDegrees(targetAngleDegrees)); 
     });
- }
+}
 
- public Supplier<AngularVelocity> trenchAlign() {
+public Command driveInLineCommand() {
+    return Commands.run(() -> {
+        if (Field.inTrenchZone()) {
+            drive(driveInLine(DriveConstants.TRENCH_MIDPOINT), rotateWithJoystick());
+        } else if (Field.inBumpZone()) {
+            drive(driveInLine(DriveConstants.BUMP_MIDPOINT), rotateWithJoystick());
+        } else {
+            Commands.none();
+        }}, drivetrain);
+}
+
+public Command driveInLineCommand(double targetY) {
+    return drive(driveInLine(targetY), rotateWithJoystick());
+}
+
+public Supplier<AngularVelocity> trenchAlign() {
     return rotateToRotation(() -> {
     double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
 
     if (currentRotation >= 90) {
         return Rotation2d.fromDegrees(180);
     }
-    return Rotation2d.fromDegrees(0);
- });
- }
+    return Rotation2d.fromDegrees(0);});
+}
 
     /**
      * Transforms joystick input into translational velocity
@@ -273,6 +289,27 @@ public Command snapToRotationPosition(double targetAngleDegrees) {
             velocityOutput = Math.min(velocityOutput, getMaxDriveSpeed().in(MetersPerSecond));
             velocity.x = MetersPerSecond.of(-velocityOutput * directionOfTravel.getCos());
             velocity.y = MetersPerSecond.of(-velocityOutput * directionOfTravel.getSin());
+
+            return velocity;
+        };
+    }
+
+    public Supplier<TranslationalVelocity> driveInLine(double targetY) {
+        TranslationalVelocity velocity = TranslationalVelocity.none();
+        return () -> {
+            int allianceMultiplier = (DriverStation.getAlliance().isEmpty()
+                    || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
+
+            double currentY = drivetrain.getTranslation().getY();
+            double linearDistance = targetY - currentY;
+
+            double velocityOutput = DriveConstants.TRANSLATION_PID_CONTROLLER.calculate(linearDistance, 0);
+            // Limit the resulting velocity
+            velocityOutput = Math.min(velocityOutput/2, getMaxDriveSpeed().in(MetersPerSecond));
+
+            velocity.x = getMaxDriveSpeed()
+                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
+            velocity.y = MetersPerSecond.of(-velocityOutput);
 
             return velocity;
         };
