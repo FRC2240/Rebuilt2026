@@ -20,6 +20,7 @@ public class AutoCreator extends SubsystemBase {
     private static final double OUTPOST_WAIT_SECONDS = 2;
 
     Supplier<Command> shootCommandSupplier;
+    Supplier<Command> defaultCommandSupplier;
     Consumer<Pose2d> resetPoseConsumer;
 
     SendableChooser<String> startPointChooser;
@@ -28,9 +29,10 @@ public class AutoCreator extends SubsystemBase {
     SendableChooser<String> collection1Chooser;
     SendableChooser<String> collection2Chooser;
 
-    public AutoCreator(Consumer<Pose2d> resetPoseConsumer, Supplier<Command> shootCommandSupplier) {
+    public AutoCreator(Consumer<Pose2d> resetPoseConsumer, Supplier<Command> shootCommandSupplier, Supplier<Command> defaultCommandSupplier) {
         this.shootCommandSupplier = shootCommandSupplier;
         this.resetPoseConsumer = resetPoseConsumer;
+        this.defaultCommandSupplier = defaultCommandSupplier;
 
         startPointChooser = new SendableChooser<>();
 
@@ -164,7 +166,7 @@ public class AutoCreator extends SubsystemBase {
                 Pose2d startingPose = AllianceRelativePose2d.fromBluePose(path.getStartingHolonomicPose().get()).get();
                 return Commands.sequence(
                         Commands.runOnce(() -> resetPoseConsumer.accept(startingPose)),
-                        AutoBuilder.followPath(path),
+                        AutoBuilder.followPath(path).raceWith(defaultCommandSupplier.get()),
                         shootCommandSupplier.get());
             } else if (collection1 == null) {
                 // If there is no collection and the start is not hub, do nothing
@@ -194,7 +196,7 @@ public class AutoCreator extends SubsystemBase {
             // No second leg specified, run the first collection and then shoot
             if (collection2 == null) {
                 return Commands.sequence(
-                        driveCollection1Command,
+                        driveCollection1Command.raceWith(defaultCommandSupplier.get()),
                         shootCommandSupplier.get());
             }
 
@@ -216,9 +218,9 @@ public class AutoCreator extends SubsystemBase {
 
             // Hub shoot from neutral to neutral
             return Commands.sequence(
-                    driveCollection1Command,
+                    driveCollection1Command.raceWith(defaultCommandSupplier.get()),
                     shootCommandSupplier.get().withTimeout(SHOOTING_SECONDS),
-                    driveCollection2Command,
+                    driveCollection2Command.raceWith(defaultCommandSupplier.get()),
                     shootCommandSupplier.get());
 
         } catch (Exception e) {
