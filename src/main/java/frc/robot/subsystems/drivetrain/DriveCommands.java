@@ -221,9 +221,13 @@ public class DriveCommands extends SubsystemBase {
 
 public Command driveInLineCommand() {
     if (Field.inTrenchZone()) {
-        return drive(driveInLine(Field.TRENCH_MIDPOINT), rotateWithJoystick());
+        double closer = Math.min(drivetrain.getPose().getY() - Field.TRENCH_MIDPOINT,
+                 drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT));
+        return drive(driveInLine(closer), rotateWithJoystick());
     } else if (Field.inBumpZone()) {
-        return drive(driveInLine(Field.BUMP_MIDPOINT), rotateWithJoystick());
+        double closer = Math.min(drivetrain.getPose().getY() - Field.BUMP_MIDPOINT,
+                 drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT));
+        return drive(driveInLine(closer), rotateWithJoystick());
     } 
     return drive(driveWithJoystick(), rotateWithJoystick());
 }
