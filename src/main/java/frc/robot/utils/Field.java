@@ -27,7 +27,7 @@ public class Field {
     public static final Translation2d FIELD_CENTER = new Translation2d(FIELD_LENGTH.div(2), FIELD_WIDTH.div(2));
 
     public static final double BUMP_MIDPOINT = Inches.of(62.35 + 73/2).in(Meters);
-    public static final double TRENCH_MIDPOINT = Inches.of(50.35).in(Meters);
+    public static final double TRENCH_MIDPOINT = Inches.of(50.35/2).in(Meters);
 
 
     public static final AllianceRelativeRectangle2d ALLIANCE_ZONE = AllianceRelativeRectangle2d
@@ -60,7 +60,7 @@ public class Field {
                                 Inches.of(200), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(50)))));
 
-    public static final AllianceRelativeRectangle2d TRENCH_ZONE = AllianceRelativeRectangle2d
+    public static final AllianceRelativeRectangle2d LOWER_TRENCH_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(
                 new Rectangle2d(
                         new Translation2d(
@@ -69,7 +69,18 @@ public class Field {
                         new Translation2d(
                                 Field.FIELD_LENGTH.div(2), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5)))));
-    public static final AllianceRelativeRectangle2d BUMP_ZONE = AllianceRelativeRectangle2d
+
+        public static final AllianceRelativeRectangle2d UPPER_TRENCH_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5)))));
+
+    public static final AllianceRelativeRectangle2d LOWER_BUMP_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(
                 new Rectangle2d(
                         new Translation2d(
@@ -78,6 +89,16 @@ public class Field {
                         new Translation2d(
                                 Field.FIELD_LENGTH.div(2), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(23.5)))));
+
+    public static final AllianceRelativeRectangle2d UPPER_BUMP_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5))), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(23.5)))));
 
 
     public static boolean isHubActive() {
@@ -161,24 +182,18 @@ public class Field {
 
     public static boolean inBumpZone() {
         Translation2d translation = RobotPosition.getTranslation();
-        Translation2d absoluteTranslation = new Translation2d(translation.getX(), 
-                Field.FIELD_WIDTH.in(Meters)/2 < translation.getY() ? 
-                Field.FIELD_WIDTH.in(Meters) - translation.getY() : translation.getY());
+        Rectangle2d allianceZone1 = LOWER_BUMP_ZONE.get();
+        Rectangle2d allianceZone2 = UPPER_BUMP_ZONE.get();
 
-        Rectangle2d allianceZone = BUMP_ZONE.get();
-
-        return allianceZone.contains(absoluteTranslation);
+        return allianceZone1.contains(translation) || allianceZone2.contains(translation);
     }
 
     public static boolean inTrenchZone() {
         Translation2d translation = RobotPosition.getTranslation();
-        Translation2d absoluteTranslation = new Translation2d(translation.getX(), 
-                Field.FIELD_WIDTH.in(Meters)/2 < translation.getY() ? 
-                Field.FIELD_WIDTH.in(Meters) - translation.getY() : translation.getY());
+        Rectangle2d allianceZone1 = LOWER_TRENCH_ZONE.get();
+        Rectangle2d allianceZone2 = UPPER_TRENCH_ZONE.get();
 
-        Rectangle2d allianceZone = TRENCH_ZONE.get();
-
-        return allianceZone.contains(absoluteTranslation);
+        return allianceZone1.contains(translation) || allianceZone2.contains(translation);
     }
 
     /**
