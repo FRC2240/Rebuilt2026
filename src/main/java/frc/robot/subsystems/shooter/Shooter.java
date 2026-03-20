@@ -16,6 +16,7 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.TunableNumber;
 
 public class Shooter extends SubsystemBase {
 
@@ -27,20 +28,18 @@ public class Shooter extends SubsystemBase {
 
     private VelocityTorqueCurrentFOC req = new VelocityTorqueCurrentFOC(0);
 
+    private TunableNumber p = new TunableNumber("Shooter/PID/p", 8);
+    private TunableNumber i = new TunableNumber("Shooter/PID/i", 2);
+    private TunableNumber d = new TunableNumber("Shooter/PID/d", 0);
+    
     // Declared here to keep it tied to the shooter.
     public final Feeder feeder = new Feeder();
 
     public Shooter() {
-        TalonFXConfiguration conf = new TalonFXConfiguration();
-
-        conf.Slot0.kP = 8;
-        conf.Slot0.kI = 2;
-        conf.Slot0.kD = 0;
-
-        conf.CurrentLimits.SupplyCurrentLimit = 100;
-        conf.CurrentLimits.StatorCurrentLimit = 140;
-
-        leftFlywheelMotor.getConfigurator().apply(conf);
+        applyConfiguration();
+        p.addChangeListener((v) -> applyConfiguration());
+        i.addChangeListener((v) -> applyConfiguration());
+        d.addChangeListener((v) -> applyConfiguration());
 
         leftFlywheelFollower.setControl(
             new Follower(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Aligned));
@@ -50,6 +49,19 @@ public class Shooter extends SubsystemBase {
         
         rightFlywheelFollowerLower.setControl(
             new Follower(ShooterConstants.LEFT_UPPER_FLYWHEEL_MOTOR_ID, MotorAlignmentValue.Opposed));
+    }
+
+    public void applyConfiguration() {
+        TalonFXConfiguration conf = new TalonFXConfiguration();
+
+        conf.Slot0.kP = p.get();
+        conf.Slot0.kI = i.get();
+        conf.Slot0.kD = d.get();
+
+        conf.CurrentLimits.SupplyCurrentLimit = 100;
+        conf.CurrentLimits.StatorCurrentLimit = 140;
+
+        leftFlywheelMotor.getConfigurator().apply(conf);
     }
 
     @Override
