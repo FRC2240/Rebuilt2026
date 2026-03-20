@@ -102,7 +102,7 @@ public class ShootingController extends SubsystemBase {
         // the tree map
         return RotationsPerSecond.of(passDistanceToVelocityMap.get(Field.getDistanceToPassPoint().in(Inches)));
     }
-
+    
     // These boolean functions are in this class instead of their respective
     // subsystems. This is because this class holds the constants such as tolerances
     // for aiming and shooting so holding the methods here avoids a complex web of

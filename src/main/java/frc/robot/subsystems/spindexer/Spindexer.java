@@ -30,10 +30,6 @@ public class Spindexer extends SubsystemBase {
 
         SmartDashboard.putNumber("Spindexer Spin Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
     }
-
-    public void setVelocity(AngularVelocity velocity) {
-        motor.setControl(new VelocityTorqueCurrentFOC(velocity));
-    }
   
     @Override
     public void periodic() {
@@ -45,10 +41,16 @@ public class Spindexer extends SubsystemBase {
 
     }
 
+    public void setVelocity(AngularVelocity velocity) {
+        motor.setControl(new VelocityTorqueCurrentFOC(velocity));
+    }
+
+    // For acually doing stuff
     public Command setVelocityCommand(AngularVelocity velocity) {
         return runOnce(() -> motor.setControl(new VelocityTorqueCurrentFOC(velocity)));
     }
 
+    // For tuning
     public Command setVelocityCommand(Supplier<AngularVelocity> velocity) {
         return run(() -> setVelocity(velocity.get()));
     }
@@ -75,11 +77,4 @@ public class Spindexer extends SubsystemBase {
     public Command disableCommand() {
         return setVelocityCommand(RotationsPerSecond.of(0)).andThen(() -> state = "Disable");
     }
-
-    public Command reverseCommand() {
-        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY.unaryMinus()).andThen(run(() -> {
-            state = "Reverse";
-        }));
-    }
-
 }

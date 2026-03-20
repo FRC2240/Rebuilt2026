@@ -57,10 +57,6 @@ public class IntakePivot extends SubsystemBase {
         }));
     }
 
-    public void extendMotionMagic() {
-        pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
-    }
-
     public void extend() {
         currentState = "Extend";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
