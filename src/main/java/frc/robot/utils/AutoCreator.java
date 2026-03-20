@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.Filesystem;
@@ -17,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class AutoCreator extends SubsystemBase {
+    private static final double SHOOTING_SECONDS = 5;
+    private static final double OUTPOST_WAIT_SECONDS = 2;
+
     Supplier<Command> shootCommandSupplier;
     Consumer<Pose2d> resetPoseConsumer;
 
@@ -155,9 +157,9 @@ public class AutoCreator extends SubsystemBase {
             String collection2 = collection2Chooser.getSelected();
 
             Command driveCollection1Command = Commands.none();
-            ;
 
             if (startPoint.equals("hub")) {
+                // There is only one possible path starting from the hub
                 PathPlannerPath path = PathPlannerPath.fromPathFile("creator_hub");
                 Pose2d startingPose = AllianceRelativePose2d.fromBluePose(path.getStartingHolonomicPose().get()).get();
                 return Commands.sequence(
@@ -178,10 +180,10 @@ public class AutoCreator extends SubsystemBase {
                 driveCollection1Command = Commands.sequence(
                         Commands.runOnce(() -> resetPoseConsumer.accept(startingPose)),
                         AutoBuilder.followPath(path1),
-                        Commands.waitSeconds(2),
+                        Commands.waitSeconds(OUTPOST_WAIT_SECONDS),
                         AutoBuilder.followPath(path2));
             } else {
-                PathPlannerPath path = PathPlannerPath.fromPathFile("creator_" + startPoint + "_neutral");
+                PathPlannerPath path = PathPlannerPath.fromPathFile("creator_" + startPoint + "_" + collection1);
                 Pose2d startingPose = AllianceRelativePose2d.fromBluePose(path.getStartingHolonomicPose().get()).get();
 
                 driveCollection1Command = Commands.sequence(
@@ -191,14 +193,33 @@ public class AutoCreator extends SubsystemBase {
 
             // No second leg specified, run the first collection and then shoot
             if (collection2 == null) {
-                return driveCollection1Command.andThen(shootCommandSupplier.get());
-                        //shootCommandSupplier.get());
+                return Commands.sequence(
+                        driveCollection1Command,
+                        shootCommandSupplier.get());
             }
 
-            System.out.println(startPoint + "_" + collection1);
-            System.out.println(side + "_" + collection2 + "_2");
+            Command driveCollection2Command = Commands.none();
 
-            return Commands.none();
+            // Hub shoot from neutral to depot / outpost
+            if (collection2.equals("outpost")) {
+                PathPlannerPath path1 = PathPlannerPath.fromPathFile("creator_right_neutral_outpost");
+                PathPlannerPath path2 = PathPlannerPath.fromPathFile("creator_outpost_shoot");
+
+                driveCollection2Command = Commands.sequence(
+                        AutoBuilder.followPath(path1),
+                        Commands.waitSeconds(OUTPOST_WAIT_SECONDS),
+                        AutoBuilder.followPath(path2));
+            } else {
+                PathPlannerPath path = PathPlannerPath.fromPathFile("creator_" + side + "_" + collection1 + "_" + collection2);
+                driveCollection2Command = AutoBuilder.followPath(path);
+            }
+
+            // Hub shoot from neutral to neutral
+            return Commands.sequence(
+                    driveCollection1Command,
+                    shootCommandSupplier.get().withTimeout(SHOOTING_SECONDS),
+                    driveCollection2Command,
+                    shootCommandSupplier.get());
 
         } catch (Exception e) {
             System.out.println("AUTO CREATOR ERROR");
@@ -207,5 +228,4 @@ public class AutoCreator extends SubsystemBase {
 
         return Commands.none();
     }
-
 }

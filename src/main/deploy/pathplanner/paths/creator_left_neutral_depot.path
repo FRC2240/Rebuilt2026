@@ -3,77 +3,61 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.6136205150462963,
-        "y": 5.466359375
-      },
-      "prevControl": null,
-      "nextControl": {
-        "x": 7.561143807870371,
-        "y": 5.149657335069444
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.228235966435185,
-        "y": 7.033860604745371
-      },
-      "prevControl": {
-        "x": 6.228235966435185,
-        "y": 7.033860604745371
-      },
-      "nextControl": {
-        "x": 8.228235966435186,
-        "y": 7.033860604745371
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 7.89063990162037,
-        "y": 4.64137254050926
-      },
-      "prevControl": {
-        "x": 7.988381727430555,
-        "y": 5.768791124131946
-      },
-      "nextControl": {
-        "x": 7.792898075810184,
-        "y": 3.5139539568865743
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 5.568945601851852,
-        "y": 5.466359375
-      },
-      "prevControl": {
-        "x": 7.021803442619471,
-        "y": 5.270582329474888
-      },
-      "nextControl": {
-        "x": 4.487552806712963,
-        "y": 5.612080367476851
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
         "x": 2.7995906394675933,
         "y": 5.6074220196759255
       },
+      "prevControl": null,
+      "nextControl": {
+        "x": 1.8243418243838034,
+        "y": 6.2670703125
+      },
+      "isLocked": false,
+      "linkedName": "left shoot"
+    },
+    {
+      "anchor": {
+        "x": 1.2626066241197191,
+        "y": 6.860991637323943
+      },
       "prevControl": {
-        "x": 3.556736183449075,
-        "y": 5.6288766637731475
+        "x": 1.9368685079225356,
+        "y": 6.409288072183098
+      },
+      "nextControl": {
+        "x": 0.5883447403169029,
+        "y": 7.312695202464789
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 0.5726259352992966,
+        "y": 5.428833846830986
+      },
+      "prevControl": {
+        "x": 0.40004132027904726,
+        "y": 6.492135687162138
+      },
+      "nextControl": {
+        "x": 0.6584556007922544,
+        "y": 4.900033285651409
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.5243372029049302,
+        "y": 5.041053422095071
+      },
+      "prevControl": {
+        "x": 1.2269773327464795,
+        "y": 4.7161357421875
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "left shoot"
+      "linkedName": "depot shoot"
     }
   ],
   "rotationTargets": [],
@@ -90,7 +74,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -18.322356982305223
   },
   "reversed": false,
   "folder": "creator",

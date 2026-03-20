@@ -64,16 +64,16 @@
     },
     {
       "anchor": {
-        "x": 3.1918104021990747,
-        "y": 2.6662986834490745
+        "x": 2.9915753741197193,
+        "y": 2.2278863336267603
       },
       "prevControl": {
-        "x": 4.841193576388889,
-        "y": 2.8146440972222226
+        "x": 4.640958548309534,
+        "y": 2.3762317473999084
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "right shoot"
     }
   ],
   "rotationTargets": [],
@@ -90,7 +90,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 47.91100283178216
   },
   "reversed": false,
   "folder": "creator",
