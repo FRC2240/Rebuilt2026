@@ -30,7 +30,7 @@ public class SwerveLimiter {
         double currentTime = Timer.getFPGATimestamp();
         if (currentTime <= previousTime)
             return currentChassisSpeeds;
-        Time dt = Seconds.of(currentTime - previousTime);
+        Time dt = Seconds.of(Math.min(currentTime - previousTime, 0.2)); // Cap the time difference
         previousTime = currentTime;
 
         SwerveModuleState[] targetStates = drivetrain.getKinematics().toSwerveModuleStates(targetSpeeds);

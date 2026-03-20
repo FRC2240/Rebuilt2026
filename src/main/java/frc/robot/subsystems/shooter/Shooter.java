@@ -33,11 +33,11 @@ public class Shooter extends SubsystemBase {
     public Shooter() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
 
-        conf.Slot0.kP = 7;
+        conf.Slot0.kP = 8;
         conf.Slot0.kI = 2;
         conf.Slot0.kD = 0;
 
-        conf.CurrentLimits.SupplyCurrentLimit = 50;
+        conf.CurrentLimits.SupplyCurrentLimit = 100;
         conf.CurrentLimits.StatorCurrentLimit = 140;
 
         leftFlywheelMotor.getConfigurator().apply(conf);
@@ -56,7 +56,7 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         StatusSignal.refreshAll(leftFlywheelVelocitySignal);
 
-        SmartDashboard.putNumber("Shooter/left flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
+        SmartDashboard.putNumber("Shooter/flywheel velocity", leftFlywheelMotor.getVelocity().getValueAsDouble());
     }
 
     public void setVelocity(AngularVelocity velocity) {

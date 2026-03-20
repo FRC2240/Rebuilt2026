@@ -27,6 +27,8 @@ public class Spindexer extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         motor.getConfigurator().apply(conf);
+
+        SmartDashboard.putNumber("Spindexer Spin Velocity", SpindexerConstants.ENABLED_VELOCITY.in(RotationsPerSecond));
     }
 
     public void setVelocity(AngularVelocity velocity) {
@@ -39,6 +41,8 @@ public class Spindexer extends SubsystemBase {
         //SmartDashboard.putNumber("Spindexer/Stator current", motor.getStatorCurrent().getValueAsDouble());
         //SmartDashboard.putNumber("Spindexer/Supply current", motor.getSupplyCurrent().getValueAsDouble());
         SmartDashboard.putString("Spindexer/state", state);
+        SpindexerConstants.ENABLED_VELOCITY = RotationsPerSecond.of(SmartDashboard.getNumber("Spindexer Spin Velocity", 0));
+
     }
 
     public Command setVelocityCommand(AngularVelocity velocity) {
