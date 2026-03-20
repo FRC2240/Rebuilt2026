@@ -15,6 +15,9 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.utils.*;
+import frc.robot.utils.logging.*;;
+
 
 public class Robot extends TimedRobot {
     private Command m_autonomousCommand;
@@ -29,29 +32,14 @@ public class Robot extends TimedRobot {
 
     @Override
     public void robotInit() {
-        VisualLogger.publishPoint("PassingTargets/Right", Field.PASSING_TARGET_RIGHT_TRANSLATION.getBlueTranslation());
-        VisualLogger.publishPoint("PassingTargets/Left", Field.PASSING_TARGET_LEFT_TRANSLATION.getBlueTranslation());
-
-        VisualLogger.publishLine("Lines/Left", new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), Field.PASSING_TARGET_LEFT_TRANSLATION.getBlueTranslation());
-        VisualLogger.publishLine("Lines/Right", new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), Field.PASSING_TARGET_RIGHT_TRANSLATION.getBlueTranslation());
-
-
         WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
     }
 
     @Override
     public void robotPeriodic() {
         CommandScheduler.getInstance().run();
-        VisualLogger.publishPoint("Deadzone/Point", new Translation2d(LogDataMethods.isInDeadZone(), LogDataMethods.isInDeadZone()));
 
-        VisualLogger.publishLine("Lines/Active",
-            RobotContainer.drivetrain.getTranslation(),
-            LogDataMethods.shooterGetTargetLogic());
-
-        VisualLogger.publishPolygon("Testing/Triangle", //158.85 is midline
-            new Translation2d[] { new Translation2d(Field.FIELD_LENGTH.div(2), Field.FIELD_WIDTH.div(2)), 
-                new Translation2d(Inches.of(200), Field.FIELD_WIDTH.div(2).minus(Inches.of(50))), 
-                new Translation2d(Inches.of(200), Field.FIELD_WIDTH.div(2).plus(Inches.of(50)))});
+        VisualLogger.publishRect("Rect", Field.ALLIANCE_ZONE.get());
     }
 
     @Override

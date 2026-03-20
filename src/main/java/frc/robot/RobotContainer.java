@@ -19,6 +19,7 @@ import frc.robot.subsystems.vision.*;
 //import frc.robot.subsystems.candle.Candle;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
+import frc.robot.utils.logging.*;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
@@ -41,6 +42,8 @@ public class RobotContainer {
         configureAutoChooser();
         configureDefaults();
         configureBindings();
+
+        configurePublishers();
 
         SmartDashboard.putNumber("Desired shooter velocity", 0);
     }
@@ -86,6 +89,7 @@ public class RobotContainer {
         joystick.b().whileTrue(shootingController.feed());
 
     }
+
     private void configureDefaults() {
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
@@ -111,15 +115,11 @@ public class RobotContainer {
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
 
+    }
+
 
     private void configurePublishers() {
-        Register.registerT2d("PassingTargets/Right");
-        Register.registerT2d("PassingTargets/Left");
-        Register.registerT2dArray("Lines/Active");
-        Register.registerT2dArray("Lines/Left");
-        Register.registerT2dArray("Lines/Right");
-        Register.registerT2dArray("Testing/Triangle");
-        Register.registerT2d("Deadzone/Point");
+        Register.registerT2dArray("Rect");
     }
 
     public Command getAutonomousCommand() {
