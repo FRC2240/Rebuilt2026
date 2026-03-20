@@ -123,8 +123,9 @@ public class ShootingController extends SubsystemBase {
      * Targets the middle of the valid distance ring as to reach a valid pose faster
      */
     private DriveCommands.TranslationalVelocity driveToValidDistanceFromHub() {
-        if (isValidDistanceFromHub())
+        if (isValidDistanceFromHub()) {
             return DriveCommands.TranslationalVelocity.none();
+        }
         return drivetrain.commands
                 .driveToDistanceFromPoint(Field.HUB_CENTER_TRANSLATION::get, () -> NORM_DISTANCE_FROM_HUB).get();
     }
