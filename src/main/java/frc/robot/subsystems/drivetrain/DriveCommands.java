@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import frc.robot.utils.Field;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -220,16 +221,24 @@ public class DriveCommands extends SubsystemBase {
 }
 
 public Command driveInLineCommand() {
-    if (Field.inTrenchZone()) {
-        double closer = Math.min(drivetrain.getPose().getY() - Field.TRENCH_MIDPOINT,
-                 drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT));
-        return drive(driveInLine(closer), rotateWithJoystick());
-    } else if (Field.inBumpZone()) {
-        double closer = Math.min(drivetrain.getPose().getY() - Field.BUMP_MIDPOINT,
-                 drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT));
-        return drive(driveInLine(closer), rotateWithJoystick());
-    } 
-    return drive(driveWithJoystick(), rotateWithJoystick());
+    return Commands.defer(() -> {
+        if (Field.inTrenchZone()) {
+            double distToLower = drivetrain.getPose().getY() - Field.TRENCH_MIDPOINT;
+            double distToUpper = drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT);
+            double closer = Math.abs(distToUpper) < Math.abs(distToLower) ? 
+                    Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT : Field.TRENCH_MIDPOINT;
+
+            return drive(driveInLine(closer), trenchAlign());
+        } else if (Field.inBumpZone()) {
+            double distToLower = drivetrain.getPose().getY() - Field.BUMP_MIDPOINT;
+            double distToUpper = drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT);
+            double closer = Math.abs(distToUpper) < Math.abs(distToLower) ? 
+                    Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT : Field.BUMP_MIDPOINT;
+
+            return drive(driveInLine(closer), rotateWithJoystick());
+        } 
+        return drive(driveWithJoystick(), rotateWithJoystick());},
+        Set.of(drivetrain));
 }
 
 public Command driveInLineCommand(double targetY) {
