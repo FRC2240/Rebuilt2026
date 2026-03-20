@@ -3,10 +3,6 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import static edu.wpi.first.units.Units.Inches;
-
-import edu.wpi.first.math.geometry.Translation2d;
 import com.ctre.phoenix6.SignalLogger;
 
 import edu.wpi.first.net.WebServer;

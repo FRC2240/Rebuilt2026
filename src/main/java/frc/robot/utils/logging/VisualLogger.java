@@ -2,7 +2,6 @@ package frc.robot.utils.logging;
 
 import java.util.Arrays;
 
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.StructArrayPublisher;
