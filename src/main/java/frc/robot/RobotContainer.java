@@ -32,6 +32,7 @@ public class RobotContainer {
     public final Spindexer spindexer = new Spindexer();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
     public final ElasticDashboard elasticDashboard = new ElasticDashboard();
+    public final AutoCreator autoCreator = new AutoCreator(drivetrain::resetPose, () -> shootingController.shoot());
     //public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
 
     // public final FieldSimulation sim = new FieldSimulation();
@@ -115,10 +116,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        // Defaults to firstextension to ensure it happens
-        if (autoChooser.getSelected() == null) 
-            return null;
 
-        return autoChooser.getSelected();
+        return autoCreator.getCommand();
     }
 }
