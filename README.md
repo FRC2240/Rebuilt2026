@@ -15,6 +15,9 @@ dual screen - slow mode
 Y - trench align
 X - intake up
 
+B - drive facing point
+Left Bumper - transition assist
+
 ## IDs
 ### Swerve
 10, 11, 12
