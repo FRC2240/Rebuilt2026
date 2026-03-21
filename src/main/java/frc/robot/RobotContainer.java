@@ -16,7 +16,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
-//import frc.robot.subsystems.candle.Candle;
+import frc.robot.subsystems.vision.CameraInterface.pose_estimation_data;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -32,9 +32,6 @@ public class RobotContainer {
     public final Spindexer spindexer = new Spindexer();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
     public final ElasticDashboard elasticDashboard = new ElasticDashboard();
-    //public final Candle candle = new Candle(shootingController::isShooting, shootingController::hubShootRequirementsMet);
-
-    // public final FieldSimulation sim = new FieldSimulation();
 
     public RobotContainer() {
         addNamedCommands();
@@ -111,9 +108,8 @@ public class RobotContainer {
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
     }
-
     public Command getAutonomousCommand() {
-        // Defaults to firstextension to ensure it happens
+         // Defaults to firstextension to ensure it happens
         if (autoChooser.getSelected() == null) 
             return null;
 

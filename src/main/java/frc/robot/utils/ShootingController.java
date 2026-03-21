@@ -101,7 +101,7 @@ public class ShootingController extends SubsystemBase {
         // the tree map
         return RotationsPerSecond.of(passDistanceToVelocityMap.get(Field.getDistanceToPassPoint().in(Inches)));
     }
-
+    
     // These boolean functions are in this class instead of their respective
     // subsystems. This is because this class holds the constants such as tolerances
     // for aiming and shooting so holding the methods here avoids a complex web of
@@ -122,8 +122,9 @@ public class ShootingController extends SubsystemBase {
      * Targets the middle of the valid distance ring as to reach a valid pose faster
      */
     private DriveCommands.TranslationalVelocity driveToValidDistanceFromHub() {
-        if (isValidDistanceFromHub())
+        if (isValidDistanceFromHub()) {
             return DriveCommands.TranslationalVelocity.none();
+        }
         return drivetrain.commands
                 .driveToDistanceFromPoint(Field.HUB_CENTER_TRANSLATION::get, () -> NORM_DISTANCE_FROM_HUB).get();
     }

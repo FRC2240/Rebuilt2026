@@ -64,12 +64,6 @@ public class Intake extends SubsystemBase {
         })).withName("Enable");
     }
 
-    public Command enableIntakeSlowCommand() {
-        return setIntakeVelocityCommand(AngularVelocity.ofBaseUnits(-20, RotationsPerSecond)).andThen(run(() -> {
-            state = "Enable Slow";
-        })).withName("Enable Slow");
-    }
-
     public Command disableIntakeCommand() {
         return setIntakeVelocityCommand(RotationsPerSecond.of(0)).andThen(run(() -> {
             state = "Disable";

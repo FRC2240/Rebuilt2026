@@ -102,9 +102,6 @@ public class Field {
 
 
     public static boolean isHubActive() {
-        // Game specific message does not exist if the FMS is not attached
-        //if (!DriverStation.isFMSAttached()) return true;
-
         // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
         Alliance disabledFirst;
 
