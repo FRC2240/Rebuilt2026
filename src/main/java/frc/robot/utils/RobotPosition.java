@@ -14,19 +14,32 @@ public class RobotPosition {
         this.drivetrain = drivetrain;
     }
 
+    /**
+     * Initializes the singelton. This needs to be run before using any other
+     * functions in this class.
+     */
     public static void init(Drivetrain drivetrain) {
         if (instance == null)
             instance = new RobotPosition(drivetrain);
     }
 
+    /**
+     * Gets the estimated Pose2d of the robot on the field
+     */
     public static Pose2d getPose() {
         return instance.drivetrain.getPose();
     }
 
+    /**
+     * Gets the robot's estimated translation on the field.
+     */
     public static Translation2d getTranslation() {
         return instance.drivetrain.getTranslation();
     }
 
+    /**
+     * Gets the robot's estimated heading (Where it is facing)
+     */
     public static Rotation2d getHeading() {
         return instance.drivetrain.getHeading();
     }
