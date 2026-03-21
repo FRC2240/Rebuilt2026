@@ -11,15 +11,19 @@ public class BetterCommands extends Command {
      */
     public static Command runWhen(Command command, BooleanSupplier conditionSupplier) {
         return Commands.repeatingSequence(
-            Commands.waitUntil(conditionSupplier),
-            command.until(() -> !conditionSupplier.getAsBoolean())
-        );
+                Commands.waitUntil(conditionSupplier),
+                command.until(() -> !conditionSupplier.getAsBoolean()));
     }
 
+    /**
+     * Repeatedley chooses between the true and false command every loop depending
+     * on the value of the condition.
+     */
     public static Command repeatedlyChoose(Command trueCommand, Command falseCommand, BooleanSupplier conditionSupplier) {
         return Commands.repeatingSequence(
-            trueCommand.onlyIf(() -> conditionSupplier.getAsBoolean()).until(() -> !conditionSupplier.getAsBoolean()),
-            falseCommand.onlyIf(() -> !conditionSupplier.getAsBoolean()).until(() -> conditionSupplier.getAsBoolean())
-        );
+                trueCommand.onlyIf(() -> conditionSupplier.getAsBoolean())
+                        .until(() -> !conditionSupplier.getAsBoolean()),
+                falseCommand.onlyIf(() -> !conditionSupplier.getAsBoolean())
+                        .until(() -> conditionSupplier.getAsBoolean()));
     }
 }

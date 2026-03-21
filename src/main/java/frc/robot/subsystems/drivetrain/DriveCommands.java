@@ -22,13 +22,14 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class DriveCommands extends SubsystemBase {
-    private Drivetrain drivetrain;
-    private CommandXboxController joystick;
+    public Drivetrain drivetrain;
+    CommandXboxController joystick;
+
+    public DriveAssist driveAssist;
 
     private final SwerveRequest.ApplyFieldSpeeds driveChassisSpeeds = new SwerveRequest.ApplyFieldSpeeds();
     SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -55,6 +56,7 @@ public class DriveCommands extends SubsystemBase {
         this.drivetrain = drivetrain;
         this.joystick = controller;
         this.limiter = new SwerveLimiter(drivetrain);
+        this.driveAssist = new DriveAssist(this);
     }
 
     /**
@@ -62,7 +64,7 @@ public class DriveCommands extends SubsystemBase {
      * 
      * @return The current maximum speed
      */
-    private LinearVelocity getMaxDriveSpeed() {
+    public LinearVelocity getMaxDriveSpeed() {
         return slowModeEnabled ? DriveConstants.MAX_SLOW_SPEED : DriveConstants.MAX_SPEED;
     }
 
@@ -83,7 +85,7 @@ public class DriveCommands extends SubsystemBase {
         return Commands.runOnce(() -> slowModeEnabled = !slowModeEnabled);
     }
 
-    private double applyDeadband(double value, double deadband) {
+    public double applyDeadband(double value, double deadband) {
         if (Math.abs(value) > deadband)
             return value;
         return 0;
@@ -92,7 +94,7 @@ public class DriveCommands extends SubsystemBase {
     /**
      * Puts the value to the power of exponent. Preserves the sign of the input
      */
-    private double delinearize(double value, double exponent) {
+    double delinearize(double value, double exponent) {
         return Math.pow(Math.abs(value), exponent) * (value < 0 ? -1 : 1);
     }
 
@@ -209,23 +211,6 @@ public class DriveCommands extends SubsystemBase {
                 });
     }
 
-public Command snapToRotationPosition(double targetAngleDegrees) { 
-    return new InstantCommand(() -> { 
-    rotateToRotation(() -> Rotation2d.fromDegrees(targetAngleDegrees)); 
-    });
- }
-
- public Supplier<AngularVelocity> trenchAlign() {
-    return rotateToRotation(() -> {
-    double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
-
-    if (currentRotation >= 90) {
-        return Rotation2d.fromDegrees(180);
-    }
-    return Rotation2d.fromDegrees(0);
- });
- }
-
     /**
      * Transforms joystick input into translational velocity
      */
@@ -325,38 +310,4 @@ public Command snapToRotationPosition(double targetAngleDegrees) {
             return rotationToPoint;
         });
     }
-
-    /*
-     * public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity>
-     * shooterExitGroundSpeedSupplier) {
-     * return rotateToRotation(() -> {
-     * Translation2d robotTranslation = drivetrain.getTranslation();
-     * Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-     * 
-     * ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-     * drivetrain.getState().Speeds,
-     * drivetrain.getHeading());
-     * 
-     * Translation2d robotVelocities = new Translation2d(
-     * fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
-     * fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
-     * 
-     * Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-     * double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
-     * 
-     * double timeOfFlight = translationToHub.getNorm() / exitSpeed;
-     * Translation2d virtualTarget = translationToHub;
-     * 
-     * for (int i = 0; i < 3; i++) {
-     * virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
-     * 
-     * // Re-calculate time of flight based on the new distance to the virtual
-     * target
-     * timeOfFlight = virtualTarget.getNorm() / exitSpeed;
-     * }
-     * 
-     * return virtualTarget.getAngle();
-     * });
-     * }
-     */
 }

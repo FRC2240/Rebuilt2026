@@ -20,6 +20,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -92,6 +93,11 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
             // Handle exception as needed
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putString("Drivetrain/current command", this.getCurrentCommand() == null ? "None" : this.getCurrentCommand().getName());
     }
 
     /**
