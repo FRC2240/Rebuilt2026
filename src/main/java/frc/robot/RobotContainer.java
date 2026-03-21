@@ -87,10 +87,10 @@ public class RobotContainer {
                     drivetrain.commands.driveAssist.trenchAlign()));
 
         // Drive in Line
-        joystick.a().whileTrue(drivetrain.commands.driveAssist.driveInLineCommand());
-      
-        joystick.b().whileTrue(shootingController.feed());
+        joystick.leftBumper().whileTrue(drivetrain.commands.driveAssist.driveInLineCommand());
 
+        // Drive facing Hub
+        joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingHub());
     }
     private void configureDefaults() {
         //Drive with Stick
@@ -107,18 +107,9 @@ public class RobotContainer {
 
         // Shooter coasts when not used (power saving)
         shooter.setDefaultCommand(shooter.coastCommand());
-        
-        /*
-        shooter.setDefaultCommand(
-            shooter.setVelocityCommand(
-                () -> RotationsPerSecond.of(SmartDashboard.getNumber("Desired shooter velocity", 0)))
-        );
-         */
 
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
-
-
     }
 
     public Command getAutonomousCommand() {

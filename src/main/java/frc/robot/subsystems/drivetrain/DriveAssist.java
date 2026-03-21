@@ -49,6 +49,19 @@ public class DriveAssist {
                 Set.of(drivetrain));
     }
 
+    public Command driveFacingHub(){
+        return Commands.defer(() -> {
+            if (Field.inAllianceZone()) {
+                return driveCommands.drive(driveCommands.driveWithJoystick(), 
+                        driveCommands.rotateToFacePoint(Field.HUB_CENTER_TRANSLATION::get));
+            } else {
+                return driveCommands.drive(driveCommands.driveWithJoystick(), 
+                        driveCommands.rotateToFacePoint(Field::getTranslationOfPassPoint));
+            }
+        }, 
+                Set.of(drivetrain));
+        }
+
     public Supplier<AngularVelocity> trenchAlign() {
         return driveCommands.rotateToRotation(() -> {
             double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
