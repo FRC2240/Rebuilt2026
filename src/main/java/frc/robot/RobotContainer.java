@@ -101,7 +101,7 @@ public class RobotContainer {
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
 
-
+        
     }
     public Command getAutonomousCommand() {
          // Defaults to firstextension to ensure it happens
