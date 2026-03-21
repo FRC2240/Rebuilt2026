@@ -83,10 +83,11 @@ public class RobotContainer {
         joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
         // Align with Trench
-        joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
+        joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), 
+                    drivetrain.commands.driveAssist.trenchAlign()));
 
         // Drive in Line
-        joystick.a().whileTrue(drivetrain.commands.driveInLineCommand());
+        joystick.a().whileTrue(drivetrain.commands.driveAssist.driveInLineCommand());
       
         joystick.b().whileTrue(shootingController.feed());
 

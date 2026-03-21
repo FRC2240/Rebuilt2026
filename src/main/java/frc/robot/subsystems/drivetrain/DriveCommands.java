@@ -6,9 +6,6 @@ import static edu.wpi.first.units.Units.Radians;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
-import frc.robot.utils.Field;
-
-import java.util.Set;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
@@ -29,11 +26,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 public class DriveCommands extends SubsystemBase {
-    private Drivetrain drivetrain;
-    private CommandXboxController joystick;
+    public Drivetrain drivetrain;
+    CommandXboxController joystick;
+
+    public DriveAssist driveAssist;
 
     private final SwerveRequest.ApplyFieldSpeeds driveChassisSpeeds = new SwerveRequest.ApplyFieldSpeeds();
     SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -60,6 +57,7 @@ public class DriveCommands extends SubsystemBase {
         this.drivetrain = drivetrain;
         this.joystick = controller;
         this.limiter = new SwerveLimiter(drivetrain);
+        this.driveAssist = new DriveAssist(this);
     }
 
     /**
@@ -67,7 +65,7 @@ public class DriveCommands extends SubsystemBase {
      * 
      * @return The current maximum speed
      */
-    private LinearVelocity getMaxDriveSpeed() {
+    LinearVelocity getMaxDriveSpeed() {
         return slowModeEnabled ? DriveConstants.MAX_SLOW_SPEED : DriveConstants.MAX_SPEED;
     }
 
@@ -88,7 +86,7 @@ public class DriveCommands extends SubsystemBase {
         return Commands.runOnce(() -> slowModeEnabled = !slowModeEnabled);
     }
 
-    private double applyDeadband(double value, double deadband) {
+    double applyDeadband(double value, double deadband) {
         if (Math.abs(value) > deadband)
             return value;
         return 0;
@@ -97,7 +95,7 @@ public class DriveCommands extends SubsystemBase {
     /**
      * Puts the value to the power of exponent. Preserves the sign of the input
      */
-    private double delinearize(double value, double exponent) {
+    double delinearize(double value, double exponent) {
         return Math.pow(Math.abs(value), exponent) * (value < 0 ? -1 : 1);
     }
 
@@ -220,47 +218,6 @@ public class DriveCommands extends SubsystemBase {
     });
 }
 
-public Command driveInLineCommand() {
-    return Commands.defer(() -> {
-        if (Field.inTrenchZone()) {
-            double distToLower = drivetrain.getPose().getY() - Field.TRENCH_MIDPOINT;
-            double distToUpper = drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT);
-            double closer = Math.abs(distToUpper) < Math.abs(distToLower) ? 
-                    Field.FIELD_WIDTH.in(Meters) - Field.TRENCH_MIDPOINT : Field.TRENCH_MIDPOINT;
-
-            return drive(driveInLine(closer), trenchAlign());
-        } else if (Field.inBumpZone()) {
-            double distToLower = drivetrain.getPose().getY() - Field.BUMP_MIDPOINT;
-            double distToUpper = drivetrain.getPose().getY() - (Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT);
-            double closer = Math.abs(distToUpper) < Math.abs(distToLower) ? 
-                    Field.FIELD_WIDTH.in(Meters) - Field.BUMP_MIDPOINT : Field.BUMP_MIDPOINT;
-
-            return drive(driveInLine(closer), rotateWithJoystick());
-        } 
-        return drive(driveWithJoystick(), rotateWithJoystick());},
-        Set.of(drivetrain));
-}
-
-public Command driveInLineCommand(double targetY) {
-    return drive(driveInLine(targetY), rotateWithJoystick());
-}
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putBoolean("Feild/Trench Zone", Field.inTrenchZone());
-        SmartDashboard.putBoolean("Feild/Bump Zone", Field.inBumpZone());
-    }
-
-public Supplier<AngularVelocity> trenchAlign() {
-    return rotateToRotation(() -> {
-    double currentRotation = Math.abs(drivetrain.getHeading().getDegrees());
-
-    if (currentRotation >= 90) {
-        return Rotation2d.fromDegrees(180);
-    }
-    return Rotation2d.fromDegrees(0);});
-}
-
     /**
      * Transforms joystick input into translational velocity
      */
@@ -313,27 +270,6 @@ public Supplier<AngularVelocity> trenchAlign() {
         };
     }
 
-    public Supplier<TranslationalVelocity> driveInLine(double targetY) {
-        TranslationalVelocity velocity = TranslationalVelocity.none();
-        return () -> {
-            int allianceMultiplier = (DriverStation.getAlliance().isEmpty()
-                    || DriverStation.getAlliance().get() == Alliance.Red) ? 1 : -1;
-
-            double currentY = drivetrain.getTranslation().getY();
-            double linearDistance = targetY - currentY;
-
-            double velocityOutput = DriveConstants.TRANSLATION_PID_CONTROLLER.calculate(linearDistance, 0);
-            // Limit the resulting velocity
-            velocityOutput = Math.min(velocityOutput/2, getMaxDriveSpeed().in(MetersPerSecond));
-
-            velocity.x = getMaxDriveSpeed()
-                    .times(delinearize(applyDeadband(joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
-            velocity.y = MetersPerSecond.of(-velocityOutput);
-
-            return velocity;
-        };
-    }
-
     /**
      * Drives the robot to the nearest point at a distance from a point
      */
@@ -381,38 +317,4 @@ public Supplier<AngularVelocity> trenchAlign() {
             return rotationToPoint;
         });
     }
-
-    /*
-     * public Supplier<AngularVelocity> rotateToAimAtHub(Supplier<LinearVelocity>
-     * shooterExitGroundSpeedSupplier) {
-     * return rotateToRotation(() -> {
-     * Translation2d robotTranslation = drivetrain.getTranslation();
-     * Translation2d hubTranslation = Field.HUB_CENTER_TRANSLATION.get();
-     * 
-     * ChassisSpeeds fieldSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(
-     * drivetrain.getState().Speeds,
-     * drivetrain.getHeading());
-     * 
-     * Translation2d robotVelocities = new Translation2d(
-     * fieldSpeeds.vxMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN,
-     * fieldSpeeds.vyMetersPerSecond * DriveConstants.AIM_LATERAL_GAIN);
-     * 
-     * Translation2d translationToHub = hubTranslation.minus(robotTranslation);
-     * double exitSpeed = shooterExitGroundSpeedSupplier.get().in(MetersPerSecond);
-     * 
-     * double timeOfFlight = translationToHub.getNorm() / exitSpeed;
-     * Translation2d virtualTarget = translationToHub;
-     * 
-     * for (int i = 0; i < 3; i++) {
-     * virtualTarget = translationToHub.minus(robotVelocities.times(timeOfFlight));
-     * 
-     * // Re-calculate time of flight based on the new distance to the virtual
-     * target
-     * timeOfFlight = virtualTarget.getNorm() / exitSpeed;
-     * }
-     * 
-     * return virtualTarget.getAngle();
-     * });
-     * }
-     */
 }
