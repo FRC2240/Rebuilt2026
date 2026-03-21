@@ -16,6 +16,7 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
+import frc.robot.subsystems.vision.CameraInterface.pose_estimation_data;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -101,5 +102,12 @@ public class RobotContainer {
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
 
 
+    }
+    public Command getAutonomousCommand() {
+         // Defaults to firstextension to ensure it happens
+        if (autoChooser.getSelected() == null) 
+            return null;
+
+        return autoChooser.getSelected();
     }
 }
