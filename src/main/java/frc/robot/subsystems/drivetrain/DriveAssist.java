@@ -49,7 +49,7 @@ public class DriveAssist {
                 Set.of(drivetrain));
     }
 
-    public Command driveFacingHub(){
+    public Command driveFacingTarget(){
         return Commands.defer(() -> {
             if (Field.inAllianceZone()) {
                 return driveCommands.drive(driveCommands.driveWithJoystick(), 

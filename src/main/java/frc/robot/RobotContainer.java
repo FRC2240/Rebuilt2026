@@ -90,7 +90,7 @@ public class RobotContainer {
         joystick.leftBumper().whileTrue(drivetrain.commands.driveAssist.driveInLineCommand());
 
         // Drive facing Hub
-        joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingHub());
+        joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingTarget());
     }
     private void configureDefaults() {
         //Drive with Stick
