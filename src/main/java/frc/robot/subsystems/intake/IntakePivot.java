@@ -4,6 +4,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.MotionMagicTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.PositionTorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
@@ -18,6 +19,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class IntakePivot extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     private String currentState = "None";
+    private CoastOut coast = new CoastOut();
 
     public IntakePivot() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
@@ -48,13 +50,19 @@ public class IntakePivot extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Intake/Pivot State", currentState);
-        //SmartDashboard.putNumber("Intake/Pivot Stator Current", pivotMotor.getStatorCurrent().getValueAsDouble());
-        //SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
+        // SmartDashboard.putNumber("Intake/Pivot Stator Current",
+        // pivotMotor.getStatorCurrent().getValueAsDouble());
+        // SmartDashboard.putNumber("Intake/Pivot Supply Current",
+        // pivotMotor.getSupplyCurrent().getValueAsDouble());
     }
 
     public Command setPositionCommand(Angle position) {
         return runOnce(() -> pivotMotor.setControl(new PositionTorqueCurrentFOC(position))).andThen(run(() -> {
         }));
+    }
+
+    public void extendMotionMagic() {
+        pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
     }
 
     public void extend() {
@@ -67,15 +75,21 @@ public class IntakePivot extends SubsystemBase {
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
     }
 
+    public void coast() {
+        currentState = "Coast";
+        pivotMotor.setControl(coast);
+    }
+
     public Command extendCommand() {
         return runOnce(this::extend).withName("Extend");
     }
 
     public Command extendRunCommand() {
         return extendCommand()
-                .andThen(run(() -> {
-                }).until(() -> Math.abs(pivotMotor.getPosition().getValueAsDouble()
-                        - IntakeConstants.PIVOT_EXTENDED_POSITION.in(Rotations)) < 1));
+                .andThen(run(() -> {})
+                .until(() -> Math.abs(pivotMotor.getPosition().getValueAsDouble() - IntakeConstants.PIVOT_EXTENDED_POSITION.in(Rotations)) < IntakeConstants.PIVOT_TOLLERANCE))
+                .andThen(runOnce(() -> coast()))
+                .andThen(() -> {});
     }
 
     public Command contractCommand() {
@@ -99,6 +113,11 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command rampCommand() {
-        return runOnce(this::ramp).andThen(run(() -> {}));
+        return runOnce(() -> ramp()).andThen(run(() -> {
+        }));
+    }
+
+    public Command tstRampCommand() {
+        return run(this::ramp);
     }
 }

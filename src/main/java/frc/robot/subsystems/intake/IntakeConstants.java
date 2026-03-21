@@ -10,6 +10,7 @@ public class IntakeConstants {
   public static final int INTAKE_MOTOR_ID = 54; 
   public static final int PIVOT_MOTOR_ID = 55;
   public static final int INTAKE_MOTOR_FOLLOWER_ID = 64;
+  public static final int PIVOT_TOLLERANCE = 1;
 
   public static final Angle PIVOT_EXTENDED_POSITION = Rotations.of(-10); 
   public static final Angle PIVOT_RAMP_POSITION = Rotations.of(-4.2);
