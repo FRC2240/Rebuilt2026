@@ -10,7 +10,6 @@ import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -18,17 +17,20 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.drivetrain.Drivetrain;
+import frc.robot.utils.*;
 
-public class BetterAutoChooser{
+public class BetterAutoChooser extends SubsystemBase{
 
-    //private SendableChooser<Translation2d> startChooser = new SendableChooser<>();
     private SendableChooser<PathPlannerPath> collectionOneChooser = new SendableChooser<>();
     private SendableChooser<PathPlannerPath> collectionTwoChooser = new SendableChooser<>();
 
     private List<PathPlannerPath> pathList = new ArrayList<>();
     private List<NamedCommandSupplier> commandList = new ArrayList<>();
+
+    private boolean collectionChanged = false;
 
     public BetterAutoChooser() {
     }
@@ -64,18 +66,13 @@ public class BetterAutoChooser{
         }
     }
 
-    private void initializeChoosers () {
+    private void initializeChoosers() {
         getAllPaths();
 
-        //startChooser.setDefaultOption("None", null);
         collectionOneChooser.setDefaultOption("None", null);
         collectionTwoChooser.setDefaultOption("None", null);
 
-        //startChooser.addOption("Hub", AutoConstants.HUB.get());
-        //startChooser.addOption("Left Bump", AutoConstants.LEFT_BUMP.get());
-        //startChooser.addOption("Left Trench", AutoConstants.LEFT_TRENCH.get());
-        //startChooser.addOption("Right Bump", AutoConstants.RIGHT_BUMP.get());
-        //startChooser.addOption("Left Trench", AutoConstants.RIGHT_TRENCH.get());
+        collectionOneChooser.onChange((s) -> this.collectionChanged = true);
 
         for (PathPlannerPath path : pathList) {
             collectionOneChooser.addOption(path.name, path);
@@ -83,45 +80,50 @@ public class BetterAutoChooser{
         }
     }
 
-    /* deffered for after the rest works
-    @Override
-    public void periodic() {
-        collectionOneChooser.onChange((newValue) -> {
-            // feed it into tree function to get a new list of valid paths2 and publish that to collection chooser 2
-            updateChoosers(newValue);
-        });
-    }
+    private void updateChoosers() {
 
-    private void updateChoosers(PathPlannerPath selected) {
-        if (selected == null) {return;}
-        boolean changed = false;
+        collectionOneChooser.setDefaultOption("None", null);
+        collectionTwoChooser.setDefaultOption("None", null);
+
+        List<PathPlannerPath> pList = new ArrayList<>();
+
         for (PathPlannerPath path : pathList) {
-
-            if (selected.name.contains("Left") && !path.name.contains("Right") && !path.name.contains("Outpost")) {
-                changed = true;
-
-                collectionTwoChooser = new SendableChooser<>();
-                collectionTwoChooser.addOption(path.name, path);
+            if(collectionOneChooser.getSelected() == null) {
+                pList.add(path);
+                continue;
             }
-            else if (selected.name.contains("Right") && !path.name.contains("Left") && !path.name.contains("Depot")) {
-                changed = true;
+            
+            collectionTwoChooser = new SendableChooser<>();
 
-                collectionTwoChooser = new SendableChooser<>();
-                collectionTwoChooser.addOption(path.name, path);
+            String pathName = path.name.toLowerCase();
+            String pathSelect = collectionOneChooser.getSelected().name.toLowerCase();
+
+            if(collectionChanged) {
+                if(pathSelect.startsWith("left") && !(pathName.startsWith("right") || pathName.endsWith("outpost otf"))) {
+                        pList.add(path);
+                }
+
+                else if(pathSelect.startsWith("right") && !(pathName.startsWith("left") || pathName.endsWith("depot otf"))) {
+                        pList.add(path);
+                }
             }
-
+            else {
+                pList.add(path);
+            }
         }
 
-        if (changed) {
-            publishChoosers();
+        for (PathPlannerPath path : pList) {
+            collectionTwoChooser.addOption(path.name, path);
         }
+
+        SmartDashboard.putData("BetterChooser/Collection 1 Selector", collectionOneChooser);
+        SmartDashboard.putData("BetterChooser/Collection 2 Selector", collectionTwoChooser);
     }
-    */
+
 
     public void publishChoosers() {
         initializeChoosers();
 
-        //SmartDashboard.putData("BetterChooser/Start Selector", startChooser);
         SmartDashboard.putData("BetterChooser/Collection 1 Selector", collectionOneChooser);
         SmartDashboard.putData("BetterChooser/Collection 2 Selector", collectionTwoChooser);
 
@@ -144,7 +146,7 @@ public class BetterAutoChooser{
                 //var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading())); // start.get() breaks cause null :?
                 //if (DriverStation.getAlliance().get() == Alliance.Red) {startPath.flipPath();}
                 var start = startPath.getStartingHolonomicPose();
-                drivetrain.resetPose(start.get());
+                RobotPosition.reset(start.get());
             }); 
 
         if (pathA == null) {
@@ -174,5 +176,13 @@ public class BetterAutoChooser{
     public Command buildAuto(Drivetrain drivetrain) {
         Command[] auto = initilizeAuto(drivetrain);
         return new SequentialCommandGroup(auto);
+    }
+
+    @Override
+    public void periodic() {
+        if(collectionChanged) {
+            updateChoosers();
+            collectionChanged = false;
+        }
     }
 }

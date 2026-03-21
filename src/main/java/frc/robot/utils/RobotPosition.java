@@ -30,4 +30,8 @@ public class RobotPosition {
     public static Rotation2d getHeading() {
         return instance.drivetrain.getHeading();
     }
+
+    public static void reset(Pose2d newPose) {
+        instance.drivetrain.resetPose(newPose);
+    }
 }
