@@ -85,10 +85,16 @@ public class Field {
                 || (!isInactiveFirst && isSecondInactiveActive);
     }
 
+    /**
+     * Returns a Translation2d from the robot to the hub.
+     */
     public static Translation2d getTranslationToHub() {
         return HUB_CENTER_TRANSLATION.get().minus(RobotPosition.getTranslation());
     }
 
+    /**
+     * Returns the robot's distance from the hub.
+     */
     public static Distance getDistanceToHub() {
         return Meters.of(Field.getTranslationToHub().getNorm());
     }
@@ -113,6 +119,9 @@ public class Field {
         return getTranslationOfPassPoint().minus(RobotPosition.getTranslation());
     }
 
+    /**
+     * Returns the robot's distance to the nearest pass point.
+     */
     public static Distance getDistanceToPassPoint() {
         return Meters.of(Field.getTranslationToPassPoint().getNorm());
     }
