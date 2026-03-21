@@ -31,8 +31,6 @@ public class RobotContainer {
     public final Spindexer spindexer = new Spindexer();
     public final ShootingController shootingController = new ShootingController(drivetrain, shooter, spindexer, intake);
     public final ElasticDashboard elasticDashboard = new ElasticDashboard();
-    public final AutoCreator autoCreator = new AutoCreator(drivetrain::resetPose, () -> shootingController.shoot(), () -> Commands.parallel(intake.enableIntakeCommand(),
-                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
 
     public RobotContainer() {
         addNamedCommands();
@@ -103,10 +101,5 @@ public class RobotContainer {
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
 
 
-    }
-
-    public Command getAutonomousCommand() {
-
-        return autoCreator.getCommand();
     }
 }
