@@ -73,20 +73,27 @@ public class RobotContainer {
         // Shoot
         joystick.rightTrigger().whileTrue(shootingController.shoot());
 
-        // Reverse intake
+        // Reverse Intake
         joystick.povDown().whileTrue(intake.reverseIntakeCommand());
 
         // Pivot rezeroing
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
+        // Contract Intake
         joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
-        joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), drivetrain.commands.trenchAlign()));
+        // Align with Trench
+        joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), 
+                    drivetrain.commands.driveAssist.trenchAlign()));
 
-        joystick.b().whileTrue(shootingController.feed());
+        // Drive in Line
+        joystick.leftBumper().whileTrue(drivetrain.commands.driveAssist.driveInLineCommand());
 
+        // Drive facing Hub
+        joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingTarget());
     }
     private void configureDefaults() {
+        //Drive with Stick
         drivetrain.setDefaultCommand(drivetrain.commands.controlWithJoysticks());
 
         // Spindexer is disabled by default
@@ -100,18 +107,9 @@ public class RobotContainer {
 
         // Shooter coasts when not used (power saving)
         shooter.setDefaultCommand(shooter.coastCommand());
-        
-        /*
-        shooter.setDefaultCommand(
-            shooter.setVelocityCommand(
-                () -> RotationsPerSecond.of(SmartDashboard.getNumber("Desired shooter velocity", 0)))
-        );
-         */
 
         // Pivot is extended by default
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
-
-
     }
 
     public Command getAutonomousCommand() {

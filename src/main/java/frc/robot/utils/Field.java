@@ -26,6 +26,10 @@ public class Field {
     public static final Distance FIELD_WIDTH = Inches.of(317.69); // Y
     public static final Translation2d FIELD_CENTER = new Translation2d(FIELD_LENGTH.div(2), FIELD_WIDTH.div(2));
 
+    public static final double BUMP_MIDPOINT = Inches.of(62.35 + 73/2).in(Meters);
+    public static final double TRENCH_MIDPOINT = Inches.of(50.35/2).in(Meters);
+
+
     public static final AllianceRelativeRectangle2d ALLIANCE_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(new Rectangle2d(Translation2d.kZero, new Translation2d(Inches.of(170), FIELD_WIDTH)));
 
@@ -55,6 +59,47 @@ public class Field {
                         new Translation2d(
                                 Inches.of(200), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(50)))));
+
+    public static final AllianceRelativeRectangle2d LOWER_TRENCH_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Inches.of(0)), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5)))));
+
+        public static final AllianceRelativeRectangle2d UPPER_TRENCH_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5)))));
+
+    public static final AllianceRelativeRectangle2d LOWER_BUMP_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5))), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).minus(Inches.of(23.5)))));
+
+    public static final AllianceRelativeRectangle2d UPPER_BUMP_ZONE = AllianceRelativeRectangle2d
+            .fromBlueRectangle(
+                new Rectangle2d(
+                        new Translation2d(
+                                Inches.of(0), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5))), 
+                        new Translation2d(
+                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_WIDTH.div(2).plus(Inches.of(23.5)))));
+
 
     public static boolean isHubActive() {
         // Game specific message does not exist if the FMS is not attached
@@ -142,6 +187,22 @@ public class Field {
         Rectangle2d deadzone = PASSING_DEADZONE.get();
 
         return deadzone.contains(translation);
+    }
+
+    public static boolean inBumpZone() {
+        Translation2d translation = RobotPosition.getTranslation();
+        Rectangle2d allianceZone1 = LOWER_BUMP_ZONE.get();
+        Rectangle2d allianceZone2 = UPPER_BUMP_ZONE.get();
+
+        return allianceZone1.contains(translation) || allianceZone2.contains(translation);
+    }
+
+    public static boolean inTrenchZone() {
+        Translation2d translation = RobotPosition.getTranslation();
+        Rectangle2d allianceZone1 = LOWER_TRENCH_ZONE.get();
+        Rectangle2d allianceZone2 = UPPER_TRENCH_ZONE.get();
+
+        return allianceZone1.contains(translation) || allianceZone2.contains(translation);
     }
 
     /**
