@@ -81,6 +81,7 @@ public class BetterAutoChooser extends SubsystemBase{
     }
 
     private void updateChoosers() {
+        collectionTwoChooser = new SendableChooser<>();
 
         collectionOneChooser.setDefaultOption("None", null);
         collectionTwoChooser.setDefaultOption("None", null);
@@ -92,8 +93,6 @@ public class BetterAutoChooser extends SubsystemBase{
                 pList.add(path);
                 continue;
             }
-            
-            collectionTwoChooser = new SendableChooser<>();
 
             String pathName = path.name.toLowerCase();
             String pathSelect = collectionOneChooser.getSelected().name.toLowerCase();

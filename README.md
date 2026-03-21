@@ -41,3 +41,13 @@ Pivot: 55
 
 ### Spindexer
 58
+
+### Auto Naming
+When naming paths in path planner please use the following scheme:
+`Direction |whatever you want| Outpost/Depot/(leave blank) OTF`
+
+Examples are:
+
+    Left Cycle OTF
+
+    Right Feed Outpost OTF
