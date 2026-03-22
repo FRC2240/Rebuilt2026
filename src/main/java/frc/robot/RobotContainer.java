@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -15,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
+import frc.robot.utils.BetterAutos.BetterAutoChooser;
 import frc.robot.subsystems.vision.*;
 import frc.robot.subsystems.vision.CameraInterface.pose_estimation_data;
 import frc.robot.subsystems.intake.Intake;
@@ -22,6 +25,11 @@ import frc.robot.subsystems.shooter.Shooter;
 
 public class RobotContainer {
     private SendableChooser<Command> autoChooser;
+    private BetterAutoChooser betterAutoChooser = new BetterAutoChooser();
+
+
+
+
 
     private final CommandXboxController joystick = new CommandXboxController(0);
 
@@ -53,8 +61,17 @@ public class RobotContainer {
     }
 
     private void configureAutoChooser() {
+        Supplier<Command> defaultFactory = () -> Commands.parallel(intake.enableIntakeCommand(),
+                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand());
+        Supplier<Command> shootFactory = () -> shootingController.shootIntoHub();
+
+        betterAutoChooser.registerCommand("default", defaultFactory);
+        betterAutoChooser.registerCommand("shoot", shootFactory);
+        betterAutoChooser.publishChoosers();
+
         autoChooser = AutoBuilder.buildAutoChooser();
         SmartDashboard.putData("Auto Chooser", autoChooser);
+
     }
 
     private void configureBindings() {
@@ -109,9 +126,12 @@ public class RobotContainer {
         intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
     }
     public Command getAutonomousCommand() {
-         // Defaults to firstextension to ensure it happens
-        if (autoChooser.getSelected() == null) 
-            return null;
+
+        // Defaults to firstextension to ensure it happens
+
+        if (autoChooser.getSelected() == null || autoChooser.getSelected().getName().equals("InstantCommand")) {
+            return betterAutoChooser.buildAuto(drivetrain);
+        }
 
         return autoChooser.getSelected();
     }

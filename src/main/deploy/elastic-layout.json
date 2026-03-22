@@ -109,19 +109,6 @@
             }
           },
           {
-            "title": "Auto Chooser",
-            "x": 512.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Chooser",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "limelight-left",
             "x": 768.0,
             "y": 576.0,
@@ -145,6 +132,19 @@
               "topic": "/CameraPublisher/limelight-right",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 512.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
@@ -324,32 +324,6 @@
             }
           },
           {
-            "title": "left flywheel velocity",
-            "x": 960.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/left flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "right flywheel velocity",
-            "x": 1216.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/right flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
             "title": "limelight-left",
             "x": 64.0,
             "y": 192.0,
@@ -374,8 +348,136 @@
               "period": 0.06,
               "rotation_turns": 0
             }
+          },
+          {
+            "title": "real flywheel velocity",
+            "x": 960.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/real flywheel velocity",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
+            }
+          },
+          {
+            "title": "desired flywheel velocity",
+            "x": 1216.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/desired flywheel velocity",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "real flywheel velocity",
+            "x": 1216.0,
+            "y": 704.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/real flywheel velocity",
+              "period": 0.033,
+              "data_type": "double"
+            }
           }
         ]
+      }
+    },
+    {
+      "name": "Auto",
+      "grid_layout": {
+        "layouts": [
+          {
+            "title": "OTF",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 768.0,
+            "height": 576.0,
+            "type": "List Layout",
+            "properties": {
+              "label_position": "TOP"
+            },
+            "children": [
+              {
+                "title": "Selector 1",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/OTF/Selector 1",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Selector 2",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/OTF/Selector 2",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Selector 3",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/OTF/Selector 3",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Selector 4",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/OTF/Selector 4",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              },
+              {
+                "title": "Selector 5",
+                "x": 0.0,
+                "y": 0.0,
+                "width": 128.0,
+                "height": 128.0,
+                "type": "ComboBox Chooser",
+                "properties": {
+                  "topic": "/SmartDashboard/OTF/Selector 5",
+                  "period": 0.06,
+                  "sort_options": false
+                }
+              }
+            ]
+          }
+        ],
+        "containers": []
       }
     }
   ]
