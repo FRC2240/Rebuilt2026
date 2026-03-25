@@ -50,20 +50,19 @@ public class BetterAutoChooser extends SubsystemBase{
 
         if (files != null) {
             for (File file : files) {
-
                 pathNames.add(file.getName().replace(".path", ""));
             }
         }
 
         // this should make it so all paths on the pathList are valid, and thus all selected values will be valid
-        try {
-            if (pathNames.size() == 0) {return;}
+        for (String path : pathNames) {
+            try {
+                if (pathNames.size() == 0) {return;}
 
-            for (String path : pathNames) {
                 pathList.add(PathPlannerPath.fromPathFile(path));
+            } catch (Exception e) {
+                DriverStation.reportWarning("Failed to load all paths from file:\n" + e.getMessage(), e.getStackTrace());
             }
-        } catch (Exception e) {
-            DriverStation.reportWarning("Failed to load all paths from file:\n" + e.getMessage(), e.getStackTrace());
         }
     }
 
@@ -135,33 +134,33 @@ public class BetterAutoChooser extends SubsystemBase{
         Supplier<Command> defaultCommand = commandList.get(0).GetCommand();
         Supplier<Command> shootCommand = commandList.get(1).GetCommand();
 
-        //Translation2d startTrans2d = startChooser.getSelected();
         PathPlannerPath pathA = collectionOneChooser.getSelected();
         PathPlannerPath pathB = collectionTwoChooser.getSelected();
 
+        // Returns PathA unless null, then PathB, but if both are null it returns null
         PathPlannerPath startPath = (pathA != null) ? pathA : ((pathB != null) ? pathB : null);
-        if (startPath == null) {
+        if (startPath == null) { // Catch's null from prev line
             return new Command[] {Commands.none()};
         }
 
         autoCommands[0] = new InstantCommand(() -> {
-                if (DriverStation.getAlliance().get() == Alliance.Red) {
-                    var start = startPath.flipPath().getStartingHolonomicPose();
-                    RobotPosition.reset(start.get());
-                }
-                else {
-                    var start = startPath.getStartingHolonomicPose();
-                    RobotPosition.reset(start.get());
-                }
-            }); 
+            if (DriverStation.getAlliance().get() == Alliance.Red) {
+                var start = startPath.flipPath().getStartingHolonomicPose();
+                RobotPosition.reset(start.get());
+            }
+            else {
+                var start = startPath.getStartingHolonomicPose();
+                RobotPosition.reset(start.get());
+            }
+        }); 
 
         if (pathA == null) {
             autoCommands[1] = Commands.none();
+
             autoCommands[2] = Commands.none();
         }
         else {
-            autoCommands[1] = new ParallelRaceGroup(AutoBuilder.followPath(pathA))
-                        .raceWith(defaultCommand.get());
+            autoCommands[1] = new ParallelRaceGroup(AutoBuilder.followPath(pathA)).raceWith(defaultCommand.get());
             
             autoCommands[2] = new ParallelRaceGroup(shootCommand.get()).raceWith(new WaitCommand(AutoConstants.WAITTIME));
         }
@@ -170,8 +169,7 @@ public class BetterAutoChooser extends SubsystemBase{
             autoCommands[3] = Commands.none();
         }
         else {
-            autoCommands[3] = new ParallelRaceGroup(AutoBuilder.followPath(pathB))
-                        .raceWith(defaultCommand.get());
+            autoCommands[3] = new ParallelRaceGroup(AutoBuilder.followPath(pathB)).raceWith(defaultCommand.get());
         }
 
         autoCommands[4] = shootCommand.get();
