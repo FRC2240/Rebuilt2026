@@ -15,26 +15,48 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.TunableNumber;
 
 public class IntakePivot extends SubsystemBase {
     private TalonFX pivotMotor = new TalonFX(IntakeConstants.PIVOT_MOTOR_ID);
     private String currentState = "None";
     private CoastOut coast = new CoastOut();
 
+    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 20);
+    private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 9);
+    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 2);
+
+    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 20);
+    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 2);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 3);
+
     public IntakePivot() {
+        configureMotors();
+        extensionP.addChangeListener((v) -> configureMotors());
+        extensionI.addChangeListener((v) -> configureMotors());
+        extensionD.addChangeListener((v) -> configureMotors());
+
+        retractP.addChangeListener((v) -> configureMotors());
+        retractI.addChangeListener((v) -> configureMotors());
+        retractD.addChangeListener((v) -> configureMotors());
+
+        pivotMotor.setPosition(Rotations.of(0));
+    }
+
+    private void configureMotors() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
         conf.MotionMagic.MotionMagicCruiseVelocity = 10;
         conf.MotionMagic.MotionMagicAcceleration = 16;
 
         // For extension
-        conf.Slot0.kP = 20;
-        conf.Slot0.kD = 9;
-        conf.Slot0.kI = 2;
+        conf.Slot0.kP = extensionP.get();
+        conf.Slot0.kD = extensionI.get();
+        conf.Slot0.kI = extensionD.get();
 
         // Slot 1 is for contracting in the ramp command
-        conf.Slot1.kP = 25;
-        conf.Slot1.kD = 2;
-        conf.Slot1.kI = 3;
+        conf.Slot1.kP = retractP.get();
+        conf.Slot1.kD = retractI.get();
+        conf.Slot1.kI = retractD.get();
 
         // Slot 2 has a small PID for rezeroing
         conf.Slot2.kP = 5;
@@ -43,7 +65,6 @@ public class IntakePivot extends SubsystemBase {
         conf.CurrentLimits.StatorCurrentLimit = 100;
 
         pivotMotor.getConfigurator().apply(conf);
-        pivotMotor.setPosition(Rotations.of(0));
     }
 
     @Override
@@ -86,10 +107,7 @@ public class IntakePivot extends SubsystemBase {
 
     public Command extendRunCommand() {
         return extendCommand()
-                .andThen(run(() -> {})
-                .until(() -> Math.abs(pivotMotor.getPosition().getValueAsDouble() - IntakeConstants.PIVOT_EXTENDED_POSITION.in(Rotations)) < IntakeConstants.PIVOT_TOLLERANCE))
-                .andThen(runOnce(() -> coast()))
-                .andThen(() -> {});
+                .andThen(run(() -> {}));
     }
 
     public Command contractCommand() {
@@ -107,7 +125,7 @@ public class IntakePivot extends SubsystemBase {
                         .setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-2)).withSlot(2))),
                 Commands.waitSeconds(0.3),
                 Commands.waitUntil(() -> Math.abs(pivotMotor.getVelocity().getValueAsDouble()) < 0.2),
-                runOnce(() -> pivotMotor.setPosition(Rotations.of(-10))),
+                runOnce(() -> pivotMotor.setPosition(IntakeConstants.PIVOT_EXTENDED_POSITION)),
                 extendCommand())
                 .withName("Rezero");
     }
