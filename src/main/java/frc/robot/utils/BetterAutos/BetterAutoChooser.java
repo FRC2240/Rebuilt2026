@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -139,13 +140,19 @@ public class BetterAutoChooser extends SubsystemBase{
         PathPlannerPath pathB = collectionTwoChooser.getSelected();
 
         PathPlannerPath startPath = (pathA != null) ? pathA : ((pathB != null) ? pathB : null);
-        if (startPath == null) {return new Command[] {Commands.none()};}
+        if (startPath == null) {
+            return new Command[] {Commands.none()};
+        }
 
         autoCommands[0] = new InstantCommand(() -> {
-                //var start = Optional.of(new Pose2d(startTrans2d, drivetrain.getHeading())); // start.get() breaks cause null :?
-                //if (DriverStation.getAlliance().get() == Alliance.Red) {startPath.flipPath();}
-                var start = startPath.getStartingHolonomicPose();
-                RobotPosition.reset(start.get());
+                if (DriverStation.getAlliance().get() == Alliance.Red) {
+                    var start = startPath.flipPath().getStartingHolonomicPose();
+                    RobotPosition.reset(start.get());
+                }
+                else {
+                    var start = startPath.getStartingHolonomicPose();
+                    RobotPosition.reset(start.get());
+                }
             }); 
 
         if (pathA == null) {
