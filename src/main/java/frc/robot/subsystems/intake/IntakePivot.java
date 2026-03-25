@@ -22,9 +22,9 @@ public class IntakePivot extends SubsystemBase {
     private String currentState = "None";
     private CoastOut coast = new CoastOut();
 
-    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 20);
-    private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 9);
-    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 2);
+    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 25);
+    private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 7);
+    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 10);
 
     private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 20);
     private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 2);
@@ -62,7 +62,7 @@ public class IntakePivot extends SubsystemBase {
         conf.Slot2.kP = 5;
 
         conf.CurrentLimits.SupplyCurrentLimit = 100;
-        conf.CurrentLimits.StatorCurrentLimit = 100;
+        //conf.CurrentLimits.StatorCurrentLimit = 100;
 
         pivotMotor.getConfigurator().apply(conf);
     }
@@ -131,8 +131,12 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command rampCommand() {
-        return runOnce(() -> ramp()).andThen(run(() -> {
-        }));
+        return Commands.repeatingSequence(
+            runOnce(this::ramp),
+            Commands.waitSeconds(3),
+            runOnce(this::extend),
+            Commands.waitSeconds(1)
+        );
     }
 
     public Command tstRampCommand() {
