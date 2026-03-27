@@ -67,7 +67,7 @@ public class Field {
                                 Inches.of(0), 
                                 Inches.of(0)), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_LENGTH, 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5)))));
 
         public static final AllianceRelativeRectangle2d UPPER_TRENCH_ZONE = AllianceRelativeRectangle2d
@@ -77,7 +77,7 @@ public class Field {
                                 Inches.of(0), 
                                 Field.FIELD_WIDTH), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_LENGTH, 
                                 Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5)))));
 
     public static final AllianceRelativeRectangle2d LOWER_BUMP_ZONE = AllianceRelativeRectangle2d
@@ -87,7 +87,7 @@ public class Field {
                                 Inches.of(0), 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5))), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_LENGTH, 
                                 Field.FIELD_WIDTH.div(2).minus(Inches.of(23.5)))));
 
     public static final AllianceRelativeRectangle2d UPPER_BUMP_ZONE = AllianceRelativeRectangle2d
@@ -97,7 +97,7 @@ public class Field {
                                 Inches.of(0), 
                                 Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5))), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
+                                Field.FIELD_LENGTH, 
                                 Field.FIELD_WIDTH.div(2).plus(Inches.of(23.5)))));
 
 
