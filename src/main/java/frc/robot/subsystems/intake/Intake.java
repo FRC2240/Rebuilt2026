@@ -1,10 +1,12 @@
 package frc.robot.subsystems.intake;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -13,6 +15,7 @@ import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
@@ -29,8 +32,8 @@ public class Intake extends SubsystemBase {
 
         conf.Slot0.kP = 8;
 
-        conf.CurrentLimits.SupplyCurrentLimit = 100;
-        conf.CurrentLimits.StatorCurrentLimit = 100;
+        conf.CurrentLimits.SupplyCurrentLimit = 35;
+        conf.CurrentLimits.StatorCurrentLimit = IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps);
 
         intakeMotor.getConfigurator().apply(conf);
 
@@ -46,6 +49,8 @@ public class Intake extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
         SmartDashboard.putString("Intake/Roller state", state);
+        SmartDashboard.putNumber("Intake/Roller Supply", intakeMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Roller Stator", intakeMotor.getStatorCurrent().getValueAsDouble());
     }
 
     public Command setIntakeVelocityCommand(AngularVelocity velocity) {
@@ -57,11 +62,12 @@ public class Intake extends SubsystemBase {
     }
 
     public Command enableIntakeCommand() {
-        // Runs after setting control to prevent the default (enable) commmand from
-        // being called until desired
-        return setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY).andThen(run(() -> {
-            state = "Enable";
-        })).withName("Enable");
+        return Commands.repeatingSequence(
+            setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY),
+            Commands.waitUntil(() -> intakeMotor.getStatorCurrent().getValueAsDouble() > IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps) - 5),
+            runOnce(() -> intakeMotor.setControl(new CoastOut())),
+            Commands.waitSeconds(0.5)
+        ).withName("Enable");
     }
 
     public Command disableIntakeCommand() {

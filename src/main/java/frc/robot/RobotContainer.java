@@ -16,7 +16,6 @@ import frc.robot.subsystems.drivetrain.Drivetrain;
 import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.utils.*;
 import frc.robot.subsystems.vision.*;
-import frc.robot.subsystems.vision.CameraInterface.pose_estimation_data;
 import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.shooter.Shooter;
 
@@ -88,6 +87,8 @@ public class RobotContainer {
 
         // Drive facing Hub
         joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingTarget());
+
+        joystick.a().whileTrue(drivetrain.commands.shakeCommand());
     }
     private void configureDefaults() {
         //Drive with Stick

@@ -310,4 +310,17 @@ public class DriveCommands extends SubsystemBase {
             return rotationToPoint;
         });
     }
+
+    public Command shakeCommand() {
+        return Commands.repeatingSequence(
+            Commands.race(
+                this.drive(null, () -> RotationsPerSecond.of(0.5)),
+                Commands.waitSeconds(0.15)
+            ),
+            Commands.race(
+                this.drive(null, () -> RotationsPerSecond.of(-0.5)),
+                Commands.waitSeconds(0.15)
+            )
+        );
+    }
 }

@@ -26,9 +26,9 @@ public class IntakePivot extends SubsystemBase {
     private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 7);
     private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 10);
 
-    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 20);
-    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 2);
-    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 3);
+    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 15);
+    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 3);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 0);
 
     public IntakePivot() {
         configureMotors();
@@ -55,14 +55,14 @@ public class IntakePivot extends SubsystemBase {
 
         // Slot 1 is for contracting in the ramp command
         conf.Slot1.kP = retractP.get();
-        conf.Slot1.kD = retractI.get();
-        conf.Slot1.kI = retractD.get();
+        conf.Slot1.kD = retractD.get();
+        conf.Slot1.kI = retractI.get();
 
         // Slot 2 has a small PID for rezeroing
         conf.Slot2.kP = 5;
 
-        conf.CurrentLimits.SupplyCurrentLimit = 100;
-        //conf.CurrentLimits.StatorCurrentLimit = 100;
+        conf.CurrentLimits.SupplyCurrentLimit = 45;
+        conf.CurrentLimits.StatorCurrentLimit = 100;
 
         pivotMotor.getConfigurator().apply(conf);
     }
@@ -71,10 +71,8 @@ public class IntakePivot extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Intake/Pivot Position", pivotMotor.getPosition().getValueAsDouble());
         SmartDashboard.putString("Intake/Pivot State", currentState);
-        // SmartDashboard.putNumber("Intake/Pivot Stator Current",
-        // pivotMotor.getStatorCurrent().getValueAsDouble());
-        // SmartDashboard.putNumber("Intake/Pivot Supply Current",
-        // pivotMotor.getSupplyCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Pivot Stator Current", pivotMotor.getStatorCurrent().getValueAsDouble());
+        SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
     }
 
     public Command setPositionCommand(Angle position) {
@@ -94,6 +92,15 @@ public class IntakePivot extends SubsystemBase {
     public void ramp() {
         currentState = "Ramp";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
+    }
+
+    public void rampBotton() {
+        currentState = "Ramp Bottom";
+        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_BOTTOM_POSITION).withSlot(1));
+    }
+
+    public Command testRamp() {
+        return runOnce(this::ramp).andThen(run(() -> {}));
     }
 
     public void coast() {
@@ -133,13 +140,9 @@ public class IntakePivot extends SubsystemBase {
     public Command rampCommand() {
         return Commands.repeatingSequence(
             runOnce(this::ramp),
-            Commands.waitSeconds(3),
-            runOnce(this::extend),
-            Commands.waitSeconds(1)
+            Commands.waitSeconds(0.6),
+            runOnce(this::rampBotton),
+            Commands.waitSeconds(0.6)
         );
-    }
-
-    public Command tstRampCommand() {
-        return run(this::ramp);
     }
 }
