@@ -88,7 +88,8 @@ public class DriveAssist {
 
             velocity.x = driveCommands.getMaxDriveSpeed()
                     .times(driveCommands.delinearize(driveCommands.applyDeadband(driveCommands.joystick.getLeftY(), DriveConstants.CONTROLLER_DEADBAND), 1.5) * allianceMultiplier);
-            velocity.y = MetersPerSecond.of(-velocityOutput);
+            velocity.y = (linearDistance > 0.075 ? MetersPerSecond.of(-velocityOutput) : MetersPerSecond.of(0));
+            // velocity.y = MetersPerSecond.of(-(MathUtil.applyDeadband(velocityOutput, 0.1)));
 
             return velocity;
         };

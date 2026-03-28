@@ -28,7 +28,7 @@ public class IntakePivot extends SubsystemBase {
 
     private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 10);
     private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 3);
-    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 0);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 4);
 
     public IntakePivot() {
         configureMotors();
