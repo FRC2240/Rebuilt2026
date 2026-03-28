@@ -19,5 +19,5 @@ public class IntakeConstants {
   public static final Angle PIVOT_EXTENDED_POSITION = Rotations.of(-10.495); 
   public static final Angle PIVOT_RAMP_POSITION = Rotations.of(-1.0);
   public static final Angle PIVOT_RAMP_BOTTOM_POSITION = Rotations.of(-8.5);
-  public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(-55); 
+  public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(-60); 
 }
