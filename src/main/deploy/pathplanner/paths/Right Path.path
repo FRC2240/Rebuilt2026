@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.249523654513889,
-        "y": 0.6641276765046302
+        "x": 6.301799478910878,
+        "y": 0.6802268609222116
       },
       "isLocked": false,
       "linkedName": "Right Start"
@@ -17,59 +17,59 @@
     {
       "anchor": {
         "x": 7.558,
-        "y": 0.996
+        "y": 1.0860000000000003
       },
       "prevControl": {
-        "x": 7.198842447916666,
-        "y": 0.7558512008101854
+        "x": 6.952079465600196,
+        "y": 0.6611938018429394
       },
       "nextControl": {
-        "x": 8.041129006756965,
-        "y": 1.3190416572154735
+        "x": 8.040279992920926,
+        "y": 1.4241227712358229
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 7.056294642857142,
-        "y": 3.532552083333334
+        "x": 6.934,
+        "y": 3.4930000000000003
       },
       "prevControl": {
-        "x": 7.917293579762663,
-        "y": 3.9727450304003806
+        "x": 8.022662842238457,
+        "y": 3.9049577841591083
       },
       "nextControl": {
-        "x": 6.265007740162037,
-        "y": 3.1280000000000006
+        "x": 6.198871998282279,
+        "y": 3.2148223210059634
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 5.108097222222223,
-        "y": 2.4507680844907407
+        "x": 4.924,
+        "y": 2.396
       },
       "prevControl": {
-        "x": 6.037577989452615,
-        "y": 2.638347806777167
+        "x": 5.98000111618898,
+        "y": 2.498871971924467
       },
       "nextControl": {
-        "x": 4.1373237847222235,
-        "y": 2.2548550347222216
+        "x": 3.982457063228299,
+        "y": 2.304278147558392
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.198045649072753,
-        "y": 2.2559343794579183
+        "x": 3.143,
+        "y": 2.545
       },
       "prevControl": {
-        "x": 3.9003467920125683,
-        "y": 2.2963023626755117
+        "x": 4.317112540866697,
+        "y": 2.590658968226944
       },
       "nextControl": null,
       "isLocked": false,
@@ -78,50 +78,19 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.40139248704663194,
-      "rotationDegrees": 0.0
-    },
-    {
-      "waypointRelativePos": 1.0588235294117643,
+      "waypointRelativePos": 1.05,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 1.780642810880829,
+      "waypointRelativePos": 1.7,
       "rotationDegrees": -90.0
     },
     {
-      "waypointRelativePos": 2.1230367551813476,
+      "waypointRelativePos": 2.0,
       "rotationDegrees": 0.0
     }
   ],
-  "constraintZones": [
-    {
-      "name": "Slow For School Pickup Zone",
-      "minWaypointRelativePos": 1.1229005496742672,
-      "maxWaypointRelativePos": 1.8510280944625404,
-      "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    },
-    {
-      "name": "Anti-Jumping Zone",
-      "minWaypointRelativePos": 2.6132430781758953,
-      "maxWaypointRelativePos": 3.835962947882739,
-      "constraints": {
-        "maxVelocity": 2.0,
-        "maxAcceleration": 3.0,
-        "maxAngularVelocity": 540.0,
-        "maxAngularAcceleration": 720.0,
-        "nominalVoltage": 12.0,
-        "unlimited": false
-      }
-    }
-  ],
+  "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
   "globalConstraints": {
@@ -130,17 +99,17 @@
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
-    "unlimited": false
+    "unlimited": true
   },
   "goalEndState": {
-    "velocity": 0,
-    "rotation": 0.0
+    "velocity": 0.0,
+    "rotation": 48.3
   },
   "reversed": false,
   "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -90.0
   },
   "useDefaultConstraints": true
 }

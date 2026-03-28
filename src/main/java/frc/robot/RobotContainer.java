@@ -107,7 +107,7 @@ public class RobotContainer {
         shooter.setDefaultCommand(shooter.coastCommand());
 
         // Pivot is extended by default
-        intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
+        intake.pivot.setDefaultCommand(Commands.waitSeconds(0.5).andThen(intake.pivot.extendCommand()));
     }
     public Command getAutonomousCommand() {
          // Defaults to firstextension to ensure it happens
