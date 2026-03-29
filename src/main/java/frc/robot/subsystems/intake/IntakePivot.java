@@ -26,9 +26,9 @@ public class IntakePivot extends SubsystemBase {
     private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 7);
     private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 10);
 
-    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 15);
+    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 10);
     private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 3);
-    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 0);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 4);
 
     public IntakePivot() {
         configureMotors();
@@ -94,7 +94,7 @@ public class IntakePivot extends SubsystemBase {
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
     }
 
-    public void rampBotton() {
+    public void rampBottom() {
         currentState = "Ramp Bottom";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_BOTTOM_POSITION).withSlot(1));
     }
@@ -138,11 +138,14 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command rampCommand() {
-        return Commands.repeatingSequence(
-            runOnce(this::ramp),
-            Commands.waitSeconds(0.6),
-            runOnce(this::rampBotton),
-            Commands.waitSeconds(0.6)
-        );
+
+        return Commands.waitSeconds(0.75)
+            .andThen(runOnce(this::ramp));
+        // return Commands.repeatingSequence(
+        //     runOnce(this::ramp),
+        //     Commands.waitSeconds(0.6),
+        //     runOnce(this::rampBottom),
+        //     Commands.waitSeconds(0.6)
+        // );
     }
 }

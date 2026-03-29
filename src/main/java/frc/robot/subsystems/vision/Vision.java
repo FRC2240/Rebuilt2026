@@ -175,9 +175,9 @@ public class Vision extends SubsystemBase {
             }
 
             // logs data by camera
-            fields[i].getObject("EstimatedPoses").setPoses(robot_poses.stream().map(Pose3d::toPose2d).toList());
-            fields[i].getObject("AcceptedPoses").setPoses(accepted_poses.stream().map(Pose3d::toPose2d).toList());
-            fields[i].getObject("RejectedPoses").setPoses(rejected_poses.stream().map(Pose3d::toPose2d).toList());
+            // fields[i].getObject("EstimatedPoses").setPoses(robot_poses.stream().map(Pose3d::toPose2d).toList());
+            // fields[i].getObject("AcceptedPoses").setPoses(accepted_poses.stream().map(Pose3d::toPose2d).toList());
+            // fields[i].getObject("RejectedPoses").setPoses(rejected_poses.stream().map(Pose3d::toPose2d).toList());
         }
     }
 
