@@ -67,8 +67,8 @@ public class Field {
                                 Inches.of(0), 
                                 Inches.of(0)), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
-                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5)))));
+                                Field.FIELD_LENGTH, 
+                                Meters.of(BUMP_MIDPOINT))));
 
         public static final AllianceRelativeRectangle2d UPPER_TRENCH_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(
@@ -77,28 +77,28 @@ public class Field {
                                 Inches.of(0), 
                                 Field.FIELD_WIDTH), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
-                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5)))));
+                                Field.FIELD_LENGTH, 
+                                Field.FIELD_WIDTH.minus(Meters.of(BUMP_MIDPOINT)))));
 
     public static final AllianceRelativeRectangle2d LOWER_BUMP_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(
                 new Rectangle2d(
                         new Translation2d(
-                                Inches.of(0), 
-                                Field.FIELD_WIDTH.div(2).minus(Inches.of(108.5))), 
+                                Inches.of(0),
+                                Meters.of(Field.BUMP_MIDPOINT)), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
-                                Field.FIELD_WIDTH.div(2).minus(Inches.of(23.5)))));
+                                Field.FIELD_LENGTH, 
+                                Field.FIELD_WIDTH.div(2))));
 
     public static final AllianceRelativeRectangle2d UPPER_BUMP_ZONE = AllianceRelativeRectangle2d
             .fromBlueRectangle(
                 new Rectangle2d(
                         new Translation2d(
                                 Inches.of(0), 
-                                Field.FIELD_WIDTH.div(2).plus(Inches.of(108.5))), 
+                                Field.FIELD_WIDTH.minus(Meters.of(Field.BUMP_MIDPOINT))), 
                         new Translation2d(
-                                Field.FIELD_LENGTH.div(2), 
-                                Field.FIELD_WIDTH.div(2).plus(Inches.of(23.5)))));
+                                Field.FIELD_LENGTH, 
+                                Field.FIELD_WIDTH.div(2))));
 
 
     public static boolean isHubActive() {

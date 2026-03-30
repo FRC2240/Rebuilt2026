@@ -48,7 +48,8 @@ public class RobotContainer {
         //potential auto shooting fix
         NamedCommands.registerCommand("shoot", shootingController.shootIntoHub());
         NamedCommands.registerCommand("default", Commands.parallel(intake.enableIntakeCommand(),
-                intake.pivot.extendCommand(), shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
+                Commands.waitSeconds(0.5).andThen(intake.pivot.extendCommand()),
+                shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
     }
 
     private void configureAutoChooser() {
