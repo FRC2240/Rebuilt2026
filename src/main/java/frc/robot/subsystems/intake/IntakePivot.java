@@ -50,8 +50,8 @@ public class IntakePivot extends SubsystemBase {
 
         // For extension
         conf.Slot0.kP = extensionP.get();
-        conf.Slot0.kD = extensionI.get();
-        conf.Slot0.kI = extensionD.get();
+        conf.Slot0.kD = extensionD.get();
+        conf.Slot0.kI = extensionI.get();
 
         // Slot 1 is for contracting in the ramp command
         conf.Slot1.kP = retractP.get();
@@ -138,14 +138,11 @@ public class IntakePivot extends SubsystemBase {
     }
 
     public Command rampCommand() {
-
-        return Commands.waitSeconds(0.75)
-            .andThen(runOnce(this::ramp));
-        // return Commands.repeatingSequence(
-        //     runOnce(this::ramp),
-        //     Commands.waitSeconds(0.6),
-        //     runOnce(this::rampBottom),
-        //     Commands.waitSeconds(0.6)
-        // );
+        return Commands.repeatingSequence(
+             runOnce(this::ramp),
+             Commands.waitSeconds(0.6),
+             runOnce(this::rampBottom),
+             Commands.waitSeconds(0.6)
+        );
     }
 }

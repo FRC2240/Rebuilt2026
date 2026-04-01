@@ -48,7 +48,7 @@ public class RobotContainer {
         //potential auto shooting fix
         NamedCommands.registerCommand("shoot", shootingController.shootIntoHub());
         NamedCommands.registerCommand("default", Commands.parallel(intake.enableIntakeCommand(),
-                Commands.waitSeconds(0.5).andThen(intake.pivot.extendCommand()),
+                Commands.waitSeconds(0.25).andThen(intake.pivot.extendCommand()),
                 shooter.feeder.disableCommand(), shooter.coastCommand(), spindexer.disableCommand()));
     }
 
@@ -77,7 +77,7 @@ public class RobotContainer {
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
         // Contract Intake
-        joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
+        joystick.x().toggleOnTrue(intake.pivot.rampCommand().alongWith(intake.disableIntakeCommand()));
 
         // Align with Trench
         joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), 
