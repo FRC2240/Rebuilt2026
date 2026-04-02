@@ -77,7 +77,7 @@ public class RobotContainer {
         joystick.rightBumper().onTrue(intake.pivot.rezeroCommand());
 
         // Contract Intake
-        joystick.x().toggleOnTrue(intake.pivot.rampCommand().alongWith(intake.disableIntakeCommand()));
+        joystick.x().toggleOnTrue(intake.pivot.contractCommand().alongWith(intake.disableIntakeCommand()));
 
         // Align with Trench
         joystick.y().whileTrue(drivetrain.commands.drive(drivetrain.commands.driveWithJoystick(), 

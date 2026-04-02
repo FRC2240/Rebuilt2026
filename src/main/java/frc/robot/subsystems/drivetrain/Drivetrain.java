@@ -93,9 +93,19 @@ public class Drivetrain extends TunerSwerveDrivetrain implements Subsystem {
         }
     }
 
+
+
     @Override
     public void periodic() {
         SmartDashboard.putString("Drivetrain/current command", this.getCurrentCommand() == null ? "None" : this.getCurrentCommand().getName());
+        double driveCurrent = 0;
+        double steerCurrent = 0;
+        for (var module : this.getModules()) {
+            driveCurrent += module.getDriveMotor().getSupplyCurrent().getValueAsDouble();
+            steerCurrent += module.getSteerMotor().getSupplyCurrent().getValueAsDouble();
+        }
+        SmartDashboard.putNumber("Drivetrain/Drive Current", driveCurrent);
+        SmartDashboard.putNumber("Drivetrain/Steer Current", steerCurrent);
     }
 
     /**

@@ -140,9 +140,9 @@ public class IntakePivot extends SubsystemBase {
     public Command rampCommand() {
         return Commands.repeatingSequence(
              runOnce(this::ramp),
-             Commands.waitSeconds(0.6),
+             Commands.waitSeconds(1.1),
              runOnce(this::rampBottom),
-             Commands.waitSeconds(0.6)
+             Commands.waitSeconds(1.1)
         );
     }
 }

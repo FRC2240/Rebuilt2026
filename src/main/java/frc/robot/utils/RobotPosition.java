@@ -3,6 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.subsystems.drivetrain.Drivetrain;
 
 public class RobotPosition {
@@ -42,5 +43,12 @@ public class RobotPosition {
      */
     public static Rotation2d getHeading() {
         return instance.drivetrain.getHeading();
+    }
+
+    /**
+     * Gets the robot's current chassis speeds
+     */
+    public static ChassisSpeeds getChassisSpeeds() {
+        return instance.drivetrain.getState().Speeds;
     }
 }
