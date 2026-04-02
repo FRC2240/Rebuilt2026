@@ -22,7 +22,7 @@ public class DriveConstants {
     public static final LinearVelocity MAX_SLOW_SPEED = MAX_SPEED.div(5);
     public static final AngularVelocity MAX_SLOW_ANGULAR_RATE = MAX_ANGULAR_RATE.div(5);
 
-    public static final LinearAcceleration MAX_WHEEL_ACCELERATION = MetersPerSecondPerSecond.of(4.5);
+    public static final LinearAcceleration MAX_WHEEL_ACCELERATION = MetersPerSecondPerSecond.of(3);
     public static final LinearAcceleration MAX_WHEEL_DECELERATION = MetersPerSecondPerSecond.of(4.5);
 
     // PID controllers for autonomous driving

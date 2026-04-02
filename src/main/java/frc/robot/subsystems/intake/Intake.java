@@ -12,11 +12,13 @@ import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.utils.RobotPosition;
 
 public class Intake extends SubsystemBase {
     private TalonFX intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
@@ -25,10 +27,10 @@ public class Intake extends SubsystemBase {
     public final IntakePivot pivot = new IntakePivot();
 
     private String state = "None";
-    
+
     public Intake() {
-    
-         TalonFXConfiguration conf = new TalonFXConfiguration();
+
+        TalonFXConfiguration conf = new TalonFXConfiguration();
 
         conf.Slot0.kP = 8;
 
@@ -40,11 +42,10 @@ public class Intake extends SubsystemBase {
         intakeFollower.setControl(new Follower(IntakeConstants.INTAKE_MOTOR_ID, MotorAlignmentValue.Opposed));
     }
 
-
     public void setVelocity(AngularVelocity velocity) {
-        intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity));  
+        intakeMotor.setControl(new VelocityTorqueCurrentFOC(velocity));
     }
-      
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Intake/Roller Velocity", intakeMotor.getVelocity().getValueAsDouble());
@@ -63,11 +64,25 @@ public class Intake extends SubsystemBase {
 
     public Command enableIntakeCommand() {
         return Commands.repeatingSequence(
-            setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY),
-            Commands.waitUntil(() -> intakeMotor.getStatorCurrent().getValueAsDouble() > IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps) - 5),
-            runOnce(() -> intakeMotor.setControl(new CoastOut())),
-            Commands.waitSeconds(0.5)
-        ).withName("Enable");
+                run(() -> {
+                    double MAX_ROBOT_SPEED = 4.5;
+                    double MIN_ROLLER_SPEED = 40;
+                    double MAX_ROLLER_SPEED = 90;
+                    ChassisSpeeds speeds = RobotPosition.getChassisSpeeds();
+
+
+                    double speed = Math
+                            .sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2));
+                    speed = Math.min(speed, MAX_ROBOT_SPEED); // Caps to 4.5 m/s
+                    double fraction = speed / MAX_ROBOT_SPEED;
+                    double desiredRollerSpeed = MIN_ROLLER_SPEED + (MAX_ROLLER_SPEED - MIN_ROLLER_SPEED) * fraction;
+                    SmartDashboard.putNumber("Intake/Desired Roller Speed", -desiredRollerSpeed);
+
+                    intakeMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-desiredRollerSpeed)));
+                }).until(() -> intakeMotor.getStatorCurrent()
+                        .getValueAsDouble() > IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps) - 5),
+                runOnce(() -> intakeMotor.setControl(new CoastOut())),
+                Commands.waitSeconds(0.5)).withName("Enable");
     }
 
     public Command disableIntakeCommand() {
