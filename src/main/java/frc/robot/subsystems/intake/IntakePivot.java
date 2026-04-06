@@ -62,7 +62,6 @@ public class IntakePivot extends SubsystemBase {
         conf.Slot2.kP = 5;
 
         conf.CurrentLimits.SupplyCurrentLimit = 45;
-        conf.CurrentLimits.StatorCurrentLimit = 100;
 
         pivotMotor.getConfigurator().apply(conf);
     }
@@ -91,12 +90,12 @@ public class IntakePivot extends SubsystemBase {
 
     public void ramp() {
         currentState = "Ramp";
-        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
+        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION));
     }
 
     public void rampBottom() {
         currentState = "Ramp Bottom";
-        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_BOTTOM_POSITION).withSlot(1));
+        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_BOTTOM_POSITION));
     }
 
     public Command testRamp() {
@@ -141,7 +140,7 @@ public class IntakePivot extends SubsystemBase {
         return Commands.repeatingSequence(
              runOnce(this::ramp),
              Commands.waitSeconds(1.1),
-             runOnce(this::rampBottom),
+             runOnce(this::extend),
              Commands.waitSeconds(1.1)
         );
     }
