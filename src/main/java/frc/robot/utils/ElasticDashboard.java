@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElasticDashboard extends SubsystemBase{
+    double minVoltage = 13;
 
     @Override
     public void periodic() {
@@ -16,7 +17,9 @@ public class ElasticDashboard extends SubsystemBase{
 
         publishPeriodTime();
 
+        if (RobotController.getBatteryVoltage() < minVoltage) {minVoltage = RobotController.getBatteryVoltage();}
 
+        SmartDashboard.putNumber("ElasticDashboard/MinimumVoltage", minVoltage);
     }
 
     public void publishPeriodTime() {
@@ -46,16 +49,18 @@ public class ElasticDashboard extends SubsystemBase{
             SmartDashboard.putString("ElasticDashboard/Phase", "Shift 3");
         }
         else if(time > 30) {
-            value = time - 30;
+            if (Field.isHubActive()) {
+                value = time;
+            }
+            else {
+                value = time - 30;
+            }
+            
             SmartDashboard.putString("ElasticDashboard/Phase", "Shift 4");
         }
         else {
             value = time;
             SmartDashboard.putString("ElasticDashboard/Phase", "Auto/End");
-        }
-
-        if (time < 0) {
-
         }
 
         SmartDashboard.putNumber("ElasticDashboard/Shifttime", value);

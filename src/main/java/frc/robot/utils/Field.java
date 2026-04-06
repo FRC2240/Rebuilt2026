@@ -110,6 +110,7 @@ public class Field {
         }
         else {
                 disabledFirst = DriverStation.getAlliance().orElse(Alliance.Red);
+                DriverStation.reportWarning("No Game Specific Message Found", true);
         }
 
         Alliance alliance = DriverStation.getAlliance().orElse(Alliance.Red);

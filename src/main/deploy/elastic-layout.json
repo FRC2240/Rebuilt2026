@@ -109,19 +109,6 @@
             }
           },
           {
-            "title": "Auto Chooser",
-            "x": 512.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 128.0,
-            "type": "ComboBox Chooser",
-            "properties": {
-              "topic": "/SmartDashboard/Auto Chooser",
-              "period": 0.06,
-              "sort_options": false
-            }
-          },
-          {
             "title": "limelight-left",
             "x": 768.0,
             "y": 576.0,
@@ -145,6 +132,19 @@
               "topic": "/CameraPublisher/limelight-right",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "Auto Chooser",
+            "x": 512.0,
+            "y": 576.0,
+            "width": 256.0,
+            "height": 128.0,
+            "type": "ComboBox Chooser",
+            "properties": {
+              "topic": "/SmartDashboard/Auto Chooser",
+              "period": 0.06,
+              "sort_options": false
             }
           }
         ]
@@ -324,32 +324,6 @@
             }
           },
           {
-            "title": "left flywheel velocity",
-            "x": 960.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/left flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
-            "title": "right flywheel velocity",
-            "x": 1216.0,
-            "y": 576.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Large Text Display",
-            "properties": {
-              "topic": "/SmartDashboard/Shooter/right flywheel velocity",
-              "period": 0.06,
-              "data_type": "double"
-            }
-          },
-          {
             "title": "limelight-left",
             "x": 64.0,
             "y": 192.0,
@@ -373,6 +347,45 @@
               "topic": "/CameraPublisher/limelight-right",
               "period": 0.06,
               "rotation_turns": 0
+            }
+          },
+          {
+            "title": "flywheel vel",
+            "x": 960.0,
+            "y": 576.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/Shooter/flywheel velocity",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "desired vel",
+            "x": 1152.0,
+            "y": 576.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ShootingConditions/Hub/desired flywheel velocity",
+              "period": 0.06,
+              "data_type": "double"
+            }
+          },
+          {
+            "title": "Min Voltage Reached",
+            "x": 576.0,
+            "y": 0.0,
+            "width": 192.0,
+            "height": 128.0,
+            "type": "Large Text Display",
+            "properties": {
+              "topic": "/SmartDashboard/ElasticDashboard/MinimumVoltage",
+              "period": 0.06,
+              "data_type": "double"
             }
           }
         ]
