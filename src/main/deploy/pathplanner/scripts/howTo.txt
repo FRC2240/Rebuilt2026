@@ -1,0 +1,4 @@
+search and install node.js
+type node <pathName> into terminal
+(right click to copy path)
+stage any wanted mirrored paths discard the rest
