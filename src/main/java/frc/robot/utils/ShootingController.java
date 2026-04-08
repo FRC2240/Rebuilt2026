@@ -183,7 +183,7 @@ public class ShootingController extends SubsystemBase {
                 BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
                 
                 Commands.waitUntil(this::isDrivetrainAimedAtHub).andThen(Commands.waitSeconds(0.8).andThen(intake.pivot.rampCommand())),
-                intake.disableIntakeCommand(),
+                intake.slowReverseIntakeCommand(),
 
                 // Set the `isCurrentlyShooting` variable
                 Commands.run(() -> isCurrentlyShooting = hubShootRequirementsMet()))
@@ -202,7 +202,7 @@ public class ShootingController extends SubsystemBase {
 
                 BetterCommands.runWhen(feed(), this::passRequirementsMet),
                 Commands.waitUntil(this::isDrivetrainAimedAtPassPoint).andThen(Commands.waitSeconds(0.8).andThen(intake.pivot.rampCommand())),
-                intake.disableIntakeCommand(),
+                intake.slowReverseIntakeCommand(),
 
                 Commands.run(() -> isCurrentlyShooting = passRequirementsMet()));
     }
