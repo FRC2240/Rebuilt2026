@@ -6,7 +6,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.controls.CoastOut;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -35,7 +34,7 @@ public class Intake extends SubsystemBase {
         conf.Slot0.kP = 8;
 
         conf.CurrentLimits.SupplyCurrentLimit = 35;
-        conf.CurrentLimits.StatorCurrentLimit = IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps);
+        //conf.CurrentLimits.StatorCurrentLimit = IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps);
 
         intakeMotor.getConfigurator().apply(conf);
 
@@ -66,7 +65,7 @@ public class Intake extends SubsystemBase {
         return Commands.repeatingSequence(
                 run(() -> {
                     double MAX_ROBOT_SPEED = 4.5;
-                    double MIN_ROLLER_SPEED = 40;
+                    double MIN_ROLLER_SPEED = 50;
                     double MAX_ROLLER_SPEED = 90;
                     ChassisSpeeds speeds = RobotPosition.getChassisSpeeds();
 
@@ -79,10 +78,7 @@ public class Intake extends SubsystemBase {
                     SmartDashboard.putNumber("Intake/Desired Roller Speed", -desiredRollerSpeed);
 
                     intakeMotor.setControl(new VelocityTorqueCurrentFOC(RotationsPerSecond.of(-desiredRollerSpeed)));
-                }).until(() -> intakeMotor.getStatorCurrent()
-                        .getValueAsDouble() > IntakeConstants.STATOR_CURRENT_LIMIT.in(Amps) - 5),
-                runOnce(() -> intakeMotor.setControl(new CoastOut())),
-                Commands.waitSeconds(0.5)).withName("Enable");
+                }));
     }
 
     public Command disableIntakeCommand() {
@@ -95,5 +91,11 @@ public class Intake extends SubsystemBase {
         return setIntakeVelocityCommand(IntakeConstants.INTAKE_VELOCITY.unaryMinus()).andThen(run(() -> {
             state = "Reverse";
         })).withName("Reverse");
+    }
+
+    public Command slowReverseIntakeCommand() {
+        return setIntakeVelocityCommand(RotationsPerSecond.of(1)).andThen(run(() -> {
+            state = "slow";
+        }));
     }
 }
