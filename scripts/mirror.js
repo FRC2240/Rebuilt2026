@@ -8,7 +8,7 @@ function flipY(point) {
 }
 
 for (const file of fs.readdirSync(DIRECTORY)) {
-    if (file.endsWith('.path')) {
+    if (file.endsWith('.path') && file.includes("Right")) {
         const inputPath = path.join(DIRECTORY, file);
 
         // Clone JSON
@@ -16,8 +16,14 @@ for (const file of fs.readdirSync(DIRECTORY)) {
         let clone = JSON.parse(JSON.stringify(json));
 
         for (let wp of clone.waypoints) {
-
-            if (wp?.linkedName) delete(wp.linkedName);
+            if (wp?.linkedName) {
+                if (wp.linkedName.includes("left")) {
+                    wp.linkedName.replace("left", "right")
+                }
+                if (wp.linkedName.includes("right")) {
+                    wp.linkedName.replace("right", "left")
+                }
+            }
 
             flipY(wp.anchor);
 
