@@ -4,12 +4,30 @@ const path = require('path');
 const DIRECTORY = 'src/main/deploy/pathplanner/paths';
 
 function flipY(point) {
-    point.y = 8 - point.y;
+    point.y = 8.07 - point.y;
 }
 
-for (const file of fs.readdirSync(DIRECTORY)) {
-    if (file.endsWith('.path') && file.includes("Right")) {
+const files = fs.readdirSync(DIRECTORY);
+for (const file of files) {
+    if (file.endsWith('.path') && (file.includes("Right") || file.includes("Left"))) {
         const inputPath = path.join(DIRECTORY, file);
+
+        // Build output filename
+        const parsed = path.parse(inputPath);
+        let newName = parsed.name + parsed.ext;
+        if (newName.includes("Left")) {
+            newName = newName.replace("Left", "Right")
+        } else if (newName.includes("Right")) {
+            newName = newName.replace("Right", "Left")
+        }
+        
+        // Skip paths that exist
+        if (files.includes(newName)) {
+            console.log(`WARNING: ${newName} already exists. Skipping...`)
+            continue;
+        }
+
+        const outputPath = path.join(parsed.dir, newName);
 
         // Clone JSON
         let json = JSON.parse(fs.readFileSync(inputPath));
@@ -17,11 +35,10 @@ for (const file of fs.readdirSync(DIRECTORY)) {
 
         for (let wp of clone.waypoints) {
             if (wp?.linkedName) {
-                if (wp.linkedName.includes("left")) {
-                    wp.linkedName.replace("left", "right")
-                }
                 if (wp.linkedName.includes("right")) {
-                    wp.linkedName.replace("right", "left")
+                    wp.linkedName = wp.linkedName.replace("right", "left")
+                }else if (wp.linkedName.includes("left")) {
+                    wp.linkedName = wp.linkedName.replace("left", "right")
                 }
             }
 
@@ -41,9 +58,6 @@ for (const file of fs.readdirSync(DIRECTORY)) {
         if (clone.goalEndState?.rotation) 
                 clone.goalEndState.rotation *= -1;
 
-        // Build output filename
-        const parsed = path.parse(inputPath);
-        const outputPath = path.join(parsed.dir, parsed.name + "_mirrored" + parsed.ext);
 
         // Save mirrored version
         fs.writeFileSync(outputPath, JSON.stringify(clone, null, 2));
