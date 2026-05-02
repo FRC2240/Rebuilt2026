@@ -60,7 +60,9 @@ public class LimelightCamera implements CameraInterface {
 
         rewind_entry = table.getEntry("capture_rewind");
 
-        latency_subscriber = table.getDoubleTopic("tl").subscribe(0.0); //these exact strings must be used
+        // the exact keys such as "tl" must be used to access these value see bellow
+        // https://docs.limelightvision.io/docs/docs-limelight/apis/complete-networktables-api
+        latency_subscriber = table.getDoubleTopic("tl").subscribe(0.0); 
         rot_x_subscriber = table.getDoubleTopic("tx").subscribe(0.0);
         rot_y_subscriber = table.getDoubleTopic("ty").subscribe(0.0);
 
@@ -155,12 +157,11 @@ public class LimelightCamera implements CameraInterface {
             //System.out.println(raw_data);
             // Java short-hand
             if (raw_data.value.length == 0) continue;
-            // 11 is that tags start with
             //read this
             //https://github.com/LimelightVision/limelightlib-wpijava/blob/main/LimelightHelpers.java
             // lines 700-800
             for (int i = 11; i < raw_data.value.length; i+=7) { 
-                //TODO document here
+                // Tags are at every 7th index starting with 11
                 april_tag_IDs.add((int) raw_data.value[i]);
             }
 
