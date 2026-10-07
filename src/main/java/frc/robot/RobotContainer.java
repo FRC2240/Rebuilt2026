@@ -89,7 +89,7 @@ public class RobotContainer {
         // Drive facing Hub
         joystick.b().whileTrue(drivetrain.commands.driveAssist.driveFacingTarget());
 
-        joystick.a().whileTrue(drivetrain.commands.shakeCommand());
+        joystick.a().whileTrue(intake.pivot.rampCommand());
     }
     private void configureDefaults() {
         //Drive with Stick

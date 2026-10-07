@@ -182,7 +182,7 @@ public class ShootingController extends SubsystemBase {
 
                 BetterCommands.runWhen(feed(), this::hubShootRequirementsMet),
                 
-                Commands.waitUntil(this::isDrivetrainAimedAtHub).andThen(Commands.waitSeconds(0.8).andThen(intake.pivot.rampCommand())),
+                Commands.waitUntil(this::isDrivetrainAimedAtHub).andThen(Commands.waitSeconds(0.9).andThen(intake.pivot.rampCommand())),
                 intake.slowReverseIntakeCommand(),
 
                 // Set the `isCurrentlyShooting` variable
