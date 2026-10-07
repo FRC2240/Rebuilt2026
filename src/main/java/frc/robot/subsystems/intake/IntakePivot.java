@@ -22,13 +22,24 @@ public class IntakePivot extends SubsystemBase {
     private String currentState = "None";
     private CoastOut coast = new CoastOut();
 
+    /*
     private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 25);
     private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 7);
     private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 10);
 
-    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 10);
-    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 3);
-    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 4);
+    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 40);
+    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 0);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 0);
+     */
+
+
+    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 8);
+    private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 0);
+    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 0.5);
+
+    private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 11);
+    private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 0);
+    private TunableNumber retractD = new TunableNumber("Intake/PID/retract D", 1);
 
     public IntakePivot() {
         configureMotors();
@@ -45,8 +56,6 @@ public class IntakePivot extends SubsystemBase {
 
     private void configureMotors() {
         TalonFXConfiguration conf = new TalonFXConfiguration();
-        conf.MotionMagic.MotionMagicCruiseVelocity = 10;
-        conf.MotionMagic.MotionMagicAcceleration = 16;
 
         // For extension
         conf.Slot0.kP = extensionP.get();
@@ -62,6 +71,7 @@ public class IntakePivot extends SubsystemBase {
         conf.Slot2.kP = 5;
 
         conf.CurrentLimits.SupplyCurrentLimit = 45;
+        //conf.CurrentLimits.StatorCurrentLimit = 80;
 
         pivotMotor.getConfigurator().apply(conf);
     }
@@ -74,15 +84,6 @@ public class IntakePivot extends SubsystemBase {
         SmartDashboard.putNumber("Intake/Pivot Supply Current", pivotMotor.getSupplyCurrent().getValueAsDouble());
     }
 
-    public Command setPositionCommand(Angle position) {
-        return runOnce(() -> pivotMotor.setControl(new PositionTorqueCurrentFOC(position))).andThen(run(() -> {
-        }));
-    }
-
-    public void extendMotionMagic() {
-        pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
-    }
-
     public void extend() {
         currentState = "Extend";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_EXTENDED_POSITION));
@@ -90,16 +91,12 @@ public class IntakePivot extends SubsystemBase {
 
     public void ramp() {
         currentState = "Ramp";
-        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION));
+        pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_POSITION).withSlot(1));
     }
 
     public void rampBottom() {
         currentState = "Ramp Bottom";
         pivotMotor.setControl(new PositionTorqueCurrentFOC(IntakeConstants.PIVOT_RAMP_BOTTOM_POSITION));
-    }
-
-    public Command testRamp() {
-        return runOnce(this::ramp).andThen(run(() -> {}));
     }
 
     public void coast() {
@@ -111,14 +108,9 @@ public class IntakePivot extends SubsystemBase {
         return runOnce(this::extend).withName("Extend");
     }
 
-    public Command extendRunCommand() {
-        return extendCommand()
-                .andThen(run(() -> {}));
-    }
-
     public Command contractCommand() {
         return runOnce(() -> {
-            pivotMotor.setControl(new MotionMagicTorqueCurrentFOC(Rotations.of(0)));
+            pivotMotor.setControl(new PositionTorqueCurrentFOC(Rotations.of(0)).withSlot(1));
             currentState = "Contract";
         })
                 .andThen(run(() -> {

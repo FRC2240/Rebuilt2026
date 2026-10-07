@@ -58,7 +58,9 @@ public class Spindexer extends SubsystemBase {
     public Command enableCommand() {
         // Runs after setting control to prevent the default (disable) commmand from
         // being called until desired
-        return setVelocityCommand(SpindexerConstants.ENABLED_VELOCITY).andThen(run(() -> {
+        return runOnce(() -> {
+          motor.setControl(new VelocityTorqueCurrentFOC(SpindexerConstants.ENABLED_VELOCITY));
+        }).andThen(run(() -> {
             state = "Enabled";
         }));
     }

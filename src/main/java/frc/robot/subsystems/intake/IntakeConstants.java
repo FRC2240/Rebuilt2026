@@ -16,7 +16,7 @@ public class IntakeConstants {
   public static final int PIVOT_TOLLERANCE = 1;
 
   public static final Current STATOR_CURRENT_LIMIT = Amps.of(85);
-  public static final Angle PIVOT_EXTENDED_POSITION = Rotations.of(-10.495); 
+  public static final Angle PIVOT_EXTENDED_POSITION = Rotations.of(-11.575); 
   public static final Angle PIVOT_RAMP_POSITION = Rotations.of(-1.0);
   public static final Angle PIVOT_RAMP_BOTTOM_POSITION = Rotations.of(-8.5);
   public static final AngularVelocity INTAKE_VELOCITY = RotationsPerSecond.of(-60); 
