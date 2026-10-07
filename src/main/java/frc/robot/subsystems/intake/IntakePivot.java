@@ -33,9 +33,9 @@ public class IntakePivot extends SubsystemBase {
      */
 
 
-    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 8);
+    private TunableNumber extensionP = new TunableNumber("Intake/PID/extension P", 10);
     private TunableNumber extensionI = new TunableNumber("Intake/PID/extension I", 0);
-    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 0.5);
+    private TunableNumber extensionD = new TunableNumber("Intake/PID/extension D", 0.4);
 
     private TunableNumber retractP = new TunableNumber("Intake/PID/retract P", 11);
     private TunableNumber retractI = new TunableNumber("Intake/PID/retract I", 0);
