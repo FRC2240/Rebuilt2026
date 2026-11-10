@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -58,6 +60,18 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
+        joystick.x().whileTrue(Commands.parallel(
+          shooter.setVelocityCommand(RotationsPerSecond.of(30)),
+          Commands.waitSeconds(1).andThen(
+            Commands.parallel(
+              shooter.feeder.enableCommand(),
+              spindexer.enableCommand(),
+              intake.pivot.rampCommand(),
+              intake.disableIntakeCommand()
+            )
+          )
+        ));
+      
         // Disable Intake
         joystick.leftTrigger().toggleOnTrue(intake.disableIntakeCommand());
 
@@ -99,7 +113,7 @@ public class RobotContainer {
         spindexer.setDefaultCommand(spindexer.disableCommand());
 
         // Intake is enabled by default
-        intake.setDefaultCommand(intake.enableIntakeCommand());
+        //intake.setDefaultCommand(intake.enableIntakeCommand());
 
         // Feeder is disabled by default
         shooter.feeder.setDefaultCommand(shooter.feeder.disableCommand());
@@ -108,7 +122,7 @@ public class RobotContainer {
         shooter.setDefaultCommand(shooter.coastCommand());
 
         // Pivot is extended by default
-        intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
+        //intake.pivot.setDefaultCommand(intake.pivot.extendCommand());
     }
     public Command getAutonomousCommand() {
          // Defaults to firstextension to ensure it happens
